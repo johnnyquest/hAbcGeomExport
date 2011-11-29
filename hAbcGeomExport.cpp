@@ -3,6 +3,15 @@
 		@author		xy
 		@since		2011-11-29
 
+
+
+		Run the command
+			
+			hcustom hAbcGeomExport.cpp
+
+		to build.
+
+
 */
 
 #include <fstream.h>
