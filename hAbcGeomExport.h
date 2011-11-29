@@ -28,15 +28,21 @@
 
 #include <ROP/ROP_Node.h>
 
+
 #define STR_PARM(name, idx, vi, t) \
 		{ evalString(str, name, &ifdIndirect[idx], vi, (float)t); }
+
 #define INT_PARM(name, idx, vi, t) \
                 { return evalInt(name, &ifdIndirect[idx], vi, t); }
 
 #define STR_SET(name, idx, vi, t) \
 		{ setString(str, name, ifdIndirect[idx], vi, (float)t); }
+
 #define STR_GET(name, idx, vi, t) \
 		{ evalStringRaw(str, name, &ifdIndirect[idx], vi, (float)t); }
+
+
+
 
 class OP_TemplatePair;
 class OP_VariablePair;
@@ -49,20 +55,18 @@ namespace HDK_Sample
 	public:
 
 		/// Provides access to our parm templates.
-		static OP_TemplatePair *getTemplatePair ();
+		static OP_TemplatePair *getTemplatePair();
 
 		/// Provides access to our variables.
-		static OP_VariablePair *getVariablePair ();
+		static OP_VariablePair *getVariablePair();
 
 		/// Creates an instance of this node.
-		static OP_Node *myConstructor (OP_Network * net,
-					       const char *name,
-					       OP_Operator * op);
+		static OP_Node *myConstructor(OP_Network * net, const char *name, OP_Operator * op);
 
 	protected:
-		  hAbcGeomExport (OP_Network * net, const char *name,
-				  OP_Operator * entry);
-		  virtual ~ hAbcGeomExport ();
+		  hAbcGeomExport(OP_Network * net, const char *name, OP_Operator * entry);
+		  
+		  virtual ~hAbcGeomExport();
 
 		/// Called at the beginning of rendering to perform any intialization 
 		/// necessary.
@@ -70,28 +74,34 @@ namespace HDK_Sample
 		/// @param  s           Start time, in seconds.
 		/// @param  e           End time, in seconds.
 		/// @return             True of success, false on failure (aborts the render).
-		virtual int startRender (int nframes, float s, float e);
+		virtual int startRender( int nframes, float s, float e );
 
 		/// Called once for every frame that is rendered.
 		/// @param  time        The time to render at.
 		/// @param  boss        Interrupt handler.
 		/// @return             Return a status code indicating whether to abort the
 		///                     render, continue, or retry the current frame.
-		virtual ROP_RENDER_CODE renderFrame (float time,
-						     UT_Interrupt * boss);
+		virtual ROP_RENDER_CODE renderFrame( float time, UT_Interrupt * boss );
 
 		/// Called after the rendering is done to perform any post-rendering steps
 		/// required.
 		/// @return             Return a status code indicating whether to abort the
 		///                     render, continue, or retry.
-		virtual ROP_RENDER_CODE endRender ();
+		virtual ROP_RENDER_CODE endRender();
 
 	public:
 
 		/// A convenience method to evaluate our custom file parameter.
-		void OUTPUT (UT_String & str, float t)
+
+		inline void get_str_parm( char const *parm, float t, UT_String & out )
 		{
-		STR_PARM ("file", 0, 0, t)}
+			evalString(out, parm, &ifdIndirect[0], 0, (float)t);
+		}
+
+		inline void OUTPUT(UT_String & str, float t)
+		{
+			STR_PARM("file", 0, 0, t)
+		}
 
 	private:
 		static int *ifdIndirect;
@@ -106,3 +116,5 @@ namespace HDK_Sample
 #undef STR_GET
 
 #endif
+
+

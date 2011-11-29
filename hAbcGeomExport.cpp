@@ -39,36 +39,42 @@ using namespace HDK_Sample;
 
 int *			hAbcGeomExport::ifdIndirect = 0;
 
-static PRM_Name		theFileName ("file", "Save to file");
-static PRM_Default	theFileDefault (0, "junk.out");
+static PRM_Name		prm_abcoutput("abcoutput", "Save to file");
+static PRM_Default	prm_abcoutput_d(0, "junk.out");
+
+//static PRM_Obj
 
 
 
 
 static PRM_Template * getTemplates()
 {
-	static PRM_Template * theTemplate = 0;
+	static PRM_Template * t = 0;
 
-	if (theTemplate)
-		return theTemplate;
+	if (t)
+		return t;
 
-	theTemplate = new PRM_Template[14];
-	theTemplate[0] = PRM_Template (PRM_FILE, 1, &theFileName, &theFileDefault);
-	theTemplate[1] = theRopTemplates[ROP_TPRERENDER_TPLATE];
-	theTemplate[2] = theRopTemplates[ROP_PRERENDER_TPLATE];
-	theTemplate[3] = theRopTemplates[ROP_LPRERENDER_TPLATE];
-	theTemplate[4] = theRopTemplates[ROP_TPREFRAME_TPLATE];
-	theTemplate[5] = theRopTemplates[ROP_PREFRAME_TPLATE];
-	theTemplate[6] = theRopTemplates[ROP_LPREFRAME_TPLATE];
-	theTemplate[7] = theRopTemplates[ROP_TPOSTFRAME_TPLATE];
-	theTemplate[8] = theRopTemplates[ROP_POSTFRAME_TPLATE];
-	theTemplate[9] = theRopTemplates[ROP_LPOSTFRAME_TPLATE];
-	theTemplate[10] = theRopTemplates[ROP_TPOSTRENDER_TPLATE];
-	theTemplate[11] = theRopTemplates[ROP_POSTRENDER_TPLATE];
-	theTemplate[12] = theRopTemplates[ROP_LPOSTRENDER_TPLATE];
-	theTemplate[13] = PRM_Template ();
+	t = new PRM_Template[15];
 
-	return theTemplate;
+	int c=0;
+
+	t[c++] = PRM_Template(PRM_FILE, 1, &prm_abcoutput, &prm_abcoutput_d);
+	t[c++] = PRM_Template(); // TODO: obj (objs?) name to export
+	t[c++] = theRopTemplates[ROP_TPRERENDER_TPLATE];
+	t[c++] = theRopTemplates[ROP_PRERENDER_TPLATE];
+	t[c++] = theRopTemplates[ROP_LPRERENDER_TPLATE];
+	t[c++] = theRopTemplates[ROP_TPREFRAME_TPLATE];
+	t[c++] = theRopTemplates[ROP_PREFRAME_TPLATE];
+	t[c++] = theRopTemplates[ROP_LPREFRAME_TPLATE];
+	t[c++] = theRopTemplates[ROP_TPOSTFRAME_TPLATE];
+	t[c++] = theRopTemplates[ROP_POSTFRAME_TPLATE];
+	t[c++] = theRopTemplates[ROP_LPOSTFRAME_TPLATE];
+	t[c++] = theRopTemplates[ROP_TPOSTRENDER_TPLATE];
+	t[c++] = theRopTemplates[ROP_POSTRENDER_TPLATE];
+	t[c++] = theRopTemplates[ROP_LPOSTRENDER_TPLATE];
+	t[c++] = PRM_Template();
+
+	return t;
 }
 
 
@@ -78,17 +84,17 @@ static PRM_Template * getTemplates()
 OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 {
 	static OP_TemplatePair *ropPair = 0;
-	if (!ropPair)
-	  {
-		  OP_TemplatePair *base;
 
-		  base = new OP_TemplatePair (getTemplates ());
-		  ropPair =
-			  new OP_TemplatePair (ROP_Node::
-					       getROPbaseTemplate (), base);
-	  }
+	if (!ropPair)
+	{
+		OP_TemplatePair *base;
+
+		base = new OP_TemplatePair(getTemplates());
+		ropPair = new OP_TemplatePair(ROP_Node::getROPbaseTemplate(), base);
+	}
 	return ropPair;
 }
+
 
 
 
@@ -97,16 +103,21 @@ OP_VariablePair * hAbcGeomExport::getVariablePair()
 {
 	static OP_VariablePair *pair = 0;
 	if (!pair)
-		pair = new OP_VariablePair (ROP_Node::myVariableList);
+		pair = new OP_VariablePair(ROP_Node::myVariableList);
 	return pair;
 }
 
 
 
 
-OP_Node * hAbcGeomExport::myConstructor( OP_Network * net, const char *name, OP_Operator * op )
+
+OP_Node * hAbcGeomExport::myConstructor(
+	OP_Network * net,
+	const char *name,
+	OP_Operator * op
+)
 {
-	return new hAbcGeomExport (net, name, op);
+	return new hAbcGeomExport(net, name, op);
 }
 
 
@@ -118,12 +129,14 @@ hAbcGeomExport::hAbcGeomExport(
 	const char *name,
 	OP_Operator * entry
 )
-: ROP_Node (net, name, entry)
+: ROP_Node(net, name, entry)
 {
-
 	if (!ifdIndirect)
-		ifdIndirect = allocIndirect (16);
+		ifdIndirect = allocIndirect(16);
 }
+
+
+
 
 
 hAbcGeomExport::~hAbcGeomExport()
@@ -143,12 +156,16 @@ hAbcGeomExport::~hAbcGeomExport()
 
 int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 {
-	DBG << "startRender()" << nframes << " " << tstart << " " << tend <<
-		"\n";
+	DBG
+		<< "startRender()"
+		<< nframes << " "
+		<< tstart << " "
+		<< tend
+		<< "\n";
 
 	myEndTime = tend;
-	if (error () < UT_ERROR_ABORT)
-		executePreRenderScript (tstart);
+	if (error() < UT_ERROR_ABORT)
+		executePreRenderScript(tstart);
 
 	return 1;
 }
@@ -163,8 +180,8 @@ static void printNode( ostream & os, OP_Node * node, int indent )
 	wbuf.sprintf ("%*s", indent, "");
 	os << wbuf.buffer () << node->getName () << endl;
 
-	for (int i = 0; i < node->getNchildren (); ++i)
-		printNode (os, node->getChild (i), indent + 2);
+	for(int i=0;  i<node->getNchildren ();  ++i)
+		printNode(os, node->getChild(i), indent+2);
 }
 
 
@@ -182,15 +199,20 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 	// Evaluate the parameter for the file name and write something to the
 	// file.
 	UT_String file_name;
-	OUTPUT (file_name, time);
+	get_str_parm("abcoutput", time, file_name);
 
-	ofstream os (file_name);
-	printNode (os, OPgetDirector (), 0);
-	os.close ();
+	DBG << " -- file: " << file_name << "\n";
+
+	if (false)
+	{
+		ofstream os(file_name);
+		printNode(os, OPgetDirector(), 0);
+		os.close();
+	}
 
 	// Execute the post-render script.
-	if (error () < UT_ERROR_ABORT)
-		executePostFrameScript (time);
+	if (error() < UT_ERROR_ABORT)
+		executePostFrameScript(time);
 
 	return ROP_CONTINUE_RENDER;
 }
@@ -203,8 +225,8 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 {
 	DBG << "endRender()\n";
 
-	if (error () < UT_ERROR_ABORT)
-		executePostRenderScript (myEndTime);
+	if (error() < UT_ERROR_ABORT)
+		executePostRenderScript(myEndTime);
 	return ROP_CONTINUE_RENDER;
 }
 
@@ -213,16 +235,22 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 
 
 
-void
-newDriverOperator (OP_OperatorTable * table)
+void newDriverOperator(OP_OperatorTable * table)
 {
-	table->addOperator (new OP_Operator ("hAbcGeomExport",
-					     "Alembic Geo Export",
-					     hAbcGeomExport::myConstructor,
-					     hAbcGeomExport::
-					     getTemplatePair (), 0, 0,
-					     hAbcGeomExport::
-					     getVariablePair (),
-					     OP_FLAG_GENERATOR));
+	table->addOperator(
+		new OP_Operator(
+			"hAbcGeomExport",
+			"Alembic Geo Export",
+			hAbcGeomExport::myConstructor,
+			hAbcGeomExport::
+			getTemplatePair (), 0, 0,
+			hAbcGeomExport::
+			getVariablePair (),
+			OP_FLAG_GENERATOR
+		)
+	);
 }
+
+
+
 
