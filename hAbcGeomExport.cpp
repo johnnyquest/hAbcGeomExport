@@ -39,10 +39,12 @@ using namespace HDK_Sample;
 
 int *			hAbcGeomExport::ifdIndirect = 0;
 
+static PRM_Name		prm_soppath("soppath", "SOP Path");
+static PRM_Default	prm_soppath_d(0, "dunno");
+
 static PRM_Name		prm_abcoutput("abcoutput", "Save to file");
 static PRM_Default	prm_abcoutput_d(0, "junk.out");
 
-//static PRM_Obj
 
 
 
@@ -54,12 +56,11 @@ static PRM_Template * getTemplates()
 	if (t)
 		return t;
 
-	t = new PRM_Template[15];
+	t = new PRM_Template[15]; // should equal to the c++ lines below
 
 	int c=0;
-
+	t[c++] = PRM_Template(PRM_STRING, PRM_TYPE_DYNAMIC_PATH, 1, &prm_soppath, &prm_soppath_d);
 	t[c++] = PRM_Template(PRM_FILE, 1, &prm_abcoutput, &prm_abcoutput_d);
-	t[c++] = PRM_Template(); // TODO: obj (objs?) name to export
 	t[c++] = theRopTemplates[ROP_TPRERENDER_TPLATE];
 	t[c++] = theRopTemplates[ROP_PRERENDER_TPLATE];
 	t[c++] = theRopTemplates[ROP_LPRERENDER_TPLATE];
@@ -194,18 +195,22 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 	DBG << "renderFrame()\n";
 
 	// Execute the pre-render script.
-	executePreFrameScript (time);
+	executePreFrameScript(time);
 
 	// Evaluate the parameter for the file name and write something to the
 	// file.
-	UT_String file_name;
-	get_str_parm("abcoutput", time, file_name);
+	UT_String	soppath_name,
+			abc_file_name;
 
-	DBG << " -- file: " << file_name << "\n";
+	get_str_parm("soppath", time, soppath_name);
+	get_str_parm("abcoutput", time, abc_file_name);
+
+	DBG << " -- soppath: " << soppath_name << "\n";
+	DBG << " -- file: " << abc_file_name << "\n";
 
 	if (false)
 	{
-		ofstream os(file_name);
+		ofstream os(abc_file_name);
 		printNode(os, OPgetDirector(), 0);
 		os.close();
 	}

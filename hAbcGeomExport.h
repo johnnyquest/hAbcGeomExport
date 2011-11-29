@@ -90,12 +90,12 @@ namespace HDK_Sample
 		virtual ROP_RENDER_CODE endRender();
 
 	public:
-
 		/// A convenience method to evaluate our custom file parameter.
 
 		inline void get_str_parm( char const *parm, float t, UT_String & out )
 		{
-			evalString(out, parm, &ifdIndirect[0], 0, (float)t);
+			//evalString(out, parm, &ifdIndirect[0], 0, (float)t);
+			evalString(out, parm, 0, (float)t);
 		}
 
 		inline void OUTPUT(UT_String & str, float t)
