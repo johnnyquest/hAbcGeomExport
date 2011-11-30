@@ -242,18 +242,20 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 
 void newDriverOperator(OP_OperatorTable * table)
 {
-	table->addOperator(
-		new OP_Operator(
+	OP_Operator *abc_rop = new OP_Operator(
 			"hAbcGeomExport",
 			"Alembic Geo Export",
 			hAbcGeomExport::myConstructor,
-			hAbcGeomExport::
-			getTemplatePair (), 0, 0,
-			hAbcGeomExport::
-			getVariablePair (),
+			hAbcGeomExport::getTemplatePair(),
+			0,
+			0,
+			hAbcGeomExport::getVariablePair(),
 			OP_FLAG_GENERATOR
-		)
-	);
+		);
+
+	abc_rop->setIconName("SOP_alembic");
+
+	table->addOperator(abc_rop);
 }
 
 
