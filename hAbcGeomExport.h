@@ -27,6 +27,12 @@
 #define __hAbcGeomExport_h__
 
 #include <ROP/ROP_Node.h>
+#include <OP/OP_Node.h>
+
+
+#include <vector>
+#include <string>
+
 
 
 #define STR_PARM(name, idx, vi, t) \
@@ -104,8 +110,18 @@ namespace HDK_Sample
 		}
 
 	private:
-		static int *ifdIndirect;
-		float myEndTime;
+		static int *			ifdIndirect;
+
+	private:
+
+		float				_start_time;
+		float				_end_time;
+		int				_num_frames;
+
+		std::string			_soppath;
+		std::vector<std::string>	_soppaths;
+
+		OP_Node *			_sopnode;
 	};
 
 }				// End HDK_Sample namespace

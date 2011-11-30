@@ -131,6 +131,7 @@ hAbcGeomExport::hAbcGeomExport(
 	OP_Operator * entry
 )
 : ROP_Node(net, name, entry)
+, _sopnode(0)
 {
 	if (!ifdIndirect)
 		ifdIndirect = allocIndirect(16);
@@ -143,6 +144,27 @@ hAbcGeomExport::hAbcGeomExport(
 hAbcGeomExport::~hAbcGeomExport()
 {
 }
+
+
+
+/*
+		Geometry export function:
+
+		polymesh
+		- point coordinates
+		- normals (per-point, per-vertex)
+		- uvs (per-point, per-vertex)
+		- per-face: vertex counts
+		- per-vertex: point indices for each per-face vertex
+*/
+
+
+void geom_export()
+{
+	;
+}
+
+
 
 
 
@@ -164,11 +186,34 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 		<< tend
 		<< "\n";
 
-	myEndTime = tend;
-	if (error() < UT_ERROR_ABORT)
-		executePreRenderScript(tstart);
+	_start_time = tstart;
+	_end_time = tend;
+	_num_frames = nframes;
 
-	return 1;
+	UT_String	s;
+	get_str_parm("soppath", _start_time, s);
+	_soppath = s.toStdString();
+	_sopnode = OPgetDirector()->findSOPNode(_soppath.c_str());
+
+	DBG
+		<< " -- soppath: " << _soppath.c_str()
+		<< " sopnode: " << _sopnode
+		<< "\n";
+
+	if (!_sopnode)
+	{
+		addError(ROP_MESSAGE, "ERROR: couldn't find SOP node");
+		addError(ROP_MESSAGE, _soppath.c_str());
+		return false;
+	}
+
+	if (error() < UT_ERROR_ABORT)
+	{
+		if (!executePreRenderScript(tstart))
+			return false;
+	}
+
+	return true;
 }
 
 
@@ -205,8 +250,10 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 	get_str_parm("soppath", time, soppath_name);
 	get_str_parm("abcoutput", time, abc_file_name);
 
-	DBG << " -- soppath: " << soppath_name << "\n";
-	DBG << " -- file: " << abc_file_name << "\n";
+	DBG	
+		<< " -- time:" << time
+		<< " soppath:" << soppath_name
+		<< " file:" << abc_file_name << "\n";
 
 	if (false)
 	{
@@ -220,6 +267,7 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 		executePostFrameScript(time);
 
 	return ROP_CONTINUE_RENDER;
+	// ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER
 }
 
 
@@ -231,7 +279,8 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 	DBG << "endRender()\n";
 
 	if (error() < UT_ERROR_ABORT)
-		executePostRenderScript(myEndTime);
+		executePostRenderScript(_end_time);
+
 	return ROP_CONTINUE_RENDER;
 }
 
