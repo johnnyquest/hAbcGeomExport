@@ -27,6 +27,7 @@
 #define __hAbcGeomExport_h__
 
 #include <ROP/ROP_Node.h>
+#include <SOP/SOP_Node.h>
 #include <OP/OP_Node.h>
 
 
@@ -113,6 +114,13 @@ namespace HDK_Sample
 		static int *			ifdIndirect;
 
 	private:
+		bool				export_geom(
+							char const *sopname,
+							SOP_Node *sop,
+							float time
+						);
+
+	private:
 
 		float				_start_time;
 		float				_end_time;
@@ -121,7 +129,7 @@ namespace HDK_Sample
 		std::string			_soppath;
 		std::vector<std::string>	_soppaths;
 
-		OP_Node *			_sopnode;
+		SOP_Node *			_sopnode;
 	};
 
 }				// End HDK_Sample namespace

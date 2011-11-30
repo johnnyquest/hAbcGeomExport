@@ -158,10 +158,26 @@ hAbcGeomExport::~hAbcGeomExport()
 		- per-vertex: point indices for each per-face vertex
 */
 
-
-void geom_export()
+bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time )
 {
-	;
+	DBG
+		<< "export_geom()"
+		<< " sop:" << sop
+		<< "\n";
+
+	OP_Context ctx(time);
+	GU_DetailHandle gdh = sop->getCookedGeoHandle(ctx);
+
+	GU_DetailHandleAutoReadLock gdl(gdh);
+
+	const GU_Detail *gdp = gdl.getGdp();
+
+	if (!gdp) {
+		addError(ROP_COOK_ERROR, sopname);
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -201,11 +217,12 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 	UT_String	s;
 	get_str_parm("soppath", _start_time, s);
 	_soppath = s.toStdString();
-	_sopnode = OPgetDirector()->findSOPNode(_soppath.c_str());
+	//_sopnode = OPgetDirector()->findSOPNode(_soppath.c_str());
+	_sopnode = getSOPNode(_soppath.c_str());
 
 	DBG
-		<< " -- soppath: " << _soppath.c_str()
-		<< " sopnode: " << _sopnode
+		<< " -- soppath:" << _soppath.c_str()
+		<< " sopnode:" << _sopnode
 		<< "\n";
 
 	if (!_sopnode)
@@ -255,13 +272,23 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 	UT_String	soppath_name,
 			abc_file_name;
 
-	get_str_parm("soppath", time, soppath_name);
+	//get_str_parm("soppath", time, soppath_name);
 	get_str_parm("abcoutput", time, abc_file_name);
+
+	_sopnode = getSOPNode(_soppath.c_str());
 
 	DBG	
 		<< " -- time:" << time
-		<< " soppath:" << soppath_name
+		<< " soppath:" << _soppath
+		<< " sopnode:" << _sopnode
 		<< " file:" << abc_file_name << "\n";
+
+	if ( !export_geom(_soppath.c_str(), _sopnode, time) )
+	{
+		// ERROR: couldn't export SOP geometry
+		return ROP_ABORT_RENDER;
+	}
+
 
 	if (false)
 	{
