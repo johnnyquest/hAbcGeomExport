@@ -15,6 +15,7 @@
 */
 
 #include <fstream.h>
+
 #include <UT/UT_DSOVersion.h>
 #include <CH/CH_LocalVariable.h>
 #include <PRM/PRM_Include.h>
@@ -23,6 +24,8 @@
 #include <SOP/SOP_Node.h>
 #include <ROP/ROP_Error.h>
 #include <ROP/ROP_Templates.h>
+#include <GEO/GEO_Point.h>
+
 #include "hAbcGeomExport.h"
 
 
@@ -157,6 +160,30 @@ hAbcGeomExport::~hAbcGeomExport()
 		- per-face: vertex counts
 		- per-vertex: point indices for each per-face vertex
 */
+
+
+
+int abc_fileSave(
+	GEO_Detail const *	gdp,
+	char const *		filename
+)
+{
+	GEO_Point const *pt;
+
+	std::vector<UT_Vector4> pts;
+
+	FOR_ALL_GPOINTS(gdp, pt)
+	{
+		pts.push_back( UT_Vector4( pt->getPos() ) );
+	}
+
+	return 1;
+}
+
+
+
+
+
 
 bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time )
 {
