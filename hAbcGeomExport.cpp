@@ -190,6 +190,14 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 	_end_time = tend;
 	_num_frames = nframes;
 
+	if (false)
+	{
+		// TODO: init simulation OPs
+		// (got this from ROP_Field3D.C)
+		initSimulationOPs();
+		OPgetDirector()->bumpSkipPlaybarBasedSimulationReset(1);
+	}
+
 	UT_String	s;
 	get_str_parm("soppath", _start_time, s);
 	_soppath = s.toStdString();
