@@ -35,6 +35,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 
 
@@ -137,7 +138,11 @@ namespace HDK_Sample
 		std::vector<std::string>	_soppaths;
 
 		SOP_Node *			_sopnode;
-		Alembic::AbcGeom::OArchive *	_oarchive;
+
+		Alembic::AbcGeom::OArchive *		_oarchive;
+		Alembic::AbcGeom::TimeSamplingPtr	_ts;
+		Alembic::AbcGeom::OXform *		_xform;
+		Alembic::AbcGeom::OPolyMesh *		_outmesh;
 	};
 
 }				// End HDK_Sample namespace

@@ -151,6 +151,8 @@ hAbcGeomExport::hAbcGeomExport(
 : ROP_Node(net, name, entry)
 , _sopnode(0)
 , _oarchive(0)
+, _xform(0)
+, _outmesh(0)
 {
 	if (!ifdIndirect)
 		ifdIndirect = allocIndirect(16);
@@ -180,7 +182,8 @@ hAbcGeomExport::~hAbcGeomExport()
 
 
 int abc_fileSave(
-	AbcGeom::OArchive *	oarchive,
+	AbcGeom::OPolyMesh *	outmesh,
+	float			time,
 	GEO_Detail const *	gdp,
 	char const *		filename
 )
@@ -264,21 +267,15 @@ int abc_fileSave(
 		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_num_pts_ids ),
 		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_num_facevtxcounts )
 	);
-
-	AbcGeom::OXform xform(oarchive->getTop(), "xform");
+/*
+	AbcGeom::TimeSamplingPtr ts( new AbcGeom::TimeSampling(1.0/24.0, time) );
+	AbcGeom::OXform xform(oarchive->getTop(), "xform", ts);
 	AbcGeom::XformSample xform_samp;
 
 	xform.getSchema().set(xform_samp);
-
-/*
-	AbcGeom::OPolyMesh outmesh(
-		AbcGeom::OObject(*oarchive, AbcGeom::kTop),
-		"meshington");
 */
-	AbcGeom::OPolyMesh outmesh(xform, "meshukku");
-	//AbcGeom::OPolyMeshSchema & outmesh_schema = outmesh.getSchema();
-
-	outmesh.getSchema().set(mesh_samp);
+	//AbcGeom::OPolyMesh outmesh(xform, "meshukku", ts);
+	outmesh->getSchema().set(mesh_samp);
 
 	return 1;
 }
@@ -307,7 +304,7 @@ bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time
 		return false;
 	}
 
-	abc_fileSave(_oarchive, gdp, "dunnno-whatt");
+	abc_fileSave(_outmesh, time, gdp, "dunnno-whatt");
 
 	return true;
 }
@@ -389,6 +386,10 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 	_oarchive = new Alembic::AbcGeom::OArchive(Alembic::AbcCoreHDF5::WriteArchive(), _abcfile);
 	// TODO: add metadata
 
+	_ts = AbcGeom::TimeSamplingPtr( new AbcGeom::TimeSampling(1.0/24.0, tstart) );
+	_xform = new AbcGeom::OXform(_oarchive->getTop(), "xformukku"); // ..., ts);
+	_outmesh = new AbcGeom::OPolyMesh(*_xform, "meshukku", _ts);
+
 	return true;
 }
 
@@ -467,6 +468,11 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 	if (_oarchive) delete _oarchive;
 	_oarchive=0;
 
+	if (_xform) delete _xform;
+	_xform=0;
+
+	if (_outmesh) delete _outmesh;
+	_outmesh=0;
 
 	if (error() < UT_ERROR_ABORT)
 		executePostRenderScript(_end_time);
