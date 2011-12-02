@@ -6,6 +6,7 @@ rm -f ~/houdini11.1/dso/hAbcGeomExport.so
 hcustom \
 	-L /home/tusi/work/alembic/libs/linux/lib \
 	-l Half \
+	-l Iex \
 	-l hdf5 \
 	-l hdf5_hl \
 	-L /home/tusi/work/alembic/libs/linux/alembic-1.0.3/lib/static \

@@ -36,11 +36,12 @@
 #include <GEO/GEO_Vertex.h>
 #include <GEO/GEO_PrimPoly.h>
 
-//#include <Alembic/Abc/All.h>
+#include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
 
 
-
+namespace Abc = Alembic::Abc;
+namespace AbcGeom = Alembic::AbcGeom;
 
 
 
@@ -179,6 +180,7 @@ hAbcGeomExport::~hAbcGeomExport()
 
 
 int abc_fileSave(
+	AbcGeom::OArchive *	oarchive,
 	GEO_Detail const *	gdp,
 	char const *		filename
 )
@@ -195,56 +197,88 @@ int abc_fileSave(
 		<< "\n";
 
 	std::map<GEO_Point const *, int> ptmap; // this should be replaced if possible
-	std::vector<UT_Vector4> pts_P;
-	std::vector<int> pts_per_face;
-	std::vector<int> pfv_indices;
 
-	DBG << "POINTS:\n";
+	std::vector<Abc::float32_t>	g_pts;
+	std::vector<Abc::int32_t>	g_pts_ids;
+	std::vector<Abc::int32_t>	g_facevtxcounts;
+	size_t				g_num_pts=0,
+					g_num_facevtxcounts=0,
+					g_num_pts_ids=0;
 
+
+	// collect point coords
+	//
+	//DBG << "POINTS:\n";
 	int c=0;
 	FOR_ALL_GPOINTS(gdp, pt)
 	{
-		pts_P.push_back( UT_Vector4( pt->getPos() ) );
+		UT_Vector4 const & P = pt->getPos();
 		ptmap[pt]=c;
+		g_pts.push_back(P.x());
+		g_pts.push_back(P.y());
+		g_pts.push_back(P.z());
 		++c;
-
-		DBG
-			<< " ---- "
-			<< UT_Vector4( pt->getPos() )
-			<< "\n";
 	}
-	
-	DBG << "PRIMITIVES:\n";
 
+	g_num_pts = c;
+	DBG << " --- g_num_pts: " << g_num_pts << " (/3!)\n";
+
+
+	// collect primitives
+	//
+	//DBG << "PRIMITIVES:\n";
 	FOR_ALL_PRIMITIVES(gdp, prim)
 	{
 		int prim_id = prim->getPrimitiveId();
 
-		DBG
-			<< " ---- "
-			<< prim_id;
+		//DBG << " ---- " << prim_id;
 
 		if ( prim_id == GEOPRIMPOLY )
 		{
 			int	num_verts = prim->getVertexCount(),
 				v, pti;
 
-			pts_per_face.push_back(num_verts);
-
-			dbg << " (" << num_verts << ") ";
+			g_facevtxcounts.push_back(num_verts);
+			//dbg << " (" << num_verts << ") ";
 
 			for(v=0; v<num_verts; ++v)
 			{
 				pt = prim->getVertex(v).getPt();
 				pti = ptmap[pt];
-				pfv_indices.push_back(pti);
+				//dbg << " " << pti;
 
-				dbg << " " << pti;
+				g_pts_ids.push_back(pti);
 			}
 		}
 
-		dbg << "\n";
+		//dbg << "\n";
 	}
+
+	g_num_pts_ids = g_pts_ids.size();
+	g_num_facevtxcounts = g_facevtxcounts.size();
+
+	// write to output archive
+	//
+	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
+		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_num_pts ),
+		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_num_pts_ids ),
+		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_num_facevtxcounts )
+	);
+
+	AbcGeom::OXform xform(oarchive->getTop(), "xform");
+	AbcGeom::XformSample xform_samp;
+
+	xform.getSchema().set(xform_samp);
+
+/*
+	AbcGeom::OPolyMesh outmesh(
+		AbcGeom::OObject(*oarchive, AbcGeom::kTop),
+		"meshington");
+*/
+	AbcGeom::OPolyMesh outmesh(xform, "meshukku");
+	//AbcGeom::OPolyMeshSchema & outmesh_schema = outmesh.getSchema();
+
+	outmesh.getSchema().set(mesh_samp);
 
 	return 1;
 }
@@ -273,7 +307,7 @@ bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time
 		return false;
 	}
 
-	abc_fileSave(gdp, "dunnno-whatt");
+	abc_fileSave(_oarchive, gdp, "dunnno-whatt");
 
 	return true;
 }
