@@ -36,11 +36,12 @@
 #include <GEO/GEO_Vertex.h>
 #include <GEO/GEO_PrimPoly.h>
 
+//#include <Alembic/Abc/All.h>
+#include <Alembic/AbcCoreHDF5/All.h>
 
-#include "hAbcGeomExport.h"
 
 
-#include <iostream>
+
 
 
 #define DBG if (true) std::cerr << "[hAbcGeomExport.cpp]: "
@@ -59,7 +60,7 @@ static PRM_Name		prm_soppath("soppath", "SOP Path");
 static PRM_Default	prm_soppath_d(0, "dunno");
 
 static PRM_Name		prm_abcoutput("abcoutput", "Save to file");
-static PRM_Default	prm_abcoutput_d(0, "junk.out");
+static PRM_Default	prm_abcoutput_d(0, "./out.abc");
 
 
 
@@ -310,9 +311,15 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 		OPgetDirector()->bumpSkipPlaybarBasedSimulationReset(1);
 	}
 
-	UT_String	s;
-	get_str_parm("soppath", _start_time, s);
-	_soppath = s.toStdString();
+	UT_String	soppath_name,
+			abcfile_name;
+
+	get_str_parm("soppath", tstart, soppath_name);
+	get_str_parm("abcoutput", tstart, abcfile_name);
+	
+	_soppath = soppath_name.toStdString();
+	_abcfile = abcfile_name.toStdString();
+
 	//_sopnode = OPgetDirector()->findSOPNode(_soppath.c_str());
 	_sopnode = getSOPNode(_soppath.c_str());
 
@@ -333,6 +340,14 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 		if (!executePreRenderScript(tstart))
 			return false;
 	}
+
+	_archie = CreateArchiveWithInfo(
+			Alembic::AbcCoreHDF5::WriteArchive(),
+			_abcfile,
+			"houdini x.y, exporter y.z (appWriter)",
+			"exported from: (...).hip (userInfo)",
+			Alembic::Abc::ErrorHandler::kThrowPolicy
+		);
 
 	return true;
 }

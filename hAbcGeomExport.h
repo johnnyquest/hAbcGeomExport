@@ -30,9 +30,13 @@
 #include <SOP/SOP_Node.h>
 #include <OP/OP_Node.h>
 
+#include <Alembic/AbcGeom/All.h>
+#include <Alembic/AbcCoreHDF5/All.h>
 
 #include <vector>
 #include <string>
+
+
 
 
 
@@ -47,6 +51,8 @@
 
 #define STR_GET(name, idx, vi, t) \
 		{ evalStringRaw(str, name, &ifdIndirect[idx], vi, (float)t); }
+
+
 
 
 
@@ -127,9 +133,12 @@ namespace HDK_Sample
 		int				_num_frames;
 
 		std::string			_soppath;
+		std::string			_abcfile;
 		std::vector<std::string>	_soppaths;
 
 		SOP_Node *			_sopnode;
+
+		Alembic::AbcGeom::OArchive	_archie;
 	};
 
 }				// End HDK_Sample namespace
