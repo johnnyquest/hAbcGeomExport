@@ -14,7 +14,13 @@
 
 */
 
-#include <fstream.h>
+#include "hAbcGeomExport.h"
+
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <map>
 
 #include <UT/UT_DSOVersion.h>
 #include <CH/CH_LocalVariable.h>
@@ -24,7 +30,12 @@
 #include <SOP/SOP_Node.h>
 #include <ROP/ROP_Error.h>
 #include <ROP/ROP_Templates.h>
+
 #include <GEO/GEO_Point.h>
+#include <GEO/GEO_Primitive.h>
+#include <GEO/GEO_Vertex.h>
+#include <GEO/GEO_PrimPoly.h>
+
 
 #include "hAbcGeomExport.h"
 
@@ -33,8 +44,10 @@
 
 
 #define DBG if (true) std::cerr << "[hAbcGeomExport.cpp]: "
+#define dbg if (true) std::cerr
 
 
+using namespace std;
 using namespace HDK_Sample;
 
 
@@ -168,13 +181,67 @@ int abc_fileSave(
 	char const *		filename
 )
 {
-	GEO_Point const *pt;
+	GEO_Point const		*pt;
+	GEO_Primitive const	*prim;
 
-	std::vector<UT_Vector4> pts;
+	int		num_points = gdp->points().entries(),
+			num_prims  = gdp->primitives().entries();
+	
+	DBG
+		<< "NUM POINTS: " << num_points
+		<< "\nNUM PRIMS: " << num_prims
+		<< "\n";
 
+	std::map<GEO_Point const *, int> ptmap; // this should be replaced if possible
+	std::vector<UT_Vector4> pts_P;
+	std::vector<int> pts_per_face;
+	std::vector<int> pfv_indices;
+
+	DBG << "POINTS:\n";
+
+	int c=0;
 	FOR_ALL_GPOINTS(gdp, pt)
 	{
-		pts.push_back( UT_Vector4( pt->getPos() ) );
+		pts_P.push_back( UT_Vector4( pt->getPos() ) );
+		ptmap[pt]=c;
+		++c;
+
+		DBG
+			<< " ---- "
+			<< UT_Vector4( pt->getPos() )
+			<< "\n";
+	}
+	
+	DBG << "PRIMITIVES:\n";
+
+	FOR_ALL_PRIMITIVES(gdp, prim)
+	{
+		int prim_id = prim->getPrimitiveId();
+
+		DBG
+			<< " ---- "
+			<< prim_id;
+
+		if ( prim_id == GEOPRIMPOLY )
+		{
+			int	num_verts = prim->getVertexCount(),
+				v, pti;
+
+			pts_per_face.push_back(num_verts);
+
+			dbg << " (" << num_verts << ") ";
+
+			for(v=0; v<num_verts; ++v)
+			{
+				pt = prim->getVertex(v).getPt();
+				pti = ptmap[pt];
+				pfv_indices.push_back(pti);
+
+				dbg << " " << pti;
+			}
+		}
+
+		dbg << "\n";
 	}
 
 	return 1;
@@ -203,6 +270,8 @@ bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time
 		addError(ROP_COOK_ERROR, sopname);
 		return false;
 	}
+
+	abc_fileSave(gdp, "dunnno-whatt");
 
 	return true;
 }
@@ -275,10 +344,10 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 static void printNode( ostream & os, OP_Node * node, int indent )
 {
 	UT_WorkBuffer wbuf;
-	wbuf.sprintf ("%*s", indent, "");
-	os << wbuf.buffer () << node->getName () << endl;
+	wbuf.sprintf("%*s", indent, "");
+	os << wbuf.buffer() << node->getName() << endl;
 
-	for(int i=0;  i<node->getNchildren ();  ++i)
+	for(int i=0;  i<node->getNchildren();  ++i)
 		printNode(os, node->getChild(i), indent+2);
 }
 
@@ -367,6 +436,14 @@ void newDriverOperator(OP_OperatorTable * table)
 	abc_rop->setIconName("SOP_alembic");
 
 	table->addOperator(abc_rop);
+
+	DBG
+		<< __FILE__
+		<< ": "
+		<< __DATE__
+		<< ", "
+		<< __TIME__
+		<< "\n";
 }
 
 
