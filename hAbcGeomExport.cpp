@@ -149,6 +149,7 @@ hAbcGeomExport::hAbcGeomExport(
 )
 : ROP_Node(net, name, entry)
 , _sopnode(0)
+, _oarchive(0)
 {
 	if (!ifdIndirect)
 		ifdIndirect = allocIndirect(16);
@@ -340,7 +341,7 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 		if (!executePreRenderScript(tstart))
 			return false;
 	}
-
+/*
 	_archie = CreateArchiveWithInfo(
 			Alembic::AbcCoreHDF5::WriteArchive(),
 			_abcfile,
@@ -348,6 +349,11 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 			"exported from: (...).hip (userInfo)",
 			Alembic::Abc::ErrorHandler::kThrowPolicy
 		);
+*/
+	// this dyn-allocated to allow destroy-by-hand
+	// (the only way to write to file)
+	_oarchive = new Alembic::AbcGeom::OArchive(Alembic::AbcCoreHDF5::WriteArchive(), _abcfile);
+	// TODO: add metadata
 
 	return true;
 }
@@ -423,6 +429,10 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 ROP_RENDER_CODE hAbcGeomExport::endRender()
 {
 	DBG << "endRender()\n";
+
+	if (_oarchive) delete _oarchive;
+	_oarchive=0;
+
 
 	if (error() < UT_ERROR_ABORT)
 		executePostRenderScript(_end_time);

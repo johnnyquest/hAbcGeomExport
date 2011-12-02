@@ -137,8 +137,7 @@ namespace HDK_Sample
 		std::vector<std::string>	_soppaths;
 
 		SOP_Node *			_sopnode;
-
-		Alembic::AbcGeom::OArchive	_archie;
+		Alembic::AbcGeom::OArchive *	_oarchive;
 	};
 
 }				// End HDK_Sample namespace
