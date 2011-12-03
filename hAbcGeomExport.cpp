@@ -445,8 +445,12 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 	// TODO: add metadata (see CreateArchiveWithInfo func)
 
 	// time-sampler with the appropriate timestep
-	// TODO: actually calculate this timestep (now it's a single frame @ 24fps)
-	_ts = AbcGeom::TimeSamplingPtr( new AbcGeom::TimeSampling(1.0/24.0, tstart) );
+	//
+	float t_step = tend-tstart;
+	if (nframes>1) t_step /= float(nframes-1);
+	DBG << " -- time step: " << t_step << "(@24fps it's " << (1.0/24.0) << ")\n";
+
+	_ts = AbcGeom::TimeSamplingPtr( new AbcGeom::TimeSampling(t_step, tstart) );
 
 	// build list of objects
 	//
