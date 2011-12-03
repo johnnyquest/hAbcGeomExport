@@ -20,7 +20,6 @@
 #include <cassert>
 
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <map>
 
@@ -72,8 +71,8 @@ Alembic::AbcGeom::TimeSampling * GeoObject::_ts(0);
 
 int *			hAbcGeomExport::ifdIndirect = 0;
 
-static PRM_Name		prm_soppath("soppath", "SOP Path");
-static PRM_Default	prm_soppath_d(0, "dunno");
+static PRM_Name		prm_objpath("objpath", "Object Path");
+static PRM_Default	prm_objpath_d(0, "dunno");
 
 static PRM_Name		prm_abcoutput("abcoutput", "Save to file");
 static PRM_Default	prm_abcoutput_d(0, "./out.abc");
@@ -92,7 +91,7 @@ static PRM_Template * getTemplates()
 	t = new PRM_Template[15]; // should equal to the c++ lines below
 
 	int c=0;
-	t[c++] = PRM_Template(PRM_STRING, PRM_TYPE_DYNAMIC_PATH, 1, &prm_soppath, &prm_soppath_d);
+	t[c++] = PRM_Template(PRM_STRING, PRM_TYPE_DYNAMIC_PATH, 1, &prm_objpath, &prm_objpath_d);
 	t[c++] = PRM_Template(PRM_FILE, 1, &prm_abcoutput, &prm_abcoutput_d);
 	t[c++] = theRopTemplates[ROP_TPRERENDER_TPLATE];
 	t[c++] = theRopTemplates[ROP_PRERENDER_TPLATE];
@@ -164,10 +163,7 @@ hAbcGeomExport::hAbcGeomExport(
 	OP_Operator * entry
 )
 : ROP_Node(net, name, entry)
-, _sopnode(0)
-, _oarchive(0)
-, _xform(0)
-, _outmesh(0)
+, _oarchive(0), _ts(0)
 {
 	if (!ifdIndirect)
 		ifdIndirect = allocIndirect(16);
@@ -183,8 +179,59 @@ hAbcGeomExport::~hAbcGeomExport()
 
 
 
-/*
-		Geometry export function:
+
+
+/**		GeoObject, constructor.
+*/
+GeoObject::GeoObject( OP_node *obj_node, GeoObject *parent )
+: _parent(parent)
+, _op_obj(obj_node)
+, _op_sop( (SOP_Node *) obj_node->getRenderNodePtr() )
+, _name( obj_node->getName() )
+, _path( obj_node->getPath() )
+, _sopname( _op_sop->getName() )
+, _xform(0)
+, _outmesh(0)
+{
+	DBG << " --- GeoObject() " << obj_node->getPath() << "\n";
+	//_name = obj_node->getName();
+	//_path = obj_node->getPath();
+
+	//_op_sop = (SOP_Node *) obj_node->getRenderNodePtr(); // (could also be getDisplayNodePtr())
+	//_sopname = _op_sop->getName();
+	
+	DBG << "   -- " << _path << " (" << _name << "): " << _sopname << "\n";
+
+	assert(_oarchive && "no oarchive given");
+	assert(_ts && "no timesampling given");
+
+	Alembic::AbcGeom::OXform *p =
+		_parent  ?  _parent->_xform  :  &_oarchive->getTop();
+
+	assert(p && "no valid parent found");
+	
+	_xform = new Alembic::AbcGeom::OXform(*p, _name, _ts);
+	_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
+}
+
+
+
+/**		GeoObject, destructor.
+*/
+GeoObject::~GeoObject()
+{
+	DBG << " --- ~GeoObject() " << _path << "\n";
+	if (_outmesh) delete _outmesh; _outmesh=0;
+	if (_xform) delete _xform; _xform=0;
+}
+
+
+
+
+
+
+
+/**		Geometry export function.
 
 		polymesh
 		- point coordinates
@@ -193,9 +240,6 @@ hAbcGeomExport::~hAbcGeomExport()
 		- per-face: vertex counts
 		- per-vertex: point indices for each per-face vertex
 */
-
-
-
 int abc_fileSave(
 	AbcGeom::OPolyMesh *	outmesh,
 	float			time,
@@ -329,11 +373,31 @@ bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time
 
 
 
+
+void collect_geo_objs( GeoObjects & objects, OP_Node *node )
+{
+	if (objects.size()==0) DBG << "collect_geo_objs()\n";
+	DBG << " -- " << node->getPath() << "\n";
+
+	boost::shared_ptr<GeoObject> obj( new GeoObject(node) );
+	objects.push_back(obj);
+	
+	for( int i=0, m=obj_node->getNchildren();  i<m;  ++i )
+		collect_geo_objs(objects, node->getChild(i));
+}
+
+
+
+
+
+
+
+
+
+
 //------------------------------------------------------------------------------
 // The startRender(), renderFrame(), and endRender() render methods are
 // invoked by Houdini when the ROP runs.
-
-
 
 
 
@@ -358,52 +422,46 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 		OPgetDirector()->bumpSkipPlaybarBasedSimulationReset(1);
 	}
 
-	UT_String	soppath_name,
+	UT_String	objpath_name,
 			abcfile_name;
 
-	get_str_parm("soppath", tstart, soppath_name);
+	get_str_parm("objpath", tstart, objpath_name);
 	get_str_parm("abcoutput", tstart, abcfile_name);
 	
-	_soppath = soppath_name.toStdString();
+	_objpath = objpath_name.toStdString();
 	_abcfile = abcfile_name.toStdString();
 
-	//_sopnode = OPgetDirector()->findSOPNode(_soppath.c_str());
-	_sopnode = getSOPNode(_soppath.c_str());
-
-	DBG
-		<< " -- soppath:" << _soppath.c_str()
-		<< " sopnode:" << _sopnode
+	DBG	<< "START EXPORT"
+		<< "\n -- obj path: " << _objpath
+		<< "\n -- abc file: " << _abcfile
 		<< "\n";
 
-	if (!_sopnode)
+	OP_Node *root_obj = getObjNode(_objpath.c_str());
+
+	if ( !root_obj )
 	{
-		addError(ROP_MESSAGE, "ERROR: couldn't find SOP node");
-		addError(ROP_MESSAGE, _soppath.c_str());
+		addError(ROP_MESSAGE, "ERROR: couldn't find object");
+		addError(ROP_MESSAGE, _objpath.c_str());
 		return false;
 	}
 
-	if (error() < UT_ERROR_ABORT)
-	{
+	if (error() < UT_ERROR_ABORT) {
 		if (!executePreRenderScript(tstart))
 			return false;
 	}
-/*
-	_archie = CreateArchiveWithInfo(
-			Alembic::AbcCoreHDF5::WriteArchive(),
-			_abcfile,
-			"houdini x.y, exporter y.z (appWriter)",
-			"exported from: (...).hip (userInfo)",
-			Alembic::Abc::ErrorHandler::kThrowPolicy
-		);
-*/
+
+
 	// this dyn-allocated to allow destroy-by-hand
 	// (the only way to write to file)
 	_oarchive = new Alembic::AbcGeom::OArchive(Alembic::AbcCoreHDF5::WriteArchive(), _abcfile);
-	// TODO: add metadata
-
+	// TODO: add metadata (see CreateArchiveWithInfo func)
 	_ts = AbcGeom::TimeSamplingPtr( new AbcGeom::TimeSampling(1.0/24.0, tstart) );
-	_xform = new AbcGeom::OXform(_oarchive->getTop(), "xformukku"); // ..., ts);
-	_outmesh = new AbcGeom::OPolyMesh(*_xform, "meshukku", _ts);
+
+	// build list of objects
+	//
+	GeoObject::init(_oarchive, _ts);
+	_objs.clear();
+	collect_geo_objs(_objs, root_obj);
 
 	return true;
 }
@@ -412,85 +470,56 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 
 
 
-static void printNode( ostream & os, OP_Node * node, int indent )
-{
-	UT_WorkBuffer wbuf;
-	wbuf.sprintf("%*s", indent, "");
-	os << wbuf.buffer() << node->getName() << endl;
+/**		Render (export) one frame.
 
-	for(int i=0;  i<node->getNchildren();  ++i)
-		printNode(os, node->getChild(i), indent+2);
-}
-
-
-
-
-
-
+		(Can return ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER)
+*/
 ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 {
-	DBG << "renderFrame()\n";
+	DBG << "renderFrame() time=" << time << "\n";
 
-	// Execute the pre-render script.
-	executePreFrameScript(time);
+	executePreFrameScript(time); // run pre-frame cmd
 
-	// Evaluate the parameter for the file name and write something to the
-	// file.
-	UT_String	soppath_name,
-			abc_file_name;
-
-	//get_str_parm("soppath", time, soppath_name);
-	get_str_parm("abcoutput", time, abc_file_name);
-
-	_sopnode = getSOPNode(_soppath.c_str());
-
-	DBG	
-		<< " -- time:" << time
-		<< " soppath:" << _soppath
-		<< " sopnode:" << _sopnode
-		<< " file:" << abc_file_name << "\n";
-
-	if ( !export_geom(_soppath.c_str(), _sopnode, time) )
+	for( GeoObjects::iterator i=_objs.begin(), m=_objs.end();  i!=m;  ++i )
 	{
-		// ERROR: couldn't export SOP geometry
-		return ROP_ABORT_RENDER;
+		char const *obj_name = i->pathname();
+
+		DBG << " - " << obj_name << "\n";
+		bool r = i->writeSample(time);
+
+		if (!r) {
+			addError(ROP_MESSAGE, "failed to export object");
+			addError(ROP_MESSAGE, obj_name);
+			return ROP_ABORT_RENDER;
+		}
 	}
 
-
-	if (false)
-	{
-		ofstream os(abc_file_name);
-		printNode(os, OPgetDirector(), 0);
-		os.close();
-	}
-
-	// Execute the post-render script.
 	if (error() < UT_ERROR_ABORT)
-		executePostFrameScript(time);
+		executePostFrameScript(time); // run post-frame cmd
 
 	return ROP_CONTINUE_RENDER;
-	// ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER
 }
 
 
 
 
-
+/**		Function called on render (export) finish.
+		This function is always called (even on user abort).
+@TODO
+		Check if this function is called if renderFrame() returns ROP_ABORT_RENDER
+*/
 ROP_RENDER_CODE hAbcGeomExport::endRender()
 {
 	DBG << "endRender()\n";
 
+	// delete the output archive 'stream'
+	// (so it gets flushed to disk)
+	//
 	if (_oarchive) delete _oarchive;
 	_oarchive=0;
 
-	if (_xform) delete _xform;
-	_xform=0;
-
-	if (_outmesh) delete _outmesh;
-	_outmesh=0;
-
 	if (error() < UT_ERROR_ABORT)
-		executePostRenderScript(_end_time);
+		executePostRenderScript(_end_time); // run post-render cmd
 
 	return ROP_CONTINUE_RENDER;
 }
