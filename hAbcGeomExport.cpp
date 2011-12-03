@@ -394,28 +394,17 @@ void collect_geo_objs( GeoObjects & objects, OP_Node *node )
 
 
 
-
-//------------------------------------------------------------------------------
-// The startRender(), renderFrame(), and endRender() render methods are
-// invoked by Houdini when the ROP runs.
-
-
-
+/**		Called by Houdini before the rendering of frame(s).
+*/
 int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 {
-	DBG
-		<< "startRender()"
-		<< nframes << " "
-		<< tstart << " "
-		<< tend
-		<< "\n";
+	DBG << "startRender(): " << nframes << " (" << tstart << " -> " << tend << ")\n";
 
 	_start_time = tstart;
 	_end_time = tend;
 	_num_frames = nframes;
 
-	if (false)
-	{
+	if (false) {
 		// TODO: init simulation OPs
 		// (got this from ROP_Field3D.C)
 		initSimulationOPs();
@@ -438,8 +427,7 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 
 	OP_Node *root_obj = getObjNode(_objpath.c_str());
 
-	if ( !root_obj )
-	{
+	if ( !root_obj ) {
 		addError(ROP_MESSAGE, "ERROR: couldn't find object");
 		addError(ROP_MESSAGE, _objpath.c_str());
 		return false;
@@ -450,11 +438,14 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 			return false;
 	}
 
-
-	// this dyn-allocated to allow destroy-by-hand
-	// (the only way to write to file)
+	// NOTE: this needs to be dynamically allocated, so we can
+	// explicitly destroy it (to trigger the final flush-to-disk)
+	//
 	_oarchive = new Alembic::AbcGeom::OArchive(Alembic::AbcCoreHDF5::WriteArchive(), _abcfile);
 	// TODO: add metadata (see CreateArchiveWithInfo func)
+
+	// time-sampler with the appropriate timestep
+	// TODO: actually calculate this timestep (now it's a single frame @ 24fps)
 	_ts = AbcGeom::TimeSamplingPtr( new AbcGeom::TimeSampling(1.0/24.0, tstart) );
 
 	// build list of objects
@@ -470,7 +461,7 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 
 
 
-/**		Render (export) one frame.
+/**		Render (export) one frame (called by Houdini for each frame).
 
 		(Can return ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER)
 */
@@ -503,8 +494,10 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 
 
 
-/**		Function called on render (export) finish.
-		This function is always called (even on user abort).
+/**		Called by Houdini on render (export) finish.
+
+		This function is always called (even on user abort),
+		so it provides a reliable cleanup/exit point.
 @TODO
 		Check if this function is called if renderFrame() returns ROP_ABORT_RENDER
 */
