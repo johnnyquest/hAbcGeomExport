@@ -17,7 +17,7 @@ cd $BASE_DIR
 
 echo in dir `pwd`, archiving to file $ARCHIVE_NAME
 
-tar cjvf $ARCHIVE_NAME $ROOT_DIR_NAME
+tar cjvf $ARCHIVE_NAME --exclude="*.abc" $ROOT_DIR_NAME
 
 cd $OLD_DIR
 unset OLD_DIR
