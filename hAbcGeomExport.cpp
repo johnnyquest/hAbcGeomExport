@@ -17,6 +17,8 @@
 #include "hAbcGeomExport.h"
 
 
+#include <cassert>
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -44,9 +46,17 @@ namespace Abc = Alembic::Abc;
 namespace AbcGeom = Alembic::AbcGeom;
 
 
+// always-debug for now, TODO: remove this
+#undef NDEBUG
 
+
+#ifndef NDEBUG
 #define DBG if (true) std::cerr << "[hAbcGeomExport.cpp]: "
 #define dbg if (true) std::cerr
+#else
+#define DBG if () std::cerr << "[hAbcGeomExport.cpp]: "
+#define dbg if () std::cerr
+#endif
 
 
 using namespace std;
@@ -488,8 +498,8 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 
 
 
-
-
+/**		Function that installs our ROP node.
+*/
 void newDriverOperator(OP_OperatorTable * table)
 {
 	OP_Operator *abc_rop = new OP_Operator(
@@ -503,8 +513,10 @@ void newDriverOperator(OP_OperatorTable * table)
 			OP_FLAG_GENERATOR
 		);
 
+	// set icon
 	abc_rop->setIconName("SOP_alembic");
 
+	// install operator
 	table->addOperator(abc_rop);
 
 	DBG
