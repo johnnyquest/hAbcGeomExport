@@ -3,6 +3,8 @@
 rm -f *.o
 rm -f ~/houdini11.1/dso/hAbcGeomExport.so
 
+export SESI_TAGINFO="Johnny Quest / Questetics Inc."
+
 hcustom \
 	-L /home/tusi/work/alembic/libs/linux/lib \
 	-l Half \

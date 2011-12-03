@@ -1,6 +1,6 @@
 /**
 		@file		hAbcGeomExport.cpp
-		@author		xy
+		@author		Imre Tuske
 		@since		2011-11-29
 
 
@@ -17,8 +17,9 @@
 #include "hAbcGeomExport.h"
 
 
+#include <cassert>
+
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <map>
 
@@ -44,9 +45,17 @@ namespace Abc = Alembic::Abc;
 namespace AbcGeom = Alembic::AbcGeom;
 
 
+// always-debug for now, TODO: remove this
+#undef NDEBUG
 
+
+#ifndef NDEBUG
 #define DBG if (true) std::cerr << "[hAbcGeomExport.cpp]: "
 #define dbg if (true) std::cerr
+#else
+#define DBG if () std::cerr << "[hAbcGeomExport.cpp]: "
+#define dbg if () std::cerr
+#endif
 
 
 using namespace std;
@@ -54,11 +63,16 @@ using namespace HDK_Sample;
 
 
 
+// static (shared) per-class data
+//
+Alembic::AbcGeom::OArchive * GeoObject::_oarchive(0);
+Alembic::AbcGeom::TimeSampling * GeoObject::_ts(0);
+
 
 int *			hAbcGeomExport::ifdIndirect = 0;
 
-static PRM_Name		prm_soppath("soppath", "SOP Path");
-static PRM_Default	prm_soppath_d(0, "dunno");
+static PRM_Name		prm_objpath("objpath", "Path to Root Object");
+static PRM_Default	prm_objpath_d(0, "/obj");
 
 static PRM_Name		prm_abcoutput("abcoutput", "Save to file");
 static PRM_Default	prm_abcoutput_d(0, "./out.abc");
@@ -69,15 +83,12 @@ static PRM_Default	prm_abcoutput_d(0, "./out.abc");
 
 static PRM_Template * getTemplates()
 {
-	static PRM_Template * t = 0;
-
-	if (t)
-		return t;
+	static PRM_Template *t=0;
+	if (t) return t;
 
 	t = new PRM_Template[15]; // should equal to the c++ lines below
-
 	int c=0;
-	t[c++] = PRM_Template(PRM_STRING, PRM_TYPE_DYNAMIC_PATH, 1, &prm_soppath, &prm_soppath_d);
+	t[c++] = PRM_Template(PRM_STRING, PRM_TYPE_DYNAMIC_PATH, 1, &prm_objpath, &prm_objpath_d);
 	t[c++] = PRM_Template(PRM_FILE, 1, &prm_abcoutput, &prm_abcoutput_d);
 	t[c++] = theRopTemplates[ROP_TPRERENDER_TPLATE];
 	t[c++] = theRopTemplates[ROP_PRERENDER_TPLATE];
@@ -92,7 +103,6 @@ static PRM_Template * getTemplates()
 	t[c++] = theRopTemplates[ROP_POSTRENDER_TPLATE];
 	t[c++] = theRopTemplates[ROP_LPOSTRENDER_TPLATE];
 	t[c++] = PRM_Template();
-
 	return t;
 }
 
@@ -102,12 +112,10 @@ static PRM_Template * getTemplates()
 
 OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 {
-	static OP_TemplatePair *ropPair = 0;
+	static OP_TemplatePair *ropPair=0;
 
-	if (!ropPair)
-	{
+	if (!ropPair) {
 		OP_TemplatePair *base;
-
 		base = new OP_TemplatePair(getTemplates());
 		ropPair = new OP_TemplatePair(ROP_Node::getROPbaseTemplate(), base);
 	}
@@ -120,9 +128,8 @@ OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 
 OP_VariablePair * hAbcGeomExport::getVariablePair()
 {
-	static OP_VariablePair *pair = 0;
-	if (!pair)
-		pair = new OP_VariablePair(ROP_Node::myVariableList);
+	static OP_VariablePair *pair=0;
+	if (!pair) pair = new OP_VariablePair(ROP_Node::myVariableList);
 	return pair;
 }
 
@@ -149,10 +156,7 @@ hAbcGeomExport::hAbcGeomExport(
 	OP_Operator * entry
 )
 : ROP_Node(net, name, entry)
-, _sopnode(0)
 , _oarchive(0)
-, _xform(0)
-, _outmesh(0)
 {
 	if (!ifdIndirect)
 		ifdIndirect = allocIndirect(16);
@@ -168,143 +172,136 @@ hAbcGeomExport::~hAbcGeomExport()
 
 
 
-/*
-		Geometry export function:
 
-		polymesh
-		- point coordinates
-		- normals (per-point, per-vertex)
-		- uvs (per-point, per-vertex)
-		- per-face: vertex counts
-		- per-vertex: point indices for each per-face vertex
+
+/**		GeoObject, constructor.
 */
-
-
-
-int abc_fileSave(
-	AbcGeom::OPolyMesh *	outmesh,
-	float			time,
-	GEO_Detail const *	gdp,
-	char const *		filename
-)
+GeoObject::GeoObject( OP_node *obj_node, GeoObject *parent )
+: _parent(parent)
+, _op_obj(obj_node)
+, _op_sop( (SOP_Node *) obj_node->getRenderNodePtr() )
+, _name( obj_node->getName() )
+, _path( obj_node->getPath() )
+, _sopname( _op_sop->getName() )
+, _xform(0)
+, _outmesh(0)
 {
-	GEO_Point const		*pt;
-	GEO_Primitive const	*prim;
-
-	int		num_points = gdp->points().entries(),
-			num_prims  = gdp->primitives().entries();
+	DBG << " --- GeoObject() " << obj_node->getPath() << "\n";
+	assert(_op_sop && "no SOP node");
 	
-	DBG
-		<< "NUM POINTS: " << num_points
-		<< "\nNUM PRIMS: " << num_prims
-		<< "\n";
+	DBG << "   -- " << _path << " (" << _name << "): " << _sopname << "\n";
 
-	std::map<GEO_Point const *, int> ptmap; // this should be replaced if possible
+	assert(_oarchive && "no oarchive given");
+	assert(_ts && "no timesampling given");
 
-	std::vector<Abc::float32_t>	g_pts;
-	std::vector<Abc::int32_t>	g_pts_ids;
-	std::vector<Abc::int32_t>	g_facevtxcounts;
-	size_t				g_num_pts=0,
-					g_num_facevtxcounts=0,
-					g_num_pts_ids=0;
+	Alembic::AbcGeom::OXform *p =
+		_parent  ?  _parent->_xform  :  &_oarchive->getTop();
 
-
-	// collect point coords
-	//
-	//DBG << "POINTS:\n";
-	int c=0;
-	FOR_ALL_GPOINTS(gdp, pt)
-	{
-		UT_Vector4 const & P = pt->getPos();
-		ptmap[pt]=c;
-		g_pts.push_back(P.x());
-		g_pts.push_back(P.y());
-		g_pts.push_back(P.z());
-		++c;
-	}
-
-	g_num_pts = c;
-	DBG << " --- g_num_pts: " << g_num_pts << " (/3!)\n";
-
-
-	// collect primitives
-	//
-	//DBG << "PRIMITIVES:\n";
-	FOR_ALL_PRIMITIVES(gdp, prim)
-	{
-		int prim_id = prim->getPrimitiveId();
-
-		//DBG << " ---- " << prim_id;
-
-		if ( prim_id == GEOPRIMPOLY )
-		{
-			int	num_verts = prim->getVertexCount(),
-				v, pti;
-
-			g_facevtxcounts.push_back(num_verts);
-			//dbg << " (" << num_verts << ") ";
-
-			for(v=0; v<num_verts; ++v)
-			{
-				pt = prim->getVertex(v).getPt();
-				pti = ptmap[pt];
-				//dbg << " " << pti;
-
-				g_pts_ids.push_back(pti);
-			}
-		}
-
-		//dbg << "\n";
-	}
-
-	g_num_pts_ids = g_pts_ids.size();
-	g_num_facevtxcounts = g_facevtxcounts.size();
-
-	// write to output archive
-	//
-	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
-		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_num_pts ),
-		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_num_pts_ids ),
-		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_num_facevtxcounts )
-	);
-/*
-	AbcGeom::TimeSamplingPtr ts( new AbcGeom::TimeSampling(1.0/24.0, time) );
-	AbcGeom::OXform xform(oarchive->getTop(), "xform", ts);
-	AbcGeom::XformSample xform_samp;
-
-	xform.getSchema().set(xform_samp);
-*/
-	//AbcGeom::OPolyMesh outmesh(xform, "meshukku", ts);
-	outmesh->getSchema().set(mesh_samp);
-
-	return 1;
+	assert(p && "no valid parent found");
+	
+	_xform = new Alembic::AbcGeom::OXform(*p, _name, _ts);
+	_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
 }
 
 
 
-
-
-
-bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time )
+/**		GeoObject, destructor.
+*/
+GeoObject::~GeoObject()
 {
-	DBG
-		<< "export_geom()"
-		<< " sop:" << sop
-		<< "\n";
+	DBG << " --- ~GeoObject() " << _path << "\n";
+	if (_outmesh) delete _outmesh; _outmesh=0;
+	if (_xform) delete _xform; _xform=0;
+}
 
-	OP_Context ctx(time);
-	GU_DetailHandle gdh = sop->getCookedGeoHandle(ctx);
 
+
+/**		GeoObject: write a sample (xform+geom) for the specified time.
+
+@TODO
+		- export normals/uvs (support both per-point and per-vertex)
+		- export point velocities
+		- export other attributes
+		- support for particles
+*/
+bool GeoObject::writeSample( float time )
+{
+	assert(_op_sop && "no SOP node");
+	assert(_xform && "no abc output xform");
+	assert(_outmesh && "no abc outmesh");
+
+	// * xform sample *
+	//
+	Alembic::AbcGeom::XformSample xform_samp;
+	// TODO: fill the xform sample with the proper data (local transformations)
+	_xform->getSchema().set(xform_samp);
+
+
+	// * geom sample *
+	//
+	GU_DetailHandle gdh = _op_sop->getCookedGeoHandle( OP_Context(time) );
 	GU_DetailHandleAutoReadLock gdl(gdh);
-
 	const GU_Detail *gdp = gdl.getGdp();
 
 	if (!gdp) {
-		addError(ROP_COOK_ERROR, sopname);
+		addError(ROP_COOK_ERROR, pathname());
+		//addError(ROP_COOK_ERROR, sop_name());
 		return false;
 	}
 
-	abc_fileSave(_outmesh, time, gdp, "dunnno-whatt");
+
+	// collect polymesh data
+	//
+	std::map<GEO_Point const *, int> ptmap; // this should be replaced if possible
+
+	std::vector<Abc::float32_t>	g_pts;			// point coordinates
+	std::vector<Abc::int32_t>	g_pts_ids;		// point indices for each per-face-vertex
+	std::vector<Abc::int32_t>	g_facevtxcounts;	// vertex count for each face
+
+	GEO_Point const		*pt;
+	GEO_Primitive const	*prim;
+
+	// collect point coords
+	//
+	int c=0;
+	FOR_ALL_GPOINTS(gdp, pt)
+	{
+		UT_Vector4 const & P = pt->getPos();
+		g_pts.push_back(P.x());
+		g_pts.push_back(P.y());
+		g_pts.push_back(P.z());
+		
+		ptmap[pt]=c; // store point in point->ptindex map
+		++c;
+	}
+
+	// collect primitives
+	//
+	FOR_ALL_PRIMITIVES(gdp, prim)
+	{
+		int prim_id = prim->getPrimitiveId();
+
+		if ( prim_id == GEOPRIMPOLY )
+		{
+			int num_verts = prim->getVertexCount();
+			g_facevtxcounts.push_back(num_verts);
+
+			for(int v=0; v<num_verts; ++v) {
+				pt = prim->getVertex(v).getPt();
+				g_pts_ids.push_back( ptmap[pt] );
+			}
+		}
+	}
+
+	// construct mesh sample
+	//
+	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
+		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_pts.size()/3 ),
+		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_pts_ids.size() ),
+		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_facevtxcounts.size() )
+	);
+
+	_outmesh->getSchema().set(mesh_samp); // export mesh sample
 
 	return true;
 }
@@ -314,81 +311,88 @@ bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time
 
 
 
-//------------------------------------------------------------------------------
-// The startRender(), renderFrame(), and endRender() render methods are
-// invoked by Houdini when the ROP runs.
+
+/**		Collect all objects to be exported (including all children).
+*/
+void collect_geo_objs( GeoObjects & objects, OP_Node *node )
+{
+	if (objects.size()==0) DBG << "collect_geo_objs()\n";
+	DBG << " -- " << node->getPath() << "\n";
+
+	boost::shared_ptr<GeoObject> obj( new GeoObject(node) );
+	objects.push_back(obj);
+	
+	for( int i=0, m=obj_node->getNchildren();  i<m;  ++i )
+		collect_geo_objs(objects, node->getChild(i));
+}
 
 
 
 
 
+/**		Called by Houdini before the rendering of frame(s).
+*/
 int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 {
-	DBG
-		<< "startRender()"
-		<< nframes << " "
-		<< tstart << " "
-		<< tend
-		<< "\n";
+	DBG << "startRender(): " << nframes << " (" << tstart << " -> " << tend << ")\n";
 
 	_start_time = tstart;
 	_end_time = tend;
 	_num_frames = nframes;
 
-	if (false)
-	{
+	if (false) {
 		// TODO: init simulation OPs
 		// (got this from ROP_Field3D.C)
 		initSimulationOPs();
 		OPgetDirector()->bumpSkipPlaybarBasedSimulationReset(1);
 	}
 
-	UT_String	soppath_name,
+	UT_String	objpath_name,
 			abcfile_name;
 
-	get_str_parm("soppath", tstart, soppath_name);
+	get_str_parm("objpath", tstart, objpath_name);
 	get_str_parm("abcoutput", tstart, abcfile_name);
 	
-	_soppath = soppath_name.toStdString();
+	_objpath = objpath_name.toStdString();
 	_abcfile = abcfile_name.toStdString();
 
-	//_sopnode = OPgetDirector()->findSOPNode(_soppath.c_str());
-	_sopnode = getSOPNode(_soppath.c_str());
-
-	DBG
-		<< " -- soppath:" << _soppath.c_str()
-		<< " sopnode:" << _sopnode
+	DBG	<< "START EXPORT"
+		<< "\n -- obj path: " << _objpath
+		<< "\n -- abc file: " << _abcfile
 		<< "\n";
 
-	if (!_sopnode)
-	{
-		addError(ROP_MESSAGE, "ERROR: couldn't find SOP node");
-		addError(ROP_MESSAGE, _soppath.c_str());
+	OP_Node *root_obj = getObjNode(_objpath.c_str());
+
+	if ( !root_obj ) {
+		addError(ROP_MESSAGE, "ERROR: couldn't find object");
+		addError(ROP_MESSAGE, _objpath.c_str());
 		return false;
 	}
 
-	if (error() < UT_ERROR_ABORT)
-	{
+	if (error() < UT_ERROR_ABORT) {
 		if (!executePreRenderScript(tstart))
 			return false;
 	}
-/*
-	_archie = CreateArchiveWithInfo(
-			Alembic::AbcCoreHDF5::WriteArchive(),
-			_abcfile,
-			"houdini x.y, exporter y.z (appWriter)",
-			"exported from: (...).hip (userInfo)",
-			Alembic::Abc::ErrorHandler::kThrowPolicy
-		);
-*/
-	// this dyn-allocated to allow destroy-by-hand
-	// (the only way to write to file)
-	_oarchive = new Alembic::AbcGeom::OArchive(Alembic::AbcCoreHDF5::WriteArchive(), _abcfile);
-	// TODO: add metadata
 
-	_ts = AbcGeom::TimeSamplingPtr( new AbcGeom::TimeSampling(1.0/24.0, tstart) );
-	_xform = new AbcGeom::OXform(_oarchive->getTop(), "xformukku"); // ..., ts);
-	_outmesh = new AbcGeom::OPolyMesh(*_xform, "meshukku", _ts);
+	// NOTE: this needs to be dynamically allocated, so we can
+	// explicitly destroy it (to trigger the final flush-to-disk)
+	//
+	_oarchive = new Alembic::AbcGeom::OArchive(Alembic::AbcCoreHDF5::WriteArchive(), _abcfile);
+	// TODO: add metadata (see CreateArchiveWithInfo func)
+
+	// time-sampler with the appropriate timestep
+	//
+	float t_step = tend-tstart;
+	if (nframes>1) t_step /= float(nframes-1);
+	DBG << " -- time step: " << t_step << "(@24fps it's " << (1.0/24.0) << ")\n";
+
+	_ts = AbcGeom::TimeSamplingPtr( new AbcGeom::TimeSampling(t_step, tstart) );
+
+	// build list of objects
+	//
+	GeoObject::init(_oarchive, _ts);
+	_objs.clear();
+	collect_geo_objs(_objs, root_obj);
 
 	return true;
 }
@@ -397,85 +401,58 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 
 
 
-static void printNode( ostream & os, OP_Node * node, int indent )
-{
-	UT_WorkBuffer wbuf;
-	wbuf.sprintf("%*s", indent, "");
-	os << wbuf.buffer() << node->getName() << endl;
+/**		Render (export) one frame (called by Houdini for each frame).
 
-	for(int i=0;  i<node->getNchildren();  ++i)
-		printNode(os, node->getChild(i), indent+2);
-}
-
-
-
-
-
-
+		(Can return ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER)
+*/
 ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 {
-	DBG << "renderFrame()\n";
+	DBG << "renderFrame() time=" << time << "\n";
 
-	// Execute the pre-render script.
-	executePreFrameScript(time);
+	executePreFrameScript(time); // run pre-frame cmd
 
-	// Evaluate the parameter for the file name and write something to the
-	// file.
-	UT_String	soppath_name,
-			abc_file_name;
-
-	//get_str_parm("soppath", time, soppath_name);
-	get_str_parm("abcoutput", time, abc_file_name);
-
-	_sopnode = getSOPNode(_soppath.c_str());
-
-	DBG	
-		<< " -- time:" << time
-		<< " soppath:" << _soppath
-		<< " sopnode:" << _sopnode
-		<< " file:" << abc_file_name << "\n";
-
-	if ( !export_geom(_soppath.c_str(), _sopnode, time) )
+	for( GeoObjects::iterator i=_objs.begin(), m=_objs.end();  i!=m;  ++i )
 	{
-		// ERROR: couldn't export SOP geometry
-		return ROP_ABORT_RENDER;
+		char const *obj_name = i->pathname();
+
+		DBG << " - " << obj_name << "\n";
+		bool r = i->writeSample(time);
+
+		if (!r) {
+			addError(ROP_MESSAGE, "failed to export object");
+			addError(ROP_MESSAGE, obj_name);
+			return ROP_ABORT_RENDER;
+		}
 	}
 
-
-	if (false)
-	{
-		ofstream os(abc_file_name);
-		printNode(os, OPgetDirector(), 0);
-		os.close();
-	}
-
-	// Execute the post-render script.
 	if (error() < UT_ERROR_ABORT)
-		executePostFrameScript(time);
+		executePostFrameScript(time); // run post-frame cmd
 
 	return ROP_CONTINUE_RENDER;
-	// ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER
 }
 
 
 
 
+/**		Called by Houdini on render (export) finish.
 
+		This function is always called (even on user abort),
+		so it provides a reliable cleanup/exit point.
+@TODO
+		Check if this function is called if renderFrame() returns ROP_ABORT_RENDER
+*/
 ROP_RENDER_CODE hAbcGeomExport::endRender()
 {
 	DBG << "endRender()\n";
 
+	// delete the output archive 'stream'
+	// (so it gets flushed to disk)
+	//
 	if (_oarchive) delete _oarchive;
 	_oarchive=0;
 
-	if (_xform) delete _xform;
-	_xform=0;
-
-	if (_outmesh) delete _outmesh;
-	_outmesh=0;
-
 	if (error() < UT_ERROR_ABORT)
-		executePostRenderScript(_end_time);
+		executePostRenderScript(_end_time); // run post-render cmd
 
 	return ROP_CONTINUE_RENDER;
 }
@@ -483,34 +460,38 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 
 
 
-
-
+/**		Function that installs our ROP node.
+*/
 void newDriverOperator(OP_OperatorTable * table)
 {
 	OP_Operator *abc_rop = new OP_Operator(
-			"hAbcGeomExport",
-			"Alembic Geo Export",
-			hAbcGeomExport::myConstructor,
-			hAbcGeomExport::getTemplatePair(),
-			0,
-			0,
-			hAbcGeomExport::getVariablePair(),
-			OP_FLAG_GENERATOR
-		);
+		"hAbcGeomExport",
+		"Alembic Geometry Export",
+		hAbcGeomExport::myConstructor,
+		hAbcGeomExport::getTemplatePair(),
+		0, 0,
+		hAbcGeomExport::getVariablePair(),
+		OP_FLAG_GENERATOR
+	);
 
+	// set icon
 	abc_rop->setIconName("SOP_alembic");
 
+	// install operator
 	table->addOperator(abc_rop);
 
-	DBG
-		<< __FILE__
-		<< ": "
-		<< __DATE__
-		<< ", "
-		<< __TIME__
+	// print the regular startup message to stderr
+	//
+	std::cerr
+		<< "** hAbcGeomExport ROP 0.01 ** (compiled "
+		<< __DATE__ << ", " << __TIME__ << ") "
+#ifdef NDEBUG
+		<< "release build"
+#endif
+#ifdef DEBUG
+		<< "DEBUG build"
+#endif
 		<< "\n";
 }
-
-
 
 
