@@ -194,11 +194,7 @@ GeoObject::GeoObject( OP_node *obj_node, GeoObject *parent )
 , _outmesh(0)
 {
 	DBG << " --- GeoObject() " << obj_node->getPath() << "\n";
-	//_name = obj_node->getName();
-	//_path = obj_node->getPath();
-
-	//_op_sop = (SOP_Node *) obj_node->getRenderNodePtr(); // (could also be getDisplayNodePtr())
-	//_sopname = _op_sop->getName();
+	assert(_op_sop && "no SOP node");
 	
 	DBG << "   -- " << _path << " (" << _name << "): " << _sopname << "\n";
 
@@ -227,143 +223,92 @@ GeoObject::~GeoObject()
 
 
 
+/**		GeoObject: write a sample (xform+geom) for the specified time.
 
-
-
-
-/**		Geometry export function.
-
-		polymesh
-		- point coordinates
-		- normals (per-point, per-vertex)
-		- uvs (per-point, per-vertex)
-		- per-face: vertex counts
-		- per-vertex: point indices for each per-face vertex
+@TODO
+		- export normals/uvs (support both per-point and per-vertex)
+		- export point velocities
+		- export other attributes
+		- support for particles
 */
-int abc_fileSave(
-	AbcGeom::OPolyMesh *	outmesh,
-	float			time,
-	GEO_Detail const *	gdp,
-	char const *		filename
-)
+bool GeoObject::writeSample( float time )
 {
+	assert(_op_sop && "no SOP node");
+	assert(_xform && "no abc output xform");
+	assert(_outmesh && "no abc outmesh");
+
+	// * xform sample *
+	//
+	Alembic::AbcGeom::XformSample xform_samp;
+	// TODO: fill the xform sample with the proper data (local transformations)
+	_xform->getSchema().set(xform_samp);
+
+
+	// * geom sample *
+	//
+	GU_DetailHandle gdh = _op_sop->getCookedGeoHandle( OP_Context(time) );
+	GU_DetailHandleAutoReadLock gdl(gdh);
+	const GU_Detail *gdp = gdl.getGdp();
+
+	if (!gdp) {
+		addError(ROP_COOK_ERROR, pathname());
+		//addError(ROP_COOK_ERROR, sop_name());
+		return false;
+	}
+
+
+	// collect polymesh data
+	//
+	std::map<GEO_Point const *, int> ptmap; // this should be replaced if possible
+
+	std::vector<Abc::float32_t>	g_pts;			// point coordinates
+	std::vector<Abc::int32_t>	g_pts_ids;		// point indices for each per-face-vertex
+	std::vector<Abc::int32_t>	g_facevtxcounts;	// vertex count for each face
+
 	GEO_Point const		*pt;
 	GEO_Primitive const	*prim;
 
-	int		num_points = gdp->points().entries(),
-			num_prims  = gdp->primitives().entries();
-	
-	DBG
-		<< "NUM POINTS: " << num_points
-		<< "\nNUM PRIMS: " << num_prims
-		<< "\n";
-
-	std::map<GEO_Point const *, int> ptmap; // this should be replaced if possible
-
-	std::vector<Abc::float32_t>	g_pts;
-	std::vector<Abc::int32_t>	g_pts_ids;
-	std::vector<Abc::int32_t>	g_facevtxcounts;
-	size_t				g_num_pts=0,
-					g_num_facevtxcounts=0,
-					g_num_pts_ids=0;
-
-
 	// collect point coords
 	//
-	//DBG << "POINTS:\n";
 	int c=0;
 	FOR_ALL_GPOINTS(gdp, pt)
 	{
 		UT_Vector4 const & P = pt->getPos();
-		ptmap[pt]=c;
 		g_pts.push_back(P.x());
 		g_pts.push_back(P.y());
 		g_pts.push_back(P.z());
+		
+		ptmap[pt]=c; // store point in point->ptindex map
 		++c;
 	}
 
-	g_num_pts = c;
-	DBG << " --- g_num_pts: " << g_num_pts << " (/3!)\n";
-
-
 	// collect primitives
 	//
-	//DBG << "PRIMITIVES:\n";
 	FOR_ALL_PRIMITIVES(gdp, prim)
 	{
 		int prim_id = prim->getPrimitiveId();
 
-		//DBG << " ---- " << prim_id;
-
 		if ( prim_id == GEOPRIMPOLY )
 		{
-			int	num_verts = prim->getVertexCount(),
-				v, pti;
-
+			int num_verts = prim->getVertexCount();
 			g_facevtxcounts.push_back(num_verts);
-			//dbg << " (" << num_verts << ") ";
 
-			for(v=0; v<num_verts; ++v)
-			{
+			for(int v=0; v<num_verts; ++v) {
 				pt = prim->getVertex(v).getPt();
-				pti = ptmap[pt];
-				//dbg << " " << pti;
-
-				g_pts_ids.push_back(pti);
+				g_pts_ids.push_back( ptmap[pt] );
 			}
 		}
-
-		//dbg << "\n";
 	}
 
-	g_num_pts_ids = g_pts_ids.size();
-	g_num_facevtxcounts = g_facevtxcounts.size();
-
-	// write to output archive
+	// construct mesh sample
 	//
 	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
-		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_num_pts ),
-		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_num_pts_ids ),
-		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_num_facevtxcounts )
+		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_pts.size()/3 ),
+		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_pts_ids.size() ),
+		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_facevtxcounts.size() )
 	);
-/*
-	AbcGeom::TimeSamplingPtr ts( new AbcGeom::TimeSampling(1.0/24.0, time) );
-	AbcGeom::OXform xform(oarchive->getTop(), "xform", ts);
-	AbcGeom::XformSample xform_samp;
 
-	xform.getSchema().set(xform_samp);
-*/
-	//AbcGeom::OPolyMesh outmesh(xform, "meshukku", ts);
-	outmesh->getSchema().set(mesh_samp);
-
-	return 1;
-}
-
-
-
-
-
-
-bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time )
-{
-	DBG
-		<< "export_geom()"
-		<< " sop:" << sop
-		<< "\n";
-
-	OP_Context ctx(time);
-	GU_DetailHandle gdh = sop->getCookedGeoHandle(ctx);
-
-	GU_DetailHandleAutoReadLock gdl(gdh);
-
-	const GU_Detail *gdp = gdl.getGdp();
-
-	if (!gdp) {
-		addError(ROP_COOK_ERROR, sopname);
-		return false;
-	}
-
-	abc_fileSave(_outmesh, time, gdp, "dunnno-whatt");
+	_outmesh->getSchema().set(mesh_samp); // export mesh sample
 
 	return true;
 }
@@ -374,6 +319,8 @@ bool hAbcGeomExport::export_geom( char const *sopname, SOP_Node *sop, float time
 
 
 
+/**		Collect all objects to be exported (including all children).
+*/
 void collect_geo_objs( GeoObjects & objects, OP_Node *node )
 {
 	if (objects.size()==0) DBG << "collect_geo_objs()\n";
@@ -385,10 +332,6 @@ void collect_geo_objs( GeoObjects & objects, OP_Node *node )
 	for( int i=0, m=obj_node->getNchildren();  i<m;  ++i )
 		collect_geo_objs(objects, node->getChild(i));
 }
-
-
-
-
 
 
 

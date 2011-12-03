@@ -90,6 +90,7 @@ namespace HDK_Sample
 	public:
 		bool		writeSample( float time );
 		char const *	pathname() const { return _path.c_str(); }
+		char const *	sop_name() const { return _sopname.c_str(); }
 
 
 	private:
