@@ -54,6 +54,11 @@ using namespace HDK_Sample;
 
 
 
+// static (shared) per-class data
+//
+Alembic::AbcGeom::OArchive * GeoObject::_oarchive(0);
+Alembic::AbcGeom::TimeSampling * GeoObject::_ts(0);
+
 
 int *			hAbcGeomExport::ifdIndirect = 0;
 
