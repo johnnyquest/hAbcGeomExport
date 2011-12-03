@@ -71,8 +71,8 @@ Alembic::AbcGeom::TimeSampling * GeoObject::_ts(0);
 
 int *			hAbcGeomExport::ifdIndirect = 0;
 
-static PRM_Name		prm_objpath("objpath", "Object Path");
-static PRM_Default	prm_objpath_d(0, "dunno");
+static PRM_Name		prm_objpath("objpath", "Path to Root Object");
+static PRM_Default	prm_objpath_d(0, "/obj");
 
 static PRM_Name		prm_abcoutput("abcoutput", "Save to file");
 static PRM_Default	prm_abcoutput_d(0, "./out.abc");
@@ -83,13 +83,10 @@ static PRM_Default	prm_abcoutput_d(0, "./out.abc");
 
 static PRM_Template * getTemplates()
 {
-	static PRM_Template * t = 0;
-
-	if (t)
-		return t;
+	static PRM_Template *t=0;
+	if (t) return t;
 
 	t = new PRM_Template[15]; // should equal to the c++ lines below
-
 	int c=0;
 	t[c++] = PRM_Template(PRM_STRING, PRM_TYPE_DYNAMIC_PATH, 1, &prm_objpath, &prm_objpath_d);
 	t[c++] = PRM_Template(PRM_FILE, 1, &prm_abcoutput, &prm_abcoutput_d);
@@ -106,7 +103,6 @@ static PRM_Template * getTemplates()
 	t[c++] = theRopTemplates[ROP_POSTRENDER_TPLATE];
 	t[c++] = theRopTemplates[ROP_LPOSTRENDER_TPLATE];
 	t[c++] = PRM_Template();
-
 	return t;
 }
 
@@ -116,12 +112,10 @@ static PRM_Template * getTemplates()
 
 OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 {
-	static OP_TemplatePair *ropPair = 0;
+	static OP_TemplatePair *ropPair=0;
 
-	if (!ropPair)
-	{
+	if (!ropPair) {
 		OP_TemplatePair *base;
-
 		base = new OP_TemplatePair(getTemplates());
 		ropPair = new OP_TemplatePair(ROP_Node::getROPbaseTemplate(), base);
 	}
@@ -134,9 +128,8 @@ OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 
 OP_VariablePair * hAbcGeomExport::getVariablePair()
 {
-	static OP_VariablePair *pair = 0;
-	if (!pair)
-		pair = new OP_VariablePair(ROP_Node::myVariableList);
+	static OP_VariablePair *pair=0;
+	if (!pair) pair = new OP_VariablePair(ROP_Node::myVariableList);
 	return pair;
 }
 
@@ -163,7 +156,7 @@ hAbcGeomExport::hAbcGeomExport(
 	OP_Operator * entry
 )
 : ROP_Node(net, name, entry)
-, _oarchive(0), _ts(0)
+, _oarchive(0)
 {
 	if (!ifdIndirect)
 		ifdIndirect = allocIndirect(16);
@@ -472,15 +465,14 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 void newDriverOperator(OP_OperatorTable * table)
 {
 	OP_Operator *abc_rop = new OP_Operator(
-			"hAbcGeomExport",
-			"Alembic Geo Export",
-			hAbcGeomExport::myConstructor,
-			hAbcGeomExport::getTemplatePair(),
-			0,
-			0,
-			hAbcGeomExport::getVariablePair(),
-			OP_FLAG_GENERATOR
-		);
+		"hAbcGeomExport",
+		"Alembic Geometry Export",
+		hAbcGeomExport::myConstructor,
+		hAbcGeomExport::getTemplatePair(),
+		0, 0,
+		hAbcGeomExport::getVariablePair(),
+		OP_FLAG_GENERATOR
+	);
 
 	// set icon
 	abc_rop->setIconName("SOP_alembic");
