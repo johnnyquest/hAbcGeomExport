@@ -1,6 +1,6 @@
 /**
 		@file		hAbcGeomExport.cpp
-		@author		xy
+		@author		Imre Tuske
 		@since		2011-11-29
 
 
@@ -480,15 +480,18 @@ void newDriverOperator(OP_OperatorTable * table)
 	// install operator
 	table->addOperator(abc_rop);
 
-	DBG
-		<< __FILE__
-		<< ": "
-		<< __DATE__
-		<< ", "
-		<< __TIME__
+	// print the regular startup message to stderr
+	//
+	std::cerr
+		<< "** hAbcGeomExport ROP 0.01 ** (compiled "
+		<< __DATE__ << ", " << __TIME__ << ") "
+#ifdef NDEBUG
+		<< "release build"
+#endif
+#ifdef DEBUG
+		<< "DEBUG build"
+#endif
 		<< "\n";
 }
-
-
 
 
