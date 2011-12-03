@@ -116,6 +116,8 @@ namespace HDK_Sample
 
 
 
+	/**	Alembic Geometry Export ROP node declaration.
+	*/
 	class hAbcGeomExport : public ROP_Node
 	{
 	public:
@@ -185,16 +187,13 @@ namespace HDK_Sample
 		float				_end_time;
 		int				_num_frames;
 
-		std::string			_soppath;
+		std::string			_objpath;
 		std::string			_abcfile;
-		std::vector<std::string>	_soppaths;
-
-		SOP_Node *			_sopnode;
 
 		Alembic::AbcGeom::OArchive *		_oarchive;
 		Alembic::AbcGeom::TimeSamplingPtr	_ts;
-		Alembic::AbcGeom::OXform *		_xform;
-		Alembic::AbcGeom::OPolyMesh *		_outmesh;
+
+		GeoObjects				_objs;
 	};
 
 }				// End HDK_Sample namespace
