@@ -179,7 +179,7 @@ hAbcGeomExport::~hAbcGeomExport()
 */
 GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 : _parent(parent)
-, _op_obj(obj_node)
+//, _op_obj( (OBJ_Node *) obj_node) // TODO: make sure this is an OBJ_Node!
 , _op_sop( (SOP_Node *) ((OBJ_Node *)obj_node)->getRenderSopPtr() )
 , _name( obj_node->getName() )
 //, _path( obj_node->getPath() )
@@ -189,8 +189,11 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 {
 	UT_String s; obj_node->getFullPath(s);
 	_path = s.toStdString();
+
 	DBG << " --- GeoObject() " << _path << "\n";
 	assert(_op_sop && "no SOP node");
+
+	_op_obj = (OBJ_Node *) obj_node; // TODO: make sure this is an OBJ_Node!
 	
 	DBG << "   -- " << _path << " (" << _name << "): " << _sopname << "\n";
 

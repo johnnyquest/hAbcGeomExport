@@ -26,6 +26,7 @@
 #ifndef __hAbcGeomExport_h__
 #define __hAbcGeomExport_h__
 
+#include <OBJ/OBJ_Node.h>
 #include <ROP/ROP_Node.h>
 #include <SOP/SOP_Node.h>
 #include <OP/OP_Node.h>
@@ -100,7 +101,7 @@ namespace HDK_Sample
 
 	private:
 		GeoObject *			_parent;	// hierarchy parent
-		OP_Node *			_op_obj;	// geometry xform
+		OBJ_Node *			_op_obj;	// geometry xform
 		SOP_Node *			_op_sop;	// SOP node to export
 		std::string			_name;		// obj (xform) name
 		std::string			_path;		// obj full path
