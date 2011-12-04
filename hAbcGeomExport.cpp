@@ -245,16 +245,27 @@ bool GeoObject::writeSample( float time )
 	assert(_xform && "no abc output xform");
 	assert(_outmesh && "no abc outmesh");
 
+	OP_Context ctx(time);
+
 	// * xform sample *
 	//
 	Alembic::AbcGeom::XformSample xform_samp;
 	// TODO: fill the xform sample with the proper data (local transformations)
-	_xform->getSchema().set(xform_samp);
+	// with hints and all
+	// TODO: make sure to include preTransform!
+
+	UT_DMatrix4 hou_dmtx;
+	
+	_op_obj->getParmTransform(ctx, hou_dmtx);
+
+	AbcGeom::M44d mtx( (const double (*)[4]) hou_dmtx.data() );
+	xform_samp.setMatrix(mtx);
+
+	_xform->getSchema().set(xform_samp); // export xform sample
 
 
 	// * geom sample *
 	//
-	OP_Context ctx(time);
 	GU_DetailHandle gdh = _op_sop->getCookedGeoHandle(ctx);
 	GU_DetailHandleAutoReadLock gdl(gdh);
 	const GU_Detail *gdp = gdl.getGdp();
