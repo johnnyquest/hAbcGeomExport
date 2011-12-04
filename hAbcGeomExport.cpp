@@ -254,9 +254,11 @@ bool GeoObject::writeSample( float time )
 	// with hints and all
 	// TODO: make sure to include preTransform!
 
+	UT_DMatrix4 const & hou_prexform = _op_obj->getPreTransform();
 	UT_DMatrix4 hou_dmtx;
 	
 	_op_obj->getParmTransform(ctx, hou_dmtx);
+	hou_dmtx = hou_prexform * hou_dmtx; // apply pretransform
 
 	AbcGeom::M44d mtx( (const double (*)[4]) hou_dmtx.data() );
 	xform_samp.setMatrix(mtx);
