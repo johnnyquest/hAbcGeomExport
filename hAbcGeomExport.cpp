@@ -33,10 +33,12 @@
 #include <ROP/ROP_Error.h>
 #include <ROP/ROP_Templates.h>
 
+#include <GU/GU_Detail.h>
 #include <GEO/GEO_Point.h>
 #include <GEO/GEO_Primitive.h>
 #include <GEO/GEO_Vertex.h>
 #include <GEO/GEO_PrimPoly.h>
+#include <GEO/GEO_AttributeHandle.h>
 
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
@@ -274,6 +276,24 @@ bool GeoObject::writeSample( float time )
 
 	if (!gdp)
 		return false;
+
+	GEO_AttributeHandle	h_pN = gdp->getPointAttribute("N"),
+				h_vN = gdp->getVertexAttribute("N"),
+				h_pUV = gdp->getPointAttribute("uv"),
+				h_vUV = gdp->getVertexAttribute("uv");
+	
+	int	N_type=0,
+		uv_type=0; // 0=none 1=per-pt 2=per-vtx
+
+	if ( h_pN.isAttributeValid() ) N_type=1;
+	if ( h_vN.isAttributeValid() ) N_type=2;
+	if ( h_pUV.isAttributeValid() ) uv_type=1;
+	if ( h_vUV.isAttributeValid() ) uv_type=2;
+
+	bool	has_per_vtx = N_type==2 || uv_type==2;
+
+	DBG << " - ATTRS: N_type=" << N_type << " uv_type=" << uv_type << "\n";
+
 
 	// collect polymesh data
 	//
