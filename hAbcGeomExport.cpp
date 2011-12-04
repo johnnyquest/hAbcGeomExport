@@ -277,7 +277,7 @@ bool GeoObject::writeSample( float time )
 
 	// collect polymesh data
 	//
-	std::map<GEO_Point const *, int> ptmap; // this should be replaced if possible
+	std::map<GEO_Point const *, int> ptmap; 	// (this should be replaced if possible)
 
 	std::vector<Abc::float32_t>	g_pts;			// point coordinates
 	std::vector<Abc::int32_t>	g_pts_ids;		// point indices for each per-face-vertex
