@@ -196,16 +196,20 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 
 	assert(_oarchive && "no oarchive given");
 	assert(_ts && "no timesampling given");
-
+/*
 	Alembic::AbcGeom::OObject *p =
 		_parent  ?  _parent->_xform
 		:  &_oarchive->getTop();
 
 	DBG << " --- parent " << p << " (" << parent << ")\n";
-
 	assert(p && "no valid parent found");
-
+	
 	_xform = new Alembic::AbcGeom::OXform(*p, _name, _ts);
+*/
+	_xform = new Alembic::AbcGeom::OXform(
+		_parent ? *(_parent->_xform) : _oarchive->getTop(),
+		_name, _ts);
+	
 	_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
 }
 
@@ -254,7 +258,6 @@ bool GeoObject::writeSample( float time )
 
 	if (!gdp)
 		return false;
-
 
 	// collect polymesh data
 	//
