@@ -27,8 +27,11 @@ TODO
 ----
 	- normal/uv export
 		- should support both per-point and per-vertex types
+	
+	- export transformations not as a 'raw' matrix but translate+rotate+etc.
+		with hints and all
 
-	- per-point velocity export
+	- per-point velocity attribute (velocity blur) export
 
 	- export of all custom attributes
 		- per-point, per-vertex, per-prim, detail
