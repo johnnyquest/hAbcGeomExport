@@ -451,6 +451,8 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 	// delete the output archive 'stream'
 	// (so it gets flushed to disk)
 	//
+	_objs.clear();
+
 	if (_oarchive) delete _oarchive;
 	_oarchive=0;
 
