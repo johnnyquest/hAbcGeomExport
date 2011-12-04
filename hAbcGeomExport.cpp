@@ -54,8 +54,8 @@ namespace AbcGeom = Alembic::AbcGeom;
 #define DBG if (true) std::cerr << "[hAbcGeomExport.cpp]: "
 #define dbg if (true) std::cerr
 #else
-#define DBG if () std::cerr << "[hAbcGeomExport.cpp]: "
-#define dbg if () std::cerr
+#define DBG if (false) std::cerr << "[hAbcGeomExport.cpp]: "
+#define dbg if (false) std::cerr
 #endif
 
 
@@ -201,6 +201,8 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 		_parent  ?  _parent->_xform
 		:  &_oarchive->getTop();
 
+	DBG << " --- parent " << p << " (" << parent << ")\n";
+
 	assert(p && "no valid parent found");
 
 	_xform = new Alembic::AbcGeom::OXform(*p, _name, _ts);
@@ -230,6 +232,8 @@ GeoObject::~GeoObject()
 */
 bool GeoObject::writeSample( float time )
 {
+	DBG << "writeSample() " << _path << " @ " << time << "\n";
+
 	assert(_op_sop && "no SOP node");
 	assert(_xform && "no abc output xform");
 	assert(_outmesh && "no abc outmesh");
@@ -379,7 +383,9 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 	// NOTE: this needs to be dynamically allocated, so we can
 	// explicitly destroy it (to trigger the final flush-to-disk)
 	//
-	_oarchive = new Alembic::AbcGeom::OArchive(Alembic::AbcCoreHDF5::WriteArchive(), _abcfile);
+	_oarchive = new Alembic::AbcGeom::OArchive(
+		Alembic::AbcCoreHDF5::WriteArchive(),
+		_abcfile);
 	// TODO: add metadata (see CreateArchiveWithInfo func)
 
 	// time-sampler with the appropriate timestep
