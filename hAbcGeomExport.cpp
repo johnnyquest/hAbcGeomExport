@@ -324,8 +324,8 @@ void collect_geo_objs( GeoObjects & objects, OP_Node *node )
 	boost::shared_ptr<GeoObject> obj( new GeoObject(node) );
 	objects.push_back(obj);
 	
-	for( int i=0, m=node->getNchildren();  i<m;  ++i )
-		collect_geo_objs(objects, node->getChild(i));
+	for( int i=0, m=node->nOutputs();  i<m;  ++i )
+		collect_geo_objs(objects, node->getOutput(i));
 }
 
 
@@ -385,6 +385,7 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 	// time-sampler with the appropriate timestep
 	//
 	float t_step = tend-tstart;
+	if (t_step<=0) t_step = 1.0/24.0;
 	if (nframes>1) t_step /= float(nframes-1);
 	DBG << " -- time step: " << t_step << "(@24fps it's " << (1.0/24.0) << ")\n";
 
