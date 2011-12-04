@@ -46,9 +46,6 @@
 #define STR_PARM(name, idx, vi, t) \
 		{ evalString(str, name, &ifdIndirect[idx], vi, (float)t); }
 
-#define INT_PARM(name, idx, vi, t) \
-                { return evalInt(name, &ifdIndirect[idx], vi, t); }
-
 #define STR_SET(name, idx, vi, t) \
 		{ setString(str, name, ifdIndirect[idx], vi, (float)t); }
 
@@ -77,11 +74,13 @@ namespace HDK_Sample
 		*/
 		static void init(
 			Alembic::AbcGeom::OArchive *archive,
-			Alembic::AbcGeom::TimeSampling *timesampling
+			Alembic::AbcGeom::TimeSamplingPtr & timesampling
 		)
-		: _oarchive(archive)
-		, _ts(timesampling)
-		{ assert(archive && timesampling); }
+		{
+			assert(archive && timesampling);
+			_oarchive = archive;
+			_ts = timesampling;
+		}
 
 	public:
 		GeoObject( OP_Node *obj_node, GeoObject *parent=0 );
