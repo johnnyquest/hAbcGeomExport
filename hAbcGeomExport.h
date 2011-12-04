@@ -26,6 +26,7 @@
 #ifndef __hAbcGeomExport_h__
 #define __hAbcGeomExport_h__
 
+#include <OBJ/OBJ_Node.h>
 #include <ROP/ROP_Node.h>
 #include <SOP/SOP_Node.h>
 #include <OP/OP_Node.h>
@@ -45,9 +46,6 @@
 
 #define STR_PARM(name, idx, vi, t) \
 		{ evalString(str, name, &ifdIndirect[idx], vi, (float)t); }
-
-#define INT_PARM(name, idx, vi, t) \
-                { return evalInt(name, &ifdIndirect[idx], vi, t); }
 
 #define STR_SET(name, idx, vi, t) \
 		{ setString(str, name, ifdIndirect[idx], vi, (float)t); }
@@ -77,11 +75,13 @@ namespace HDK_Sample
 		*/
 		static void init(
 			Alembic::AbcGeom::OArchive *archive,
-			Alembic::AbcGeom::TimeSampling *timesampling
+			Alembic::AbcGeom::TimeSamplingPtr & timesampling
 		)
-		: _oarchive(archive)
-		, _ts(timesampling)
-		{ assert(archive && timesampling); }
+		{
+			assert(archive && timesampling);
+			_oarchive = archive;
+			_ts = timesampling;
+		}
 
 	public:
 		GeoObject( OP_Node *obj_node, GeoObject *parent=0 );
@@ -101,7 +101,7 @@ namespace HDK_Sample
 
 	private:
 		GeoObject *			_parent;	// hierarchy parent
-		OP_Node *			_op_obj;	// geometry xform
+		OBJ_Node *			_op_obj;	// geometry xform
 		SOP_Node *			_op_sop;	// SOP node to export
 		std::string			_name;		// obj (xform) name
 		std::string			_path;		// obj full path

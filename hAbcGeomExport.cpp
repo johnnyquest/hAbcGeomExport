@@ -28,6 +28,7 @@
 #include <PRM/PRM_Include.h>
 #include <OP/OP_OperatorTable.h>
 #include <OP/OP_Director.h>
+#include <OBJ/OBJ_Node.h>
 #include <SOP/SOP_Node.h>
 #include <ROP/ROP_Error.h>
 #include <ROP/ROP_Templates.h>
@@ -53,8 +54,8 @@ namespace AbcGeom = Alembic::AbcGeom;
 #define DBG if (true) std::cerr << "[hAbcGeomExport.cpp]: "
 #define dbg if (true) std::cerr
 #else
-#define DBG if () std::cerr << "[hAbcGeomExport.cpp]: "
-#define dbg if () std::cerr
+#define DBG if (false) std::cerr << "[hAbcGeomExport.cpp]: "
+#define dbg if (false) std::cerr
 #endif
 
 
@@ -66,7 +67,7 @@ using namespace HDK_Sample;
 // static (shared) per-class data
 //
 Alembic::AbcGeom::OArchive * GeoObject::_oarchive(0);
-Alembic::AbcGeom::TimeSampling * GeoObject::_ts(0);
+Alembic::AbcGeom::TimeSamplingPtr GeoObject::_ts;
 
 
 int *			hAbcGeomExport::ifdIndirect = 0;
@@ -176,30 +177,42 @@ hAbcGeomExport::~hAbcGeomExport()
 
 /**		GeoObject, constructor.
 */
-GeoObject::GeoObject( OP_node *obj_node, GeoObject *parent )
+GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 : _parent(parent)
-, _op_obj(obj_node)
-, _op_sop( (SOP_Node *) obj_node->getRenderNodePtr() )
+//, _op_obj( (OBJ_Node *) obj_node) // TODO: make sure this is an OBJ_Node!
+, _op_sop( (SOP_Node *) ((OBJ_Node *)obj_node)->getRenderSopPtr() )
 , _name( obj_node->getName() )
-, _path( obj_node->getPath() )
+//, _path( obj_node->getPath() )
 , _sopname( _op_sop->getName() )
 , _xform(0)
 , _outmesh(0)
 {
-	DBG << " --- GeoObject() " << obj_node->getPath() << "\n";
+	UT_String s; obj_node->getFullPath(s);
+	_path = s.toStdString();
+
+	DBG << " --- GeoObject() " << _path << "\n";
 	assert(_op_sop && "no SOP node");
+
+	_op_obj = (OBJ_Node *) obj_node; // TODO: make sure this is an OBJ_Node!
 	
 	DBG << "   -- " << _path << " (" << _name << "): " << _sopname << "\n";
 
 	assert(_oarchive && "no oarchive given");
 	assert(_ts && "no timesampling given");
+/*
+	Alembic::AbcGeom::OObject *p =
+		_parent  ?  _parent->_xform
+		:  &_oarchive->getTop();
 
-	Alembic::AbcGeom::OXform *p =
-		_parent  ?  _parent->_xform  :  &_oarchive->getTop();
-
+	DBG << " --- parent " << p << " (" << parent << ")\n";
 	assert(p && "no valid parent found");
 	
 	_xform = new Alembic::AbcGeom::OXform(*p, _name, _ts);
+*/
+	_xform = new Alembic::AbcGeom::OXform(
+		_parent ? *(_parent->_xform) : _oarchive->getTop(),
+		_name, _ts);
+	
 	_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
 }
 
@@ -226,29 +239,41 @@ GeoObject::~GeoObject()
 */
 bool GeoObject::writeSample( float time )
 {
+	DBG << "writeSample() " << _path << " @ " << time << "\n";
+
 	assert(_op_sop && "no SOP node");
 	assert(_xform && "no abc output xform");
 	assert(_outmesh && "no abc outmesh");
+
+	OP_Context ctx(time);
 
 	// * xform sample *
 	//
 	Alembic::AbcGeom::XformSample xform_samp;
 	// TODO: fill the xform sample with the proper data (local transformations)
-	_xform->getSchema().set(xform_samp);
+	// with hints and all
+	// TODO: make sure to include preTransform!
+
+	UT_DMatrix4 const & hou_prexform = _op_obj->getPreTransform();
+	UT_DMatrix4 hou_dmtx;
+	
+	_op_obj->getParmTransform(ctx, hou_dmtx);
+	hou_dmtx = hou_prexform * hou_dmtx; // apply pretransform
+
+	AbcGeom::M44d mtx( (const double (*)[4]) hou_dmtx.data() );
+	xform_samp.setMatrix(mtx);
+
+	_xform->getSchema().set(xform_samp); // export xform sample
 
 
 	// * geom sample *
 	//
-	GU_DetailHandle gdh = _op_sop->getCookedGeoHandle( OP_Context(time) );
+	GU_DetailHandle gdh = _op_sop->getCookedGeoHandle(ctx);
 	GU_DetailHandleAutoReadLock gdl(gdh);
 	const GU_Detail *gdp = gdl.getGdp();
 
-	if (!gdp) {
-		addError(ROP_COOK_ERROR, pathname());
-		//addError(ROP_COOK_ERROR, sop_name());
+	if (!gdp)
 		return false;
-	}
-
 
 	// collect polymesh data
 	//
@@ -314,16 +339,18 @@ bool GeoObject::writeSample( float time )
 
 /**		Collect all objects to be exported (including all children).
 */
-void collect_geo_objs( GeoObjects & objects, OP_Node *node )
+void collect_geo_objs( GeoObjects & objects, OP_Node *node, GeoObject *parent=0 )
 {
 	if (objects.size()==0) DBG << "collect_geo_objs()\n";
-	DBG << " -- " << node->getPath() << "\n";
+	DBG << " -- " << node->getName() << "\n";
 
-	boost::shared_ptr<GeoObject> obj( new GeoObject(node) );
+	boost::shared_ptr<GeoObject> obj( new GeoObject(node, parent) );
 	objects.push_back(obj);
 	
-	for( int i=0, m=obj_node->getNchildren();  i<m;  ++i )
-		collect_geo_objs(objects, node->getChild(i));
+	for( int i=0, m=node->nOutputs();  i<m;  ++i ) {
+		DBG << i << " (parent will be " << obj.get() << ")\n";
+		collect_geo_objs(objects, node->getOutput(i), obj.get());
+	}
 }
 
 
@@ -361,7 +388,7 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 		<< "\n -- abc file: " << _abcfile
 		<< "\n";
 
-	OP_Node *root_obj = getObjNode(_objpath.c_str());
+	OP_Node *root_obj = findNode(_objpath.c_str());
 
 	if ( !root_obj ) {
 		addError(ROP_MESSAGE, "ERROR: couldn't find object");
@@ -377,12 +404,15 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 	// NOTE: this needs to be dynamically allocated, so we can
 	// explicitly destroy it (to trigger the final flush-to-disk)
 	//
-	_oarchive = new Alembic::AbcGeom::OArchive(Alembic::AbcCoreHDF5::WriteArchive(), _abcfile);
+	_oarchive = new Alembic::AbcGeom::OArchive(
+		Alembic::AbcCoreHDF5::WriteArchive(),
+		_abcfile);
 	// TODO: add metadata (see CreateArchiveWithInfo func)
 
 	// time-sampler with the appropriate timestep
 	//
 	float t_step = tend-tstart;
+	if (t_step<=0) t_step = 1.0/24.0;
 	if (nframes>1) t_step /= float(nframes-1);
 	DBG << " -- time step: " << t_step << "(@24fps it's " << (1.0/24.0) << ")\n";
 
@@ -413,10 +443,10 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 
 	for( GeoObjects::iterator i=_objs.begin(), m=_objs.end();  i!=m;  ++i )
 	{
-		char const *obj_name = i->pathname();
+		char const *obj_name = (*i)->pathname();
 
 		DBG << " - " << obj_name << "\n";
-		bool r = i->writeSample(time);
+		bool r = (*i)->writeSample(time);
 
 		if (!r) {
 			addError(ROP_MESSAGE, "failed to export object");
@@ -448,6 +478,8 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 	// delete the output archive 'stream'
 	// (so it gets flushed to disk)
 	//
+	_objs.clear();
+
 	if (_oarchive) delete _oarchive;
 	_oarchive=0;
 
