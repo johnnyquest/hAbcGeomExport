@@ -320,16 +320,18 @@ bool GeoObject::writeSample( float time )
 
 /**		Collect all objects to be exported (including all children).
 */
-void collect_geo_objs( GeoObjects & objects, OP_Node *node )
+void collect_geo_objs( GeoObjects & objects, OP_Node *node, GeoObject *parent=0 )
 {
 	if (objects.size()==0) DBG << "collect_geo_objs()\n";
 	DBG << " -- " << node->getName() << "\n";
 
-	boost::shared_ptr<GeoObject> obj( new GeoObject(node) );
+	boost::shared_ptr<GeoObject> obj( new GeoObject(node, parent) );
 	objects.push_back(obj);
 	
-	for( int i=0, m=node->nOutputs();  i<m;  ++i )
-		collect_geo_objs(objects, node->getOutput(i));
+	for( int i=0, m=node->nOutputs();  i<m;  ++i ) {
+		DBG << i << " (parent will be " << obj.get() << ")\n";
+		collect_geo_objs(objects, node->getOutput(i), obj.get());
+	}
 }
 
 
