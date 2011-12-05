@@ -500,6 +500,7 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 	_t_step = t_step;
 	DBG << " -- time step: " << t_step << " (@24fps it's " << (1.0/24.0) << ")\n";
 
+	_ts = AbcGeom::TimeSamplingPtr( new AbcGeom::TimeSampling(t_step, tstart+t_step) );
 
 	// build list of objects
 	//
