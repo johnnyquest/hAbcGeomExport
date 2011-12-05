@@ -33,10 +33,12 @@
 #include <ROP/ROP_Error.h>
 #include <ROP/ROP_Templates.h>
 
+#include <GU/GU_Detail.h>
 #include <GEO/GEO_Point.h>
 #include <GEO/GEO_Primitive.h>
 #include <GEO/GEO_Vertex.h>
 #include <GEO/GEO_PrimPoly.h>
+#include <GEO/GEO_AttributeHandle.h>
 
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
@@ -275,13 +277,38 @@ bool GeoObject::writeSample( float time )
 	if (!gdp)
 		return false;
 
+	GEO_AttributeHandle	h_pN = gdp->getPointAttribute("N"),
+				h_vN = gdp->getVertexAttribute("N"),
+				h_pUV = gdp->getPointAttribute("uv"),
+				h_vUV = gdp->getVertexAttribute("uv");
+	
+	bool	N_pt   = h_pN.isAttributeValid(),
+		N_vtx  = h_vN.isAttributeValid(),
+		uv_pt  = h_pUV.isAttributeValid(),
+		uv_vtx = h_vUV.isAttributeValid(),
+		has_N  = N_pt  || N_vtx,
+		has_uv = uv_pt || uv_vtx;
+
+	DBG	<< " - ATTRS:"
+		<< " has_N:" << has_N
+		<< " N_pt:" << N_pt
+		<< " N_vtx:" << N_vtx
+		<< " has_uv:" << has_uv
+		<< " uv_pt:" << uv_pt
+		<< " uv_vtx:" << uv_vtx
+		<< "\n";
+
+
 	// collect polymesh data
 	//
-	std::map<GEO_Point const *, int> ptmap; // this should be replaced if possible
+	std::map<GEO_Point const *, int> ptmap; 	// (this should be replaced if possible)
 
-	std::vector<Abc::float32_t>	g_pts;			// point coordinates
+	std::vector<Abc::float32_t>	g_pts;			// point coordinates (3 values)
 	std::vector<Abc::int32_t>	g_pts_ids;		// point indices for each per-face-vertex
 	std::vector<Abc::int32_t>	g_facevtxcounts;	// vertex count for each face
+	
+	std::vector<Abc::float32_t>	g_N;			// normals (3 values; per-point or per-vertex)
+	std::vector<Abc::float32_t>	g_uv;			// uv coords (2 values; per-point or per-vertex)
 
 	GEO_Point const		*pt;
 	GEO_Primitive const	*prim;
@@ -295,7 +322,28 @@ bool GeoObject::writeSample( float time )
 		g_pts.push_back(P.x());
 		g_pts.push_back(P.y());
 		g_pts.push_back(P.z());
-		
+
+		// collect per-point normals/uvs
+		//
+		UT_Vector3 V;
+
+		if ( N_pt ) {
+			h_pN.setElement(pt);
+			V = h_pN.getV3();
+			g_N.push_back(V.x());
+			g_N.push_back(V.y());
+			g_N.push_back(V.z());
+			//DBG << " -- pN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+		}
+
+		if ( uv_pt ) {
+			h_pUV.setElement(pt);
+			V = h_pUV.getV3();
+			g_uv.push_back(V.x());
+			g_uv.push_back(V.y());
+			//DBG << " -- pUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+		}
+
 		ptmap[pt]=c; // store point in point->ptindex map
 		++c;
 	}
@@ -310,12 +358,47 @@ bool GeoObject::writeSample( float time )
 		{
 			int num_verts = prim->getVertexCount();
 			g_facevtxcounts.push_back(num_verts);
+			UT_Vector3 V;
 
-			for(int v=0; v<num_verts; ++v) {
-				pt = prim->getVertex(v).getPt();
+			for(int v=0; v<num_verts; ++v)
+			{
+				GEO_Vertex const & vtx = prim->getVertex(v);
+				pt = vtx.getPt();
 				g_pts_ids.push_back( ptmap[pt] );
+
+				// collect per-vertex normals/uvs
+				//
+				if ( N_vtx ) {
+					h_vN.setElement(&vtx);
+					V = h_vN.getV3();
+					g_N.push_back(V.x());
+					g_N.push_back(V.y());
+					g_N.push_back(V.z());
+					//DBG << " -- vN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+				}
+
+				if ( uv_vtx ) {
+					h_vUV.setElement(&vtx);
+					V = h_vUV.getV3();
+					g_uv.push_back(V.x());
+					g_uv.push_back(V.y());
+					//DBG << " -- vUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+				}
 			}
 		}
+	}
+
+	AbcGeom::ON3fGeomParam::Sample N_samp;
+	AbcGeom::OV2fGeomParam::Sample uv_samp;
+
+	if ( has_N ) {
+		N_samp.setScope( N_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
+		N_samp.setVals( AbcGeom::N3fArraySample( (const AbcGeom::N3f *)&g_N[0], g_N.size()/3) );
+	}
+
+	if ( has_uv ) {
+		uv_samp.setScope( uv_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
+		uv_samp.setVals( AbcGeom::V2fArraySample( (const AbcGeom::V2f *)&g_uv[0], g_uv.size()/2) );
 	}
 
 	// construct mesh sample
@@ -323,7 +406,8 @@ bool GeoObject::writeSample( float time )
 	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
 		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_pts.size()/3 ),
 		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_pts_ids.size() ),
-		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_facevtxcounts.size() )
+		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_facevtxcounts.size() ),
+		uv_samp, N_samp
 	);
 
 	_outmesh->getSchema().set(mesh_samp); // export mesh sample
