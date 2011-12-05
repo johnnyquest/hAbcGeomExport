@@ -23,11 +23,17 @@
 # set these variables accordingly
 #
 HOUDINI_PREFS=$HIH
-OPENEXR_INCLUDES=~/work/dev/alembic/libs/linux/include/OpenEXR
-ALEMBIC_SUPPORT_LIBS=~/work/dev/alembic/libs/linux/lib
-ALEMBIC_SUPPORT_INCLUDES=~/work/dev/alembic/libs/linux/include
-ALEMBIC_LIBS=~/work/dev/alembic/libs/linux/alembic-0.9.3/lib/static
-ALEMBIC_INCLUDES=~/work/dev/alembic/libs/linux/alembic-0.9.3/include
+#OPENEXR_INCLUDES=~/work/dev/alembic/libs/linux/include/OpenEXR
+#ALEMBIC_SUPPORT_LIBS=~/work/dev/alembic/libs/linux/lib
+#ALEMBIC_SUPPORT_INCLUDES=~/work/dev/alembic/libs/linux/include
+#ALEMBIC_LIBS=~/work/dev/alembic/libs/linux/alembic-0.9.3/lib/static
+#ALEMBIC_INCLUDES=~/work/dev/alembic/libs/linux/alembic-0.9.3/include
+
+OPENEXR_INCLUDES=/usr/include/OpenEXR
+ALEMBIC_SUPPORT_LIBS=~/work/alembic/libs/linux/lib
+ALEMBIC_SUPPORT_INCLUDES=~/work/alembic/libs/linux/include
+ALEMBIC_LIBS=~/work/alembic/libs/linux/alembic-1.0.3/lib/static
+ALEMBIC_INCLUDES=~/work/alembic/libs/linux/alembic-1.0.3/include
 
 
 # remove previous build

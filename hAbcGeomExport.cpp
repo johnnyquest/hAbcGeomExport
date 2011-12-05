@@ -242,19 +242,18 @@ GeoObject::~GeoObject()
 bool GeoObject::writeSample( float time )
 {
 	DBG << "writeSample() " << _path << " @ " << time << "\n";
-
 	assert(_op_sop && "no SOP node");
 	assert(_xform && "no abc output xform");
 	assert(_outmesh && "no abc outmesh");
 
 	OP_Context ctx(time);
 
+
 	// * xform sample *
 	//
 	Alembic::AbcGeom::XformSample xform_samp;
 	// TODO: fill the xform sample with the proper data (local transformations)
-	// with hints and all
-	// TODO: make sure to include preTransform!
+	// with hints and all (how to include preTransform elegantly?)
 
 	UT_DMatrix4 const & hou_prexform = _op_obj->getPreTransform();
 	UT_DMatrix4 hou_dmtx;

@@ -1,4 +1,4 @@
-hAbcGeomExport 0.01
+hAbcGeomExport 0.02
 ===================
 (Imre Tuske, 2011)
 
@@ -25,8 +25,9 @@ transformations.
 
 TODO
 ----
-	- normal/uv export
-		- should support both per-point and per-vertex types
+	- (DONE) normal/uv export
+		- (DONE) should support both per-point and per-vertex types
+		- should be thoroughly tested!
 	
 	- export transformations not as a 'raw' matrix but translate+rotate+etc.
 		with hints and all
