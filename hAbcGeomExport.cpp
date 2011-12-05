@@ -383,12 +383,26 @@ bool GeoObject::writeSample( float time )
 		}
 	}
 
+	AbcGeom::ON3fGeomParam::Sample N_samp;
+	AbcGeom::OV2fGeomParam::Sample uv_samp;
+
+	if ( N_type>0 ) {
+		N_samp.setScope( N_type==2 ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
+		N_samp.setVals( AbcGeom::N3fArraySample( (const AbcGeom::N3f *)&g_N[0], g_N.size()/3) );
+	}
+
+	if ( uv_type>0 ) {
+		uv_samp.setScope( uv_type==2 ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
+		uv_samp.setVals( AbcGeom::V2fArraySample( (const AbcGeom::V2f *)&g_uv[0], g_uv.size()/2) );
+	}
+
 	// construct mesh sample
 	//
 	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
 		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_pts.size()/3 ),
 		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_pts_ids.size() ),
-		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_facevtxcounts.size() )
+		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_facevtxcounts.size() ),
+		uv_samp, N_samp
 	);
 
 	_outmesh->getSchema().set(mesh_samp); // export mesh sample
