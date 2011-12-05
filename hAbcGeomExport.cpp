@@ -282,17 +282,21 @@ bool GeoObject::writeSample( float time )
 				h_pUV = gdp->getPointAttribute("uv"),
 				h_vUV = gdp->getVertexAttribute("uv");
 	
-	int	N_type=0,
-		uv_type=0; // 0=none 1=per-pt 2=per-vtx
+	bool	N_pt   = h_pN.isAttributeValid(),
+		N_vtx  = h_vN.isAttributeValid(),
+		uv_pt  = h_pUV.isAttributeValid(),
+		uv_vtx = h_vUV.isAttributeValid(),
+		has_N  = N_pt  || N_vtx,
+		has_uv = uv_pt || uv_vtx;
 
-	if ( h_pN.isAttributeValid() ) N_type=1;
-	if ( h_vN.isAttributeValid() ) N_type=2;
-	if ( h_pUV.isAttributeValid() ) uv_type=1;
-	if ( h_vUV.isAttributeValid() ) uv_type=2;
-
-	bool	has_per_vtx = N_type==2 || uv_type==2;
-
-	DBG << " - ATTRS: N_type=" << N_type << " uv_type=" << uv_type << "\n";
+	DBG	<< " - ATTRS:"
+		<< " has_N:" << has_N
+		<< " N_pt:" << N_pt
+		<< " N_vtx:" << N_vtx
+		<< " has_uv:" << has_uv
+		<< " uv_pt:" << uv_pt
+		<< " uv_vtx:" << uv_vtx
+		<< "\n";
 
 
 	// collect polymesh data
@@ -318,10 +322,12 @@ bool GeoObject::writeSample( float time )
 		g_pts.push_back(P.x());
 		g_pts.push_back(P.y());
 		g_pts.push_back(P.z());
+
+		// collect per-point normals/uvs
+		//
 		UT_Vector3 V;
 
-		if ( N_type==1 ) // collect per-point normals
-		{
+		if ( N_pt ) {
 			h_pN.setElement(pt);
 			V = h_pN.getV3();
 			g_N.push_back(V.x());
@@ -330,8 +336,7 @@ bool GeoObject::writeSample( float time )
 			//DBG << " -- pN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 		}
 
-		if ( uv_type==1 ) // collect per-point uvs
-		{
+		if ( uv_pt ) {
 			h_pUV.setElement(pt);
 			V = h_pUV.getV3();
 			g_uv.push_back(V.x());
@@ -361,23 +366,23 @@ bool GeoObject::writeSample( float time )
 				pt = vtx.getPt();
 				g_pts_ids.push_back( ptmap[pt] );
 
-				if ( N_type==2 )
-				{
+				// collect per-vertex normals/uvs
+				//
+				if ( N_vtx ) {
 					h_vN.setElement(&vtx);
 					V = h_vN.getV3();
 					g_N.push_back(V.x());
 					g_N.push_back(V.y());
 					g_N.push_back(V.z());
-					DBG << " -- vN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+					//DBG << " -- vN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 				}
 
-				if ( uv_type==2 )
-				{
+				if ( uv_vtx ) {
 					h_vUV.setElement(&vtx);
 					V = h_vUV.getV3();
 					g_uv.push_back(V.x());
 					g_uv.push_back(V.y());
-					DBG << " -- vUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+					//DBG << " -- vUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 				}
 			}
 		}
@@ -386,13 +391,13 @@ bool GeoObject::writeSample( float time )
 	AbcGeom::ON3fGeomParam::Sample N_samp;
 	AbcGeom::OV2fGeomParam::Sample uv_samp;
 
-	if ( N_type>0 ) {
-		N_samp.setScope( N_type==2 ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
+	if ( has_N ) {
+		N_samp.setScope( N_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
 		N_samp.setVals( AbcGeom::N3fArraySample( (const AbcGeom::N3f *)&g_N[0], g_N.size()/3) );
 	}
 
-	if ( uv_type>0 ) {
-		uv_samp.setScope( uv_type==2 ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
+	if ( has_uv ) {
+		uv_samp.setScope( uv_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
 		uv_samp.setVals( AbcGeom::V2fArraySample( (const AbcGeom::V2f *)&g_uv[0], g_uv.size()/2) );
 	}
 
