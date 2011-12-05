@@ -401,12 +401,12 @@ bool GeoObject::writeSample( float time )
 	AbcGeom::OV2fGeomParam::Sample uv_samp;
 
 	if ( has_N ) {
-		N_samp.setScope( N_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
+		N_samp.setScope( N_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
 		N_samp.setVals( AbcGeom::N3fArraySample( (const AbcGeom::N3f *)&g_N[0], g_N.size()/3) );
 	}
 
 	if ( has_uv ) {
-		uv_samp.setScope( uv_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVaryingScope );
+		uv_samp.setScope( uv_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
 		uv_samp.setVals( AbcGeom::V2fArraySample( (const AbcGeom::V2f *)&g_uv[0], g_uv.size()/2) );
 	}
 
