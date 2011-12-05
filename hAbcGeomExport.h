@@ -187,6 +187,7 @@ namespace HDK_Sample
 		float				_start_time;
 		float				_end_time;
 		int				_num_frames;
+		float				_t_step;
 
 		std::string			_objpath;
 		std::string			_abcfile;
