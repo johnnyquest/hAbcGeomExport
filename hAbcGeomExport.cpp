@@ -214,8 +214,14 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 	_xform = new Alembic::AbcGeom::OXform(
 		_parent ? *(_parent->_xform) : _oarchive->getTop(),
 		_name, _ts);
-	
-	_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
+
+	if (_op_obj->getObjectType()==OBJ_GEOMETRY ) {
+		DBG << " --- geometry\n";
+		_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
+	} else {
+		DBG << " --- empty xform\n";
+		_outmesh = 0;
+	}
 }
 
 
@@ -244,7 +250,6 @@ bool GeoObject::writeSample( float time )
 	DBG << "writeSample() " << _path << " @ " << time << "\n";
 	assert(_op_sop && "no SOP node");
 	assert(_xform && "no abc output xform");
-	assert(_outmesh && "no abc outmesh");
 
 	OP_Context ctx(time);
 
@@ -265,6 +270,11 @@ bool GeoObject::writeSample( float time )
 	xform_samp.setMatrix(mtx);
 
 	_xform->getSchema().set(xform_samp); // export xform sample
+
+	if ( _outmesh==0 ) {
+		DBG << " --- (writing empty xform)\n";
+		return true;
+	}
 
 
 	// * geom sample *
