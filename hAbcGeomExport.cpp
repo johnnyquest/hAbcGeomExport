@@ -353,10 +353,32 @@ bool GeoObject::writeSample( float time )
 		{
 			int num_verts = prim->getVertexCount();
 			g_facevtxcounts.push_back(num_verts);
+			UT_Vector3 V;
 
-			for(int v=0; v<num_verts; ++v) {
-				pt = prim->getVertex(v).getPt();
+			for(int v=0; v<num_verts; ++v)
+			{
+				GEO_Vertex const & vtx = prim->getVertex(v);
+				pt = vtx.getPt();
 				g_pts_ids.push_back( ptmap[pt] );
+
+				if ( N_type==2 )
+				{
+					h_vN.setElement(&vtx);
+					V = h_vN.getV3();
+					g_N.push_back(V.x());
+					g_N.push_back(V.y());
+					g_N.push_back(V.z());
+					DBG << " -- vN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+				}
+
+				if ( uv_type==2 )
+				{
+					h_vUV.setElement(&vtx);
+					V = h_vUV.getV3();
+					g_uv.push_back(V.x());
+					g_uv.push_back(V.y());
+					DBG << " -- vUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+				}
 			}
 		}
 	}
