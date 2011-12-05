@@ -14,8 +14,10 @@
 
 */
 
-#include "hAbcGeomExport.h"
+#define PLUGIN_VERSION_STR "0.02"
 
+
+#include "hAbcGeomExport.h"
 
 #include <cassert>
 
@@ -48,11 +50,8 @@ namespace Abc = Alembic::Abc;
 namespace AbcGeom = Alembic::AbcGeom;
 
 
-// always-debug for now, TODO: remove this
-#undef NDEBUG
 
-
-#ifndef NDEBUG
+#ifdef _DEBUG
 #define DBG if (true) std::cerr << "[hAbcGeomExport.cpp]: "
 #define dbg if (true) std::cerr
 #else
@@ -62,7 +61,7 @@ namespace AbcGeom = Alembic::AbcGeom;
 
 
 using namespace std;
-using namespace HDK_Sample;
+using namespace HDK_AbcExportSimple;
 
 
 
@@ -196,7 +195,7 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 	assert(_op_sop && "no SOP node");
 
 	_op_obj = (OBJ_Node *) obj_node; // TODO: make sure this is an OBJ_Node!
-	
+
 	DBG << "   -- " << _path << " (" << _name << "): " << _sopname << "\n";
 
 	assert(_oarchive && "no oarchive given");
@@ -609,15 +608,15 @@ void newDriverOperator(OP_OperatorTable * table)
 	// print the regular startup message to stderr
 	//
 	std::cerr
-		<< "** hAbcGeomExport ROP 0.01 ** (compiled "
+		<< "** hAbcGeomExport ROP " PLUGIN_VERSION_STR " ** (compiled "
 		<< __DATE__ << ", " << __TIME__ << ") "
-#ifdef NDEBUG
+#ifndef _DEBUG
 		<< "release build"
-#endif
-#ifdef DEBUG
+#else
 		<< "DEBUG build"
 #endif
 		<< "\n";
 }
 
+#undef PLUGIN_VERSION_STR
 

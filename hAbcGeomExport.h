@@ -34,13 +34,10 @@
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
 
+#include <boost/shared_ptr.hpp>
 #include <vector>
 #include <string>
 #include <map>
-
-#include <boost/shared_ptr.hpp>
-
-
 
 
 
@@ -61,7 +58,7 @@
 class OP_TemplatePair;
 class OP_VariablePair;
 
-namespace HDK_Sample
+namespace HDK_AbcExportSimple
 {
 	/**		Class for storing all related stuff about an object to be exported.
 
