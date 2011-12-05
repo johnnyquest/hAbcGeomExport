@@ -3,14 +3,18 @@
 		@author		Imre Tuske
 		@since		2011-11-29
 
+		@brief		Alembic Geometry Export ROP (implementation).
 
+		Based on a HDK ROP example and the Maya Alembic export code
+		by Lucas Miller.
 
-		Run the command
-			
-			hcustom hAbcGeomExport.cpp
+@todo
+		Figure out how to do proper debug/release builds with hcustom!
 
-		to build.
-
+@todo
+		If/when implementing primgroups-to-facesets functionality,
+		make sure it behaves symmetrically with the importer (ie.
+		primitive groups will be re-created on import).
 
 */
 
