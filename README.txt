@@ -62,6 +62,12 @@ for testing, see
 is a quick hack, try to avoid that--compile with the exact same lib
 versions, or go for full static linking, if possible (?) )
 
+To build testing/example hip files, go to the ./data folder in a shell and
+type
+	./hip_build.sh
+
+This will build .hip files from their extracted versions.
+
 
 
 
