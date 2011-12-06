@@ -56,10 +56,10 @@ namespace AbcGeom = Alembic::AbcGeom;
 
 
 #ifdef _DEBUG
-#define DBG if (true) std::cerr << "[hAbcGeomExport.cpp]: "
+#define DBG if (true) std::cerr << "[hAbcGeomExport.cpp " << __LINE__ << "]: "
 #define dbg if (true) std::cerr
 #else
-#define DBG if (false) std::cerr << "[hAbcGeomExport.cpp]: "
+#define DBG if (false) std::cerr
 #define dbg if (false) std::cerr
 #endif
 
@@ -184,10 +184,8 @@ hAbcGeomExport::~hAbcGeomExport()
 */
 GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 : _parent(parent)
-//, _op_obj( (OBJ_Node *) obj_node) // TODO: make sure this is an OBJ_Node!
 , _op_sop( (SOP_Node *) ((OBJ_Node *)obj_node)->getRenderSopPtr() )
 , _name( obj_node->getName() )
-//, _path( obj_node->getPath() )
 , _sopname( _op_sop->getName() )
 , _xform(0)
 , _outmesh(0)
@@ -195,34 +193,26 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 	UT_String s; obj_node->getFullPath(s);
 	_path = s.toStdString();
 
-	DBG << " --- GeoObject() " << _path << "\n";
+	// TODO: make sure this is an OBJ_Node!
+	_op_obj = (OBJ_Node *) obj_node;
 	assert(_op_sop && "no SOP node");
 
-	_op_obj = (OBJ_Node *) obj_node; // TODO: make sure this is an OBJ_Node!
-
-	DBG << "   -- " << _path << " (" << _name << "): " << _sopname << "\n";
+	dbg << "(" << _path << "): " << _sopname;
 
 	assert(_oarchive && "no oarchive given");
 	assert(_ts && "no timesampling given");
-/*
-	Alembic::AbcGeom::OObject *p =
-		_parent  ?  _parent->_xform
-		:  &_oarchive->getTop();
 
-	DBG << " --- parent " << p << " (" << parent << ")\n";
-	assert(p && "no valid parent found");
-	
-	_xform = new Alembic::AbcGeom::OXform(*p, _name, _ts);
-*/
 	_xform = new Alembic::AbcGeom::OXform(
 		_parent ? *(_parent->_xform) : _oarchive->getTop(),
 		_name, _ts);
 
 	if (_op_obj->getObjectType()==OBJ_GEOMETRY ) {
 		DBG << " --- geometry\n";
+		dbg << " [GEO]";
 		_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
-	} else {
-		DBG << " --- empty xform\n";
+	}
+	else {
+		dbg << " [NULL]";
 		_outmesh = 0;
 	}
 }
@@ -250,8 +240,8 @@ GeoObject::~GeoObject()
 */
 bool GeoObject::writeSample( float time )
 {
-	DBG << "writeSample() " << _path << " @ " << time << "\n";
 	assert(_op_sop && "no SOP node");
+	dbg << "sample for " << _path << " @ " << time << ": ";
 	assert(_xform && "no abc output xform");
 
 	OP_Context ctx(time);
@@ -275,13 +265,15 @@ bool GeoObject::writeSample( float time )
 	_xform->getSchema().set(xform_samp); // export xform sample
 
 	if ( _outmesh==0 ) {
-		DBG << " --- (writing empty xform)\n";
+		dbg << "null/xform\n";
 		return true;
 	}
 
 
 	// * geom sample *
 	//
+	dbg << "GEO\n";
+
 	GU_DetailHandle gdh = _op_sop->getCookedGeoHandle(ctx);
 	GU_DetailHandleAutoReadLock gdl(gdh);
 	const GU_Detail *gdp = gdl.getGdp();
@@ -435,17 +427,27 @@ bool GeoObject::writeSample( float time )
 
 /**		Collect all objects to be exported (including all children).
 */
-void collect_geo_objs( GeoObjects & objects, OP_Node *node, GeoObject *parent=0 )
+void collect_geo_objs(
+	GeoObjects &	objects,
+	OP_Node *	node,
+	GeoObject *	parent=0,
+	int		depth=1
+)
 {
-	if (objects.size()==0) DBG << "collect_geo_objs()\n";
-	DBG << " -- " << node->getName() << "\n";
+	if (objects.size()==0)
+		DBG << "Collecting object(s) to export\n";
+
+	DBG << " | " << string(depth, '-') << " " << node->getName() << " ";
 
 	boost::shared_ptr<GeoObject> obj( new GeoObject(node, parent) );
 	objects.push_back(obj);
+
+	int m = node->nOutputs();
+	if (m>0) dbg << " c:" << m;
+	dbg << "\n";
 	
-	for( int i=0, m=node->nOutputs();  i<m;  ++i ) {
-		DBG << i << " (parent will be " << obj.get() << ")\n";
-		collect_geo_objs(objects, node->getOutput(i), obj.get());
+	for( int i=0; i<m; ++i ) {
+		collect_geo_objs(objects, node->getOutput(i), obj.get(), depth+1);
 	}
 }
 
@@ -542,7 +544,7 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
 	{
 		char const *obj_name = (*i)->pathname();
 
-		DBG << " - " << obj_name << "\n";
+		DBG << "- " << obj_name << ": ";
 		bool r = (*i)->writeSample(time);
 
 		if (!r) {

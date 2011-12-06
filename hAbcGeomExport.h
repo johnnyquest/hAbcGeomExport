@@ -73,20 +73,22 @@ namespace HDK_AbcExportSimple
 
 
 	private:
+		/// output archive 'stream' to work in
 		static Alembic::AbcGeom::OArchive *
-						_oarchive;	// oarchive 'stream' to work in
-		static Alembic::AbcGeom::TimeSamplingPtr
-						_ts;		// time-sampling specs (boost shared_ptr)
+						_oarchive;
 
+		/// time-sampling spec (boost shared_ptr)
+		static Alembic::AbcGeom::TimeSamplingPtr
+						_ts;
 	private:
-		GeoObject *			_parent;	// hierarchy parent
-		OBJ_Node *			_op_obj;	// geometry xform
-		SOP_Node *			_op_sop;	// SOP node to export
-		std::string			_name;		// obj (xform) name
-		std::string			_path;		// obj full path
-		std::string			_sopname;	// SOP name
-		Alembic::AbcGeom::OXform *	_xform;		// output xform obj
-		Alembic::AbcGeom::OPolyMesh *	_outmesh;	// output polymesh obj
+		GeoObject *			_parent;	///< hierarchy parent
+		OBJ_Node *			_op_obj;	///< geometry xform node
+		SOP_Node *			_op_sop;	///< SOP node to export
+		std::string			_name;		///< obj (xform) name
+		std::string			_path;		///< obj full path
+		std::string			_sopname;	///< SOP name
+		Alembic::AbcGeom::OXform *	_xform;		///< output xform obj
+		Alembic::AbcGeom::OPolyMesh *	_outmesh;	///< output polymesh obj
 	};
 
 
@@ -101,44 +103,22 @@ namespace HDK_AbcExportSimple
 	class hAbcGeomExport : public ROP_Node
 	{
 	public:
-
-		/// Provides access to our parm templates.
-		static OP_TemplatePair *getTemplatePair();
-
-		/// Provides access to our variables.
-		static OP_VariablePair *getVariablePair();
+		static OP_TemplatePair *getTemplatePair();	///< Provides access to our parm templates.
+		static OP_VariablePair *getVariablePair();	///< Provides access to our variables.
 
 		/// Creates an instance of this node.
-		static OP_Node *myConstructor(OP_Network * net, const char *name, OP_Operator * op);
+		static OP_Node *myConstructor(OP_Network *net, const char *name, OP_Operator *op);
 
 	protected:
-		  hAbcGeomExport(OP_Network * net, const char *name, OP_Operator * entry);
-		  
-		  virtual ~hAbcGeomExport();
+		hAbcGeomExport(OP_Network * net, const char *name, OP_Operator * entry);
+		virtual ~hAbcGeomExport();
 
-		/// Called at the beginning of rendering to perform any intialization 
-		/// necessary.
-		/// @param  nframes     Number of frames being rendered.
-		/// @param  s           Start time, in seconds.
-		/// @param  e           End time, in seconds.
-		/// @return             True of success, false on failure (aborts the render).
-		virtual int startRender( int nframes, float s, float e );
-
-		/// Called once for every frame that is rendered.
-		/// @param  time        The time to render at.
-		/// @param  boss        Interrupt handler.
-		/// @return             Return a status code indicating whether to abort the
-		///                     render, continue, or retry the current frame.
-		virtual ROP_RENDER_CODE renderFrame( float time, UT_Interrupt * boss );
-
-		/// Called after the rendering is done to perform any post-rendering steps
-		/// required.
-		/// @return             Return a status code indicating whether to abort the
-		///                     render, continue, or retry.
-		virtual ROP_RENDER_CODE endRender();
+		virtual int			startRender( int nframes, float s, float e );
+		virtual ROP_RENDER_CODE		renderFrame( float time, UT_Interrupt * boss );
+		virtual ROP_RENDER_CODE		endRender();
 
 	public:
-		/// A convenience method to evaluate our custom file parameter.
+		/// Cnvenience method to evaluate a string parameter.
 
 		inline void get_str_parm( char const *parm, float t, UT_String & out )
 		{
@@ -152,29 +132,25 @@ namespace HDK_AbcExportSimple
 		}
 
 	private:
-		static int *			ifdIndirect;
-
+		static int *		ifdIndirect;
 	private:
-		bool				export_geom(
-							char const *sopname,
-							SOP_Node *sop,
-							float time
-						);
-
+		bool			export_geom(
+						char const *sopname,
+						SOP_Node *sop,
+						float time
+					);
 	private:
+		float			_start_time;		///< start time (in secs)
+		float			_end_time;		///< end time (in secs)
+		int			_num_frames;		///< no. of frames to export
+		float			_t_step;		///< time step (usually 1/FPS or 1/24)
 
-		float				_start_time;
-		float				_end_time;
-		int				_num_frames;
-		float				_t_step;
-
-		std::string			_objpath;
-		std::string			_abcfile;
-
-		Alembic::AbcGeom::OArchive *		_oarchive;
-		Alembic::AbcGeom::TimeSamplingPtr	_ts;
+		std::string		_objpath;		///< name of root object to export
+		std::string		_abcfile;		///< output file name
 
 		GeoObjects				_objs;
+		Alembic::AbcGeom::OArchive *		_oarchive;
+		Alembic::AbcGeom::TimeSamplingPtr	_ts;
 	};
 
 }				// End HDK_Sample namespace
