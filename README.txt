@@ -19,8 +19,18 @@ The exported objects will be either polymeshes (for OBJ_Nodes containing
 polygon data) or empty transforms (for everything else).
 
 For more information, see the github repository (especially the issues
-section). Also: "feedback is silver, contribution is gold" -- if you
+section). Also "feedback is silver, contribution is gold" -- if you
 find a bug, good for you, if you can fix it, good for all of us ;)
+
+
+
+IMPORTANT WINDOWS-RELATED NOTE
+------------------------------
+
+I cannot and WILL NOT build this thing under windows as for me all windows-
+related build procedures turn out nothing but pure frustration. However since
+we'd like to use this on windows, too, I'd really appreciate if someone could
+put together an MSVC++ project file, or something to that effect. Thanks!
 
 
 
