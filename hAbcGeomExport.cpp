@@ -186,7 +186,7 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 : _parent(parent)
 , _op_sop( (SOP_Node *) ((OBJ_Node *)obj_node)->getRenderSopPtr() )
 , _name( obj_node->getName() )
-, _sopname( _op_sop->getName() )
+, _sopname( _op_sop ? _op_sop->getName() : "<no SOP>" )
 , _xform(0)
 , _outmesh(0)
 {
@@ -195,7 +195,6 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 
 	// TODO: make sure this is an OBJ_Node!
 	_op_obj = (OBJ_Node *) obj_node;
-	assert(_op_sop && "no SOP node");
 
 	dbg << "(" << _path << "): " << _sopname;
 
@@ -206,8 +205,8 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 		_parent ? *(_parent->_xform) : _oarchive->getTop(),
 		_name, _ts);
 
-	if (_op_obj->getObjectType()==OBJ_GEOMETRY ) {
-		DBG << " --- geometry\n";
+	if ( _op_obj->getObjectType()==OBJ_GEOMETRY  && _op_sop )
+	{
 		dbg << " [GEO]";
 		_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
 	}
@@ -240,7 +239,6 @@ GeoObject::~GeoObject()
 */
 bool GeoObject::writeSample( float time )
 {
-	assert(_op_sop && "no SOP node");
 	dbg << "sample for " << _path << " @ " << time << ": ";
 	assert(_xform && "no abc output xform");
 
