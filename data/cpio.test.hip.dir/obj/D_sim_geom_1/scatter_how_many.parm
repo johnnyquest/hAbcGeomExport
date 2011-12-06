@@ -1,0 +1,20 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+keep	[ 0	locks=0 ]	(	"off"	)
+ptsperarea	[ 0	locks=0 ]	(	"off"	)
+npts	[ 0	locks=0 ]	(	80	)
+nptsperarea	[ 0	locks=0 ]	(	10	)
+usedensity	[ 0	locks=0 ]	(	"on"	)
+seed	[ 0	locks=0 ]	(	0	)
+area	[ 0	locks=0 ]	(	"on"	)
+attrib	[ 0	locks=0 ]	(	""	)
+blend	[ 0	locks=0 ]	(	lerp	)
+bias	[ 0	locks=0 ]	(	0.5	)
+donear	[ 0	locks=0 ]	(	off	)
+nearcount	[ 0	locks=0 ]	(	4	)
+nearname	[ 0	locks=0 ]	(	ptarea	)
+dogroup	[ 0	locks=0 ]	(	"off"	)
+sgroup	[ 0	locks=0 ]	(	scatter	)
+intattrib	[ 0	locks=0 ]	(	"off"	)
+}

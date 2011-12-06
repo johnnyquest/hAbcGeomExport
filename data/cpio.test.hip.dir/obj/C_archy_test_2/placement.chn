@@ -1,0 +1,32 @@
+{
+    channel tx {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 1.9583333730697632 accel = 0.652778 0.652778 expr = bezier() }
+      segment { length = 0 accel = 0.333333 0.333333 expr = bezier() }
+    }
+    channel ty {
+      lefttype = extend
+      righttype = extend
+      default = 0.25
+      flags = 0
+      segment { length = 1.9583333730697632 value = 0.25 0 accel = 0.652778 0.652778 expr = bezier() }
+      segment { length = 0 value = 0 0.25 accel = 0.333333 0.333333 expr = bezier() }
+    }
+    channel tz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 1.9583333730697632 value = 0.25 0 accel = 0.652778 0.652778 expr = bezier() }
+      segment { length = 0 value = 0 0.25 accel = 0.333333 0.333333 expr = bezier() }
+    }
+    channel ry {
+      lefttype = extend
+      righttype = extend
+      default = -180
+      flags = 0
+      segment { length = 1.9583333730697632 value = 360 0 accel = 0.652778 0.652778 expr = bezier() }
+      segment { length = 0 value = 0 360 accel = 0.333333 0.333333 expr = bezier() }
+    }
+  }

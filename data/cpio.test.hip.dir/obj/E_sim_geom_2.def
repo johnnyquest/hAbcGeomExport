@@ -1,0 +1,21 @@
+objflags objflags =  origin off
+pretransform UT_DMatrix4 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+comment "RBD simulation
+"
+position 1.08897 13.2678
+cachesize 1
+flags =  lock off model off template off footprint off xray off bypass off display on render off highlight off unload off savedata off compress off exposed on selectable on
+inputs
+{
+}
+stat
+{
+  create 1323134899
+  modify 1323136215
+  author tusi@demeisen
+  access 0777
+}
+color UT_Color RGB 0.8 0.8 0.8 
+delscript ""
+exprlanguage hscript
+end

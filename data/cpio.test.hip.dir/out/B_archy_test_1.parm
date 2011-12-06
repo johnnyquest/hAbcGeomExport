@@ -1,0 +1,22 @@
+{
+version 0.8
+execute	[ 0	locks=0 ]	(	0	)
+renderdialog	[ 0	locks=0 ]	(	0	)
+trange	[ 0	locks=0 ]	(	"on"	)
+f	[ 0	locks=0 ]	(	1	48	1	)
+take	[ 0	locks=0 ]	(	_current_	)
+objpath	[ 0	locks=0 ]	(	/obj/B_archy_test_1/B_archy_test	)
+abcoutput	[ 0	locks=0 ]	(	$HIP/$OS.abc	)
+tprerender	[ 0	locks=0 ]	(	"on"	)
+prerender	[ 0	locks=0 ]	(	""	)
+lprerender	[ 0	locks=0 ]	(	hscript	)
+tpreframe	[ 0	locks=0 ]	(	"on"	)
+preframe	[ 0	locks=0 ]	(	""	)
+lpreframe	[ 0	locks=0 ]	(	hscript	)
+tpostframe	[ 0	locks=0 ]	(	"on"	)
+postframe	[ 0	locks=0 ]	(	""	)
+lpostframe	[ 0	locks=0 ]	(	hscript	)
+tpostrender	[ 0	locks=0 ]	(	"on"	)
+postrender	[ 0	locks=0 ]	(	""	)
+lpostrender	[ 0	locks=0 ]	(	hscript	)
+}

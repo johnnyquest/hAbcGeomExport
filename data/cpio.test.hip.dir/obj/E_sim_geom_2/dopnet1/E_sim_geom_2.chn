@@ -1,0 +1,68 @@
+{
+    channel px {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { options = {	   untie  is os ia oa }
+
+	 length = 0 expr = "obj = hou.node(hou.parm(\"soppath\").eval())
+dopnet = hou.pwd().creator()
+if dopnet and dopnet.type().category() != hou.objNodeTypeCategory():
+    dopnet = None
+if obj is None:
+    return 0
+if obj.type().category() != hou.objNodeTypeCategory():
+    obj = obj.creator()
+p = hou.Vector3(obj.parm(\"px\").eval(),
+                obj.parm(\"py\").eval(),
+                obj.parm(\"pz\").eval())
+tp = p * obj.worldTransform()
+if dopnet is not None:
+    tp = tp * dopnet.worldTransform().inverted()
+return tp[0]" language = python }
+    }
+    channel py {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { options = {	   untie  is os ia oa }
+
+	 length = 0 expr = "obj = hou.node(hou.parm(\"soppath\").eval())
+dopnet = hou.pwd().creator()
+if dopnet and dopnet.type().category() != hou.objNodeTypeCategory():
+    dopnet = None
+if obj is None:
+    return 0
+if obj.type().category() != hou.objNodeTypeCategory():
+    obj = obj.creator()
+p = hou.Vector3(obj.parm(\"px\").eval(),
+                obj.parm(\"py\").eval(),
+                obj.parm(\"pz\").eval())
+tp = p * obj.worldTransform()
+if dopnet is not None:
+    tp = tp * dopnet.worldTransform().inverted()
+return tp[1]" language = python }
+    }
+    channel pz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { options = {	   untie  is os ia oa }
+
+	 length = 0 expr = "obj = hou.node(hou.parm(\"soppath\").eval())
+dopnet = hou.pwd().creator()
+if dopnet and dopnet.type().category() != hou.objNodeTypeCategory():
+    dopnet = None
+if obj is None:
+    return 0
+if obj.type().category() != hou.objNodeTypeCategory():
+    obj = obj.creator()
+p = hou.Vector3(obj.parm(\"px\").eval(),
+                obj.parm(\"py\").eval(),
+                obj.parm(\"pz\").eval())
+tp = p * obj.worldTransform()
+if dopnet is not None:
+    tp = tp * dopnet.worldTransform().inverted()
+return tp[2]" language = python }
+    }
+  }

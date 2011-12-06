@@ -1,0 +1,17 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+prenml	[ 0	locks=0 ]	(	"off"	)
+unit	[ 0	locks=0 ]	(	"off"	)
+unique	[ 0	locks=0 ]	(	"off"	)
+cons	[ 0	locks=0 ]	(	"none"	)
+dist	[ 0	locks=0 ]	(	0.00100000005	)
+inline	[ 0	locks=0 ]	(	"off"	)
+inlinedist	[ 0	locks=0 ]	(	0.00100000005	)
+orientPolys	[ 0	locks=0 ]	(	"off"	)
+cusp	[ 0	locks=0 ]	(	"off"	)
+angle	[ 0	locks=0 ]	(	20	)
+remove	[ 0	locks=0 ]	(	"off"	)
+mkplanar	[ 0	locks=0 ]	(	"off"	)
+postnml	[ 0	locks=0 ]	(	"on"	)
+}

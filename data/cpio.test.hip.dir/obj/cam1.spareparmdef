@@ -1,0 +1,390 @@
+    group {
+	name	"stdswitcher3"
+	label	"Transform"
+
+	parm {
+	    name	"keeppos"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"pre_xform"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"xOrd"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"rOrd"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"t"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"r"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"s"
+	    baseparm
+	    invisible
+	    export	none
+	}
+	parm {
+	    name	"p"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"scale"
+	    baseparm
+	    invisible
+	    export	none
+	}
+	parm {
+	    name	"lookatpath"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"lookup"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"pathobjpath"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"roll"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"pos"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"uparmtype"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"pathorient"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"up"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"bank"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"stdswitcher3_1"
+	label	"Render"
+
+	parm {
+	    name	"tdisplay"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"display"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"use_dcolor"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"dcolor"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"picking"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"pickscript"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"caching"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"stdswitcher3_2"
+	label	"View"
+
+	parm {
+	    name	"iconscale"
+	    label	"Icon Scale"
+	    type	float
+	    default	{ "1" }
+	    range	{ 0.001 10 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"res"
+	    label	"Resolution"
+	    type	intvector2
+	    joinnext
+	    size	2
+	    default	{ "640" "480" }
+	    range	{ -1 1 }
+	    export	none
+	    parmtag	{ "cook_dependent" "1" }
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"resMenu"
+	    label	"Choose Resolution"
+	    type	button
+	    nolabel
+	    default	{ "0" }
+	    menumini	{
+		[ "echo `pythonexprs(\"__import__('toolutils').parseDialogScriptMenu('FBres')\")`" ]
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	    parmtag	{ "script_callback" "opparm . res ( `arg(\"$script_value\", 0)` `arg(\"$script_value\", 1)` aspect ( `arg(\"$script_value\", 2)` )" }
+	}
+	parm {
+	    name	"aspect"
+	    label	"Pixel Aspect Ratio"
+	    type	float
+	    default	{ "1" }
+	    range	{ 0.05 2 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"projection"
+	    label	"Projection"
+	    type	ordinal
+	    default	{ "perspective" }
+	    menu	{
+		"perspective"	"Perspective"
+		"ortho"	"Orthographic"
+		"sphere"	"Polar (panoramic)"
+		"cylinder"	"Cylindrical (panoramic)"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"focal"
+	    label	"Focal Length"
+	    type	float
+	    joinnext
+	    default	{ "50" }
+	    range	{ 1 100 }
+	    export	none
+	}
+	parm {
+	    name	"focalunits"
+	    label	"Focal Units"
+	    type	string
+	    default	{ "mm" }
+	    menu	{
+		"mm"	"millimeters"
+		"m"	"meters"
+		"nm"	"nanometers"
+		"in"	"inches"
+		"ft"	"feet"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"aperture"
+	    label	"Aperture"
+	    type	float
+	    default	{ "41.2136" }
+	    range	{ 1 100 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"orthowidth"
+	    label	"Ortho Width"
+	    type	float
+	    default	{ "2" }
+	    disablewhen	"{ projection != ortho }"
+	    range	{ 0.001 10 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"near"
+	    label	"Near Clipping"
+	    type	float
+	    default	{ "0.001" }
+	    range	{ 0 10 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"far"
+	    label	"Far Clipping"
+	    type	float
+	    default	{ "10000" }
+	    range	{ 1 10000 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"vm_bgenable"
+	    label	"Enable Background Image"
+	    type	toggle
+	    default	{ "1" }
+	    help	"Enable background image"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"vm_background"
+	    label	"Background Image"
+	    type	file
+	    default	{ "" }
+	    help	"An map image used to set the background color on primary rays (may be a deep camera/shadow map)."
+	    disablewhen	"{ vm_bgenable == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "filechooser_mode" "read" }
+	    parmtag	{ "spare_category" "View" }
+	}
+	parm {
+	    name	"win"
+	    label	"Screen Window X/Y"
+	    type	vector2
+	    size	2
+	    default	{ "0" "0" }
+	    range	{ -1 1 }
+	    export	none
+	}
+	parm {
+	    name	"winsize"
+	    label	"Screen Window Size"
+	    type	vector2
+	    size	2
+	    default	{ "1" "1" }
+	    range	{ 0.01 10 }
+	    export	none
+	}
+	parm {
+	    name	"cropl"
+	    label	"Left Crop"
+	    type	float
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"cropr"
+	    label	"Right Crop"
+	    type	float
+	    default	{ "1" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"cropb"
+	    label	"Bottom Crop"
+	    type	float
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"cropt"
+	    label	"Top Crop"
+	    type	float
+	    default	{ "1" }
+	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    group {
+	name	"stdswitcher3_3"
+	label	"Sampling"
+
+	parm {
+	    name	"shutter"
+	    label	"Shutter Time"
+	    type	float
+	    default	{ "0.5" }
+	    disablewhen	"{ allowmotionblur == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "spare_category" "Sampling" }
+	}
+	parm {
+	    name	"focus"
+	    label	"Focus Distance"
+	    type	float
+	    default	{ "5" }
+	    disablewhen	"{ vm_dof == 0 }"
+	    range	{ 0.001 1000 }
+	    export	none
+	    parmtag	{ "spare_category" "Sampling" }
+	}
+	parm {
+	    name	"fstop"
+	    label	"F-Stop"
+	    type	float
+	    default	{ "5.6" }
+	    disablewhen	"{ vm_dof == 0 }"
+	    range	{ 1.4 22 }
+	    export	none
+	    parmtag	{ "spare_category" "Sampling" }
+	}
+	parm {
+	    name	"vm_bokeh"
+	    label	"Bokeh"
+	    type	string
+	    default	{ "radial" }
+	    menureplace	{
+		"radial"	"Radial Bokeh"
+		"box"	"Box Filter Bokeh"
+		"null"	"Disable Bokeh"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "spare_category" "Sampling" }
+	}
+    }
+

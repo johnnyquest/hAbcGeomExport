@@ -1,0 +1,10 @@
+{
+    channel blend1 {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 1.9583333730697632 value = 1 0 accel = 0.652778 0.652778 expr = bezier() }
+      segment { length = 0 value = 0 1 accel = 0.333333 0.333333 expr = bezier() }
+    }
+  }

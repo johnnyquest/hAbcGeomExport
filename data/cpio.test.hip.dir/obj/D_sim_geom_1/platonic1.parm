@@ -1,0 +1,7 @@
+{
+version 0.8
+type	[ 0	locks=0 ]	(	6	)
+orient	[ 0	locks=0 ]	(	"y"	)
+radius	[ 0	locks=0 ]	(	4	)
+t	[ 8	locks=0 ]	(	0	[ t2	2 ] 	0	)
+}

@@ -1,0 +1,470 @@
+    group {
+	name	"stdswitcher5"
+	label	"Transform"
+
+	parm {
+	    name	"keeppos"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"pre_xform"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"xOrd"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"rOrd"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"t"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"r"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"s"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"p"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"scale"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"lookatpath"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"lookup"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"pathobjpath"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"roll"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"pos"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"uparmtype"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"pathorient"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"up"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"bank"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"stdswitcher5_1"
+	label	"Material"
+
+	parm {
+	    name	"shop_materialpath"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"shop_materialopts"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"stdswitcher5_2"
+	label	"Render"
+
+	parm {
+	    name	"tdisplay"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"display"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"vm_phantom"
+	    label	"Phantom"
+	    type	toggle
+	    default	{ "0" }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "spare_category" "Render" }
+	}
+	parm {
+	    name	"vm_renderable"
+	    label	"Renderable"
+	    type	toggle
+	    default	{ "1" }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "spare_category" "Render" }
+	}
+	group {
+	    name	"folder0"
+	    label	"Shading"
+
+	    parm {
+		name	"categories"
+		label	"Categories"
+		type	string
+		default	{ "" }
+		help	"A list of tags which can be used to select the object"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"reflectmask"
+		label	"Reflection Mask"
+		type	oplist
+		default	{ "*" }
+		help	"Objects that will be reflected on this object."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "oprelative" "/obj" }
+		parmtag	{ "opfilter" "!!OBJ/GEOMETRY!!" }
+		parmtag	{ "spare_category" "Shading" }
+		parmtag	{ "opexpand" "1" }
+	    }
+	    parm {
+		name	"refractmask"
+		label	"Refraction Mask"
+		type	oplist
+		default	{ "*" }
+		help	"Objects that will be refracted on this object."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "oprelative" "/obj" }
+		parmtag	{ "opfilter" "!!OBJ/GEOMETRY!!" }
+		parmtag	{ "spare_category" "Shading" }
+		parmtag	{ "opexpand" "1" }
+	    }
+	    parm {
+		name	"lightmask"
+		label	"Light Mask"
+		type	oplist
+		default	{ "*" }
+		help	"Lights that illuminate this object."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "oprelative" "/obj" }
+		parmtag	{ "opfilter" "!!OBJ/LIGHT!!" }
+		parmtag	{ "spare_category" "Shading" }
+		parmtag	{ "opexpand" "1" }
+	    }
+	    parm {
+		name	"vm_volumefilter"
+		label	"Volume Filter"
+		type	string
+		default	{ "gaussian" }
+		menu	{
+		    "box"	"Box Filter"
+		    "gaussian"	"Gaussian"
+		    "bartlett"	"Bartlett (triangle)"
+		    "catrom"	"Catmull-Rom"
+		    "hanning"	"Hanning"
+		    "blackman"	"Blackman"
+		    "sinc"	"Sinc (sharpening)"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_volumefilterwidth"
+		label	"Volume Filter Width"
+		type	float
+		default	{ "1.5" }
+		range	{ 0.001 5 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_matte"
+		label	"Matte shading"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_rayshade"
+		label	"Raytrace Shading"
+		type	toggle
+		default	{ "0" }
+		help	"Shade every sample rather than shading micropolygon vertices.  This setting enables the raytrace rendering engine on a per-object basis."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	}
+
+	group {
+	    name	"folder0_1"
+	    label	"Sampling"
+
+	    parm {
+		name	"geo_velocityblur"
+		label	"Geometry Velocity Blur"
+		type	toggle
+		default	{ "0" }
+		disablewhen	"{ allowmotionblur == 0 }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	}
+
+	group {
+	    name	"folder0_2"
+	    label	"Dicing"
+
+	    parm {
+		name	"vm_shadingquality"
+		label	"Shading Quality"
+		type	float
+		default	{ "1" }
+		disablewhen	"{ vm_renderengine != micropoly vm_renderengine != pbrmicropoly }"
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_rayshadingquality"
+		label	"Ray Shading Quality"
+		type	float
+		default	{ "1" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_flatness"
+		label	"Dicing Flatness"
+		type	float
+		default	{ "0.05" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_raypredice"
+		label	"Ray Predicing"
+		type	integer
+		default	{ "0" }
+		menu	{
+		    "off"	"Disable Predicing"
+		    "on"	"Full Predicing"
+		    "bounds"	"Precompute Bounds"
+		}
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_curvesurface"
+		label	"Shade Curves As Surfaces"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	}
+
+	group {
+	    name	"folder0_3"
+	    label	"Geometry"
+
+	    parm {
+		name	"vm_rmbackface"
+		label	"Backface Removal (Mantra)"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"shop_geometrypath"
+		label	"Procedural Shader"
+		type	oppath
+		default	{ "" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "oprelative" "." }
+		parmtag	{ "opfilter" "!!SHOP/GEOMETRY!!" }
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_forcegeometry"
+		label	"Force Procedural Geometry Output"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_rendersubd"
+		label	"Polygons As Subdivision (Mantra)"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_renderpoints"
+		label	"Render As Points (Mantra)"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_usenforpoints"
+		label	"Use N For Point Rendering"
+		type	toggle
+		default	{ "0" }
+		disablewhen	"{ vm_renderpoints == 0 }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_metavolume"
+		label	"Metaballs as Volume"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_coving"
+		label	"Coving"
+		type	integer
+		default	{ "1" }
+		menu	{
+		    "0"	"Disable Coving"
+		    "1"	"Coving for displacement/sub-d"
+		    "2"	"Coving for all primitives"
+		}
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_computeN"
+		label	"Automatically Compute Normals"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_overridedetail"
+		label	"Ignore Geometry Attribute Shaders"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	}
+
+    }
+
+    group {
+	name	"stdswitcher5_3"
+	label	"Misc"
+
+	parm {
+	    name	"use_dcolor"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"dcolor"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"picking"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"pickscript"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"caching"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"vport_shadeopen"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"vport_displayassubdiv"
+	    baseparm
+	    invisible
+	    export	none
+	}
+    }
+

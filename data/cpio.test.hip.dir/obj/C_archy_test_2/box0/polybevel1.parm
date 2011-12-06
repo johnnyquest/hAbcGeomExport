@@ -1,0 +1,11 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+beveltype	[ 0	locks=0 ]	(	"flat"	)
+entitytype	[ 0	locks=0 ]	(	"edges"	)
+setinset	[ 0	locks=0 ]	(	1	1	)
+relinset	[ 0	locks=0 ]	(	0.100000001	)
+absinset	[ 0	locks=0 ]	(	0.00999999978	)
+repetitions	[ 0	locks=0 ]	(	0	)
+updatenmls	[ 0	locks=0 ]	(	"on"	)
+}

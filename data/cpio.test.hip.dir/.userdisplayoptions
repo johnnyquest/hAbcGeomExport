@@ -1,0 +1,64 @@
+viewoptadd -r text __origgrp
+viewoptset __origgrp attrib ( __origgrp ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: __origgrp' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r vector vtx_tanu
+viewoptset vtx_tanu attrib ( tangentu ) class ( vertex ) color ( 0 0.663 0 ) fade ( 0 ) icon ( SI_pointNormal ) label ( 'VTX: tangentu *' ) overridecolor ( 1 ) scale ( 1 ) selcolor ( 0 1 0 )
+viewoptadd -r vector vtx_tanv
+viewoptset vtx_tanv attrib ( tangentv ) class ( vertex ) color ( 0.5 0 0 ) fade ( 0 ) icon ( SI_pointNormal ) label ( 'VTX: tangentv *' ) overridecolor ( 1 ) scale ( 1 ) selcolor ( 0.9 0 0 )
+viewoptadd -r text pp_index
+viewoptset pp_index attrib ( index ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: index ("index") *' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text __origpt
+viewoptset __origpt attrib ( __origpt ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: __origpt' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text uv_point
+viewoptset uv_point attrib ( uv ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: uv' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text class_point
+viewoptset class_point attrib ( class ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: class' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text uv_vertex
+viewoptset uv_vertex attrib ( uv ) class ( vertex ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'VTX: uv' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text shop_materialpath
+viewoptset shop_materialpath attrib ( shop_materialpath ) class ( prim ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'pr: material path' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r vector normal_vertex
+viewoptset normal_vertex attrib ( N ) class ( vertex ) color ( 0 0 1 ) fade ( 1 ) icon ( SI_pointNormal ) label ( 'VTX: normal (N)' ) overridecolor ( 0 ) scale ( 1 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text ugrow
+viewoptset ugrow attrib ( ugrow ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: ugrow *' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r vector accel
+viewoptset accel attrib ( accel ) class ( point ) color ( 0 0 0.25 ) fade ( 0 ) icon ( SI_pointNormal ) label ( 'P: accel' ) overridecolor ( 1 ) scale ( 1 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text oradius
+viewoptset oradius attrib ( oradius ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: oradius' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text index
+viewoptset index attrib ( index ) class ( prim ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'pr: index ("index") *' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text upos
+viewoptset upos attrib ( upos ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: upos *' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text id
+viewoptset id attrib ( id ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: id' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text life
+viewoptset life attrib ( life ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: life' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text pscale
+viewoptset pscale attrib ( pscale ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: pscale' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text alpha
+viewoptset alpha attrib ( Alpha ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: alpha' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r vector velocity
+viewoptset velocity attrib ( v ) class ( point ) color ( 1 0.05 0 ) fade ( 0 ) icon ( SI_pointNormal ) label ( 'P: velocity (v)' ) overridecolor ( 1 ) scale ( 1 ) selcolor ( 0 0.45 1 )
+viewoptadd -r vector up
+viewoptset up attrib ( up ) class ( point ) color ( 1 0.92 0 ) fade ( 0 ) icon ( SI_pointNormal ) label ( 'P: up' ) overridecolor ( 1 ) scale ( 1 ) selcolor ( 0 0.45 1 )
+viewoptadd -r vector tanU
+viewoptset tanU attrib ( tanU ) class ( point ) color ( 0 0.5 0 ) fade ( 0 ) icon ( SI_pointNormal ) label ( 'P: tanU *' ) overridecolor ( 1 ) scale ( 1 ) selcolor ( 0 1 0 )
+viewoptadd -r vector tanV
+viewoptset tanV attrib ( tanV ) class ( point ) color ( 0.5 0 0 ) fade ( 0 ) icon ( SI_pointNormal ) label ( 'P: tanV *' ) overridecolor ( 1 ) scale ( 1 ) selcolor ( 1 0 0 )
+viewoptadd -r text orbit
+viewoptset orbit attrib ( orbit ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: orbit' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text cluster
+viewoptset cluster attrib ( cluster ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: cluster' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text blend
+viewoptset blend attrib ( blend ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: blend *' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text width
+viewoptset width attrib ( width ) class ( point ) color ( 0.58 0.222333 0 ) icon ( SI_pointPosition ) label ( '[Lsys] width' ) overridecolor ( 1 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text gen
+viewoptset gen attrib ( gen ) class ( point ) color ( 0.0383905 0.167 0.009519 ) icon ( SI_pointPosition ) label ( '[Lsys] generation' ) overridecolor ( 1 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text dist
+viewoptset dist attrib ( dist ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: dist *' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text phase
+viewoptset phase attrib ( phase ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: phase *' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r text Cd
+viewoptset Cd attrib ( Cd ) class ( point ) color ( 0 0 1 ) icon ( SI_pointPosition ) label ( 'P: color (Cd)' ) overridecolor ( 0 ) selcolor ( 0 0.45 1 )
+viewoptadd -r vector pv
+viewoptset pv attrib ( pv ) class ( point ) color ( 0 0 1 ) fade ( 0 ) icon ( SI_pointNormal ) label ( 'P: velocity,prev.(pv)' ) overridecolor ( 0 ) scale ( 0.25 ) selcolor ( 0 0.45 1 )

@@ -1,0 +1,16 @@
+{
+version 0.8
+parmop_force	[ 0	locks=0 ]	(	"default"	)
+force	[ 0	locks=0 ]	(	0	-9.80665016	0	)
+parmop_handlepos	[ 0	locks=0 ]	(	"default"	)
+handlepos	[ 0	locks=0 ]	(	0	3	0	)
+parmop_samplemode	[ 0	locks=0 ]	(	"default"	)
+samplemode	[ 0	locks=0 ]	(	"def"	)
+defaultparmop	[ 0	locks=0 ]	(	"initial"	)
+sharedata	[ 0	locks=0 ]	(	"off"	)
+activation	[ 0	locks=0 ]	(	[ activation	1 ] 	)
+activationrules	[ 0	locks=0 ]	(	0	)
+group	[ 0	locks=0 ]	(	*	)
+dataname	[ 0	locks=0 ]	(	Forces/Gravity	)
+uniquedataname	[ 0	locks=0 ]	(	"on"	)
+}

@@ -1,0 +1,232 @@
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /out 0.00588235  0.00588235 1 panetab2
+chopview -a 0 -c "" -k 1 -m 1 -b 1 -e 1 -f 1 -g 0 -H 0 -i 0 -j 1 -l 0 -n 1 -V 0 -y 0 -B 0 -s 0 -S 0.203554 -u 0 -v 0 -h -41.1442 254.326 -r -1.5 1.5 -R 0 -8.21538 10.7579 buildB.panetab20
+viewerstow -b stow -x open -l open -m open -c open -d open buildB.pane1.world
+vieweroption -a 0 -h 0 -m 1 -r 'View: Mantra' buildB.pane1.world
+viewlayout -s 2 buildB.pane1.world
+viewtype -t perspective buildB.pane1.world.`vpname("buildB.pane1.world",2)`
+viewtype -t ortho_top buildB.pane1.world.`vpname("buildB.pane1.world",1)`
+viewtype -t ortho_front buildB.pane1.world.`vpname("buildB.pane1.world",3)`
+viewtype -t ortho_right buildB.pane1.world.`vpname("buildB.pane1.world",4)`
+viewname -l on -n aaaa3 buildB.pane1.world.`vpname("buildB.pane1.world",2)`
+viewname -l on -n aaaa2 buildB.pane1.world.`vpname("buildB.pane1.world",1)`
+viewname -l on -n aaaa1 buildB.pane1.world.`vpname("buildB.pane1.world",3)`
+viewname -l on -n aaaa0 buildB.pane1.world.`vpname("buildB.pane1.world",4)`
+viewname -l off -n persp1 buildB.pane1.world.`vpname("buildB.pane1.world",2)`
+viewname -l off -n top1 buildB.pane1.world.`vpname("buildB.pane1.world",1)`
+viewname -l off -n front1 buildB.pane1.world.`vpname("buildB.pane1.world",3)`
+viewname -l off -n right1 buildB.pane1.world.`vpname("buildB.pane1.world",4)`
+viewdisplay -a on buildB.pane1.world.persp1
+viewdisplay -M unsel hidden_ghost -N unsel n off -E unsel n off -I unsel n off buildB.pane1.world.persp1
+viewdisplay -N unsel t off -E unsel t off -I unsel t off buildB.pane1.world.persp1
+viewdisplay -N unsel l off -E unsel g off -I unsel l off buildB.pane1.world.persp1
+viewdisplay -N unsel p off -I unsel p off buildB.pane1.world.persp1
+viewdisplay -N unsel m off -I unsel h off buildB.pane1.world.persp1
+viewdisplay -I unsel b off buildB.pane1.world.persp1
+viewdisplay -I unsel f off buildB.pane1.world.persp1
+viewdisplay -M templ wire -N templ n off -E templ n off -I templ n off buildB.pane1.world.persp1
+viewdisplay -N templ t off -E templ t off -I templ t off buildB.pane1.world.persp1
+viewdisplay -N templ l off -E templ g off -I templ l off buildB.pane1.world.persp1
+viewdisplay -N templ p off -I templ p off buildB.pane1.world.persp1
+viewdisplay -N templ m off -I templ h off buildB.pane1.world.persp1
+viewdisplay -I templ b off buildB.pane1.world.persp1
+viewdisplay -I templ f off buildB.pane1.world.persp1
+viewdisplay -M curr_unsel wire -N curr_unsel n off -E curr_unsel n off -I curr_unsel n off buildB.pane1.world.persp1
+viewdisplay -N curr_unsel t off -E curr_unsel t off -I curr_unsel t on buildB.pane1.world.persp1
+viewdisplay -N curr_unsel l off -E curr_unsel g off -I curr_unsel l off buildB.pane1.world.persp1
+viewdisplay -N curr_unsel p off -I curr_unsel p off buildB.pane1.world.persp1
+viewdisplay -N curr_unsel m off -I curr_unsel h off buildB.pane1.world.persp1
+viewdisplay -I curr_unsel b off buildB.pane1.world.persp1
+viewdisplay -I curr_unsel f off buildB.pane1.world.persp1
+viewdisplay -A templ on -B bw -b off -d off -C 2 -e 0.76 -F off -f off -g on -G '*' -h off -H on -j off -J off buildB.pane1.world.persp1
+viewdisplay -A curr_all on -l 1 -L on -n 1 -o off -O on -q on -r on -s off -S off -t off buildB.pane1.world.persp1
+viewdisplay -V 1 -z off -y off -x off -X off -U 4 -Y 4 -T on -R on -i on -D on -k off buildB.pane1.world.persp1
+viewdisplay -Q on -m on -v on buildB.pane1.world.persp1
+viewdisplay -W  off bound_box_wire 0 buildB.pane1.world.persp1
+viewdisplay -c off -K off -P points -p 3 buildB.pane1.world.persp1
+vieweffect -a 0 -A 4 -b on -B 0 -d on -D on off -g 2.2 -h 1 -H on -L off -l '' -m on -M 512 -o on -n 8 -O 2 -q 1 -Q 2 -r 1024 1024 -s 4 -S on -t 100 -T 100 -u off -U off -v 128 128 128 -w 0.05 -W off buildB.pane1.world.persp1
+viewbackground -b off -q 1 -S file -F '' -O off -r 1 1 -C '' -p '(Default Color)' 1 -t on -a on -o 0 0 -s 1 1 -i off -m 0 0 -M 1 1 buildB.pane1.world.persp1
+viewtransform buildB.pane1.world.persp1 version ( 3 )  flag ( F )  orthowidth ( 6.64968 )  focal ( 50 )  aperture ( 41.4214 )  window ( 0 1 0 1 )  winroll ( 0 )  clear ( 1 )  nearfar ( 0.1 10000 )  resxy ( 1 1 )  aspect ( 1.33333 )  pixelaspect ( 1 )  txyz ( -0.0862476 2.7787 14.2756 )  pxyz ( -0.0862505 2.77869 -0.182325 )  rotation ( 0.987468 -0.0400452 0.152624 1.26116e-07 0.967255 0.253787 -0.15779 -0.250608 0.955141  )  homedistance ( 11.1046 )  homeadjboxwidth ( 6.64968 )  homeorthowidth ( 6.64968 )  homeradius ( 10.9767 )  homeaxis ( 0 )  homecustom ( 0.707107 -0.353553 0.612373 0 0.866025 0.5 -0.707107 -0.353553 0.612372  )  adjustlimits ( 0 )  
+viewcamera -c '' buildB.pane1.world.persp1
+vieworthogrid -d on -o 0 0 0 -s 1 1 -r 10 10 buildB.pane1.world.persp1
+viewuvgrid -r off -s 0.1 0.1 -P on -S 1 1 -O 0 0 -C on -t on buildB.pane1.world.persp1
+viewdisplay -a on buildB.pane1.world.top1
+viewdisplay -M unsel hidden_ghost -N unsel n off -E unsel n off -I unsel n off buildB.pane1.world.top1
+viewdisplay -N unsel t off -E unsel t off -I unsel t off buildB.pane1.world.top1
+viewdisplay -N unsel l off -E unsel g off -I unsel l off buildB.pane1.world.top1
+viewdisplay -N unsel p off -I unsel p off buildB.pane1.world.top1
+viewdisplay -N unsel m off -I unsel h off buildB.pane1.world.top1
+viewdisplay -I unsel b off buildB.pane1.world.top1
+viewdisplay -I unsel f off buildB.pane1.world.top1
+viewdisplay -M templ wire -N templ n off -E templ n off -I templ n off buildB.pane1.world.top1
+viewdisplay -N templ t off -E templ t off -I templ t off buildB.pane1.world.top1
+viewdisplay -N templ l off -E templ g off -I templ l off buildB.pane1.world.top1
+viewdisplay -N templ p off -I templ p off buildB.pane1.world.top1
+viewdisplay -N templ m off -I templ h off buildB.pane1.world.top1
+viewdisplay -I templ b off buildB.pane1.world.top1
+viewdisplay -I templ f off buildB.pane1.world.top1
+viewdisplay -M curr_unsel wire -N curr_unsel n off -E curr_unsel n off -I curr_unsel n off buildB.pane1.world.top1
+viewdisplay -N curr_unsel t off -E curr_unsel t off -I curr_unsel t on buildB.pane1.world.top1
+viewdisplay -N curr_unsel l off -E curr_unsel g off -I curr_unsel l off buildB.pane1.world.top1
+viewdisplay -N curr_unsel p off -I curr_unsel p off buildB.pane1.world.top1
+viewdisplay -N curr_unsel m off -I curr_unsel h off buildB.pane1.world.top1
+viewdisplay -I curr_unsel b off buildB.pane1.world.top1
+viewdisplay -I curr_unsel f off buildB.pane1.world.top1
+viewdisplay -A templ on -B bw -b off -d off -C 2 -e 0.76 -F off -f off -g on -G '*' -h off -H on -j off -J off buildB.pane1.world.top1
+viewdisplay -A curr_all on -l 1 -L on -n 1 -o off -O on -q on -r on -s off -S off -t off buildB.pane1.world.top1
+viewdisplay -V 1 -z off -y off -x off -X off -U 4 -Y 4 -T on -R on -i on -D on -k off buildB.pane1.world.top1
+viewdisplay -Q on -m on -v on buildB.pane1.world.top1
+viewdisplay -W  off bound_box_wire 0 buildB.pane1.world.top1
+viewdisplay -c off -K off -P points -p 3 buildB.pane1.world.top1
+vieweffect -a 0 -A 4 -b on -B 0 -d on -D on off -g 2.2 -h 1 -H on -L off -l '' -m on -M 512 -o on -n 8 -O 2 -q 1 -Q 2 -r 1024 1024 -s 4 -S on -t 100 -T 100 -u off -U off -v 128 128 128 -w 0.05 -W off buildB.pane1.world.top1
+viewbackground -b off -q 1 -S file -F '' -O off -r 1 1 -C '' -p '(Default Color)' 1 -t on -a on -o 0 0 -s 1 1 -i off -m 0 0 -M 1 1 buildB.pane1.world.top1
+viewtransform buildB.pane1.world.top1 version ( 3 )  flag ( Fo )  orthowidth ( 2.22222 )  focal ( 50 )  aperture ( 41.4214 )  window ( 0 1 0 1 )  winroll ( 0 )  clear ( 1 )  nearfar ( 0.1 10000 )  resxy ( 1 1 )  aspect ( 1.33333 )  pixelaspect ( 1 )  txyz ( 0 0 3.68246 )  pxyz ( 0 0 0 )  rotation ( 1 0 0 0 7.54979e-08 1 0 -1 7.54979e-08  )  homedistance ( 3.68246 )  homeadjboxwidth ( 2.22222 )  homeorthowidth ( 2.22222 )  homeradius ( 3.4641 )  homeaxis ( 0 )  homecustom ( 0.707107 -0.353553 0.612373 0 0.866025 0.5 -0.707107 -0.353553 0.612372  )  adjustlimits ( 0 )  
+vieworthogrid -d on -o 0 0 0 -s 1 1 -r 10 10 buildB.pane1.world.top1
+viewuvgrid -r off -s 0.1 0.1 -P on -S 1 1 -O 0 0 -C on -t on buildB.pane1.world.top1
+viewdisplay -a on buildB.pane1.world.front1
+viewdisplay -M unsel hidden_ghost -N unsel n off -E unsel n off -I unsel n off buildB.pane1.world.front1
+viewdisplay -N unsel t off -E unsel t off -I unsel t off buildB.pane1.world.front1
+viewdisplay -N unsel l off -E unsel g off -I unsel l off buildB.pane1.world.front1
+viewdisplay -N unsel p off -I unsel p off buildB.pane1.world.front1
+viewdisplay -N unsel m off -I unsel h off buildB.pane1.world.front1
+viewdisplay -I unsel b off buildB.pane1.world.front1
+viewdisplay -I unsel f off buildB.pane1.world.front1
+viewdisplay -M templ wire -N templ n off -E templ n off -I templ n off buildB.pane1.world.front1
+viewdisplay -N templ t off -E templ t off -I templ t off buildB.pane1.world.front1
+viewdisplay -N templ l off -E templ g off -I templ l off buildB.pane1.world.front1
+viewdisplay -N templ p off -I templ p off buildB.pane1.world.front1
+viewdisplay -N templ m off -I templ h off buildB.pane1.world.front1
+viewdisplay -I templ b off buildB.pane1.world.front1
+viewdisplay -I templ f off buildB.pane1.world.front1
+viewdisplay -M curr_unsel wire -N curr_unsel n off -E curr_unsel n off -I curr_unsel n off buildB.pane1.world.front1
+viewdisplay -N curr_unsel t off -E curr_unsel t off -I curr_unsel t on buildB.pane1.world.front1
+viewdisplay -N curr_unsel l off -E curr_unsel g off -I curr_unsel l off buildB.pane1.world.front1
+viewdisplay -N curr_unsel p off -I curr_unsel p off buildB.pane1.world.front1
+viewdisplay -N curr_unsel m off -I curr_unsel h off buildB.pane1.world.front1
+viewdisplay -I curr_unsel b off buildB.pane1.world.front1
+viewdisplay -I curr_unsel f off buildB.pane1.world.front1
+viewdisplay -A templ on -B bw -b off -d off -C 2 -e 0.76 -F off -f off -g on -G '*' -h off -H on -j off -J off buildB.pane1.world.front1
+viewdisplay -A curr_all on -l 1 -L on -n 1 -o off -O on -q on -r on -s off -S off -t off buildB.pane1.world.front1
+viewdisplay -V 1 -z off -y off -x off -X off -U 4 -Y 4 -T on -R on -i on -D on -k off buildB.pane1.world.front1
+viewdisplay -Q on -m on -v on buildB.pane1.world.front1
+viewdisplay -W  off bound_box_wire 0 buildB.pane1.world.front1
+viewdisplay -c off -K off -P points -p 3 buildB.pane1.world.front1
+vieweffect -a 0 -A 4 -b on -B 0 -d on -D on off -g 2.2 -h 1 -H on -L off -l '' -m on -M 512 -o on -n 8 -O 2 -q 1 -Q 2 -r 1024 1024 -s 4 -S on -t 100 -T 100 -u off -U off -v 128 128 128 -w 0.05 -W off buildB.pane1.world.front1
+viewbackground -b off -q 1 -S file -F '' -O off -r 1 1 -C '' -p '(Default Color)' 1 -t on -a on -o 0 0 -s 1 1 -i off -m 0 0 -M 1 1 buildB.pane1.world.front1
+viewtransform buildB.pane1.world.front1 version ( 3 )  flag ( Fo )  orthowidth ( 2.22222 )  focal ( 50 )  aperture ( 41.4214 )  window ( 0 1 0 1 )  winroll ( 0 )  clear ( 1 )  nearfar ( 0.1 10000 )  resxy ( 1 1 )  aspect ( 1.33333 )  pixelaspect ( 1 )  txyz ( 0 0 3.68246 )  pxyz ( 0 0 0 )  rotation ( 1 0 0 0 1 0 0 0 1  )  homedistance ( 3.68246 )  homeadjboxwidth ( 2.22222 )  homeorthowidth ( 2.22222 )  homeradius ( 3.4641 )  homeaxis ( 0 )  homecustom ( 0.707107 -0.353553 0.612373 0 0.866025 0.5 -0.707107 -0.353553 0.612372  )  adjustlimits ( 0 )  
+vieworthogrid -d on -o 0 0 0 -s 1 1 -r 10 10 buildB.pane1.world.front1
+viewuvgrid -r off -s 0.1 0.1 -P on -S 1 1 -O 0 0 -C on -t on buildB.pane1.world.front1
+viewdisplay -a on buildB.pane1.world.right1
+viewdisplay -M unsel hidden_ghost -N unsel n off -E unsel n off -I unsel n off buildB.pane1.world.right1
+viewdisplay -N unsel t off -E unsel t off -I unsel t off buildB.pane1.world.right1
+viewdisplay -N unsel l off -E unsel g off -I unsel l off buildB.pane1.world.right1
+viewdisplay -N unsel p off -I unsel p off buildB.pane1.world.right1
+viewdisplay -N unsel m off -I unsel h off buildB.pane1.world.right1
+viewdisplay -I unsel b off buildB.pane1.world.right1
+viewdisplay -I unsel f off buildB.pane1.world.right1
+viewdisplay -M templ wire -N templ n off -E templ n off -I templ n off buildB.pane1.world.right1
+viewdisplay -N templ t off -E templ t off -I templ t off buildB.pane1.world.right1
+viewdisplay -N templ l off -E templ g off -I templ l off buildB.pane1.world.right1
+viewdisplay -N templ p off -I templ p off buildB.pane1.world.right1
+viewdisplay -N templ m off -I templ h off buildB.pane1.world.right1
+viewdisplay -I templ b off buildB.pane1.world.right1
+viewdisplay -I templ f off buildB.pane1.world.right1
+viewdisplay -M curr_unsel wire -N curr_unsel n off -E curr_unsel n off -I curr_unsel n off buildB.pane1.world.right1
+viewdisplay -N curr_unsel t off -E curr_unsel t off -I curr_unsel t on buildB.pane1.world.right1
+viewdisplay -N curr_unsel l off -E curr_unsel g off -I curr_unsel l off buildB.pane1.world.right1
+viewdisplay -N curr_unsel p off -I curr_unsel p off buildB.pane1.world.right1
+viewdisplay -N curr_unsel m off -I curr_unsel h off buildB.pane1.world.right1
+viewdisplay -I curr_unsel b off buildB.pane1.world.right1
+viewdisplay -I curr_unsel f off buildB.pane1.world.right1
+viewdisplay -A templ on -B bw -b off -d off -C 2 -e 0.76 -F off -f off -g on -G '*' -h off -H on -j off -J off buildB.pane1.world.right1
+viewdisplay -A curr_all on -l 1 -L on -n 1 -o off -O on -q on -r on -s off -S off -t off buildB.pane1.world.right1
+viewdisplay -V 1 -z off -y off -x off -X off -U 4 -Y 4 -T on -R on -i on -D on -k off buildB.pane1.world.right1
+viewdisplay -Q on -m on -v on buildB.pane1.world.right1
+viewdisplay -W  off bound_box_wire 0 buildB.pane1.world.right1
+viewdisplay -c off -K off -P points -p 3 buildB.pane1.world.right1
+vieweffect -a 0 -A 4 -b on -B 0 -d on -D on off -g 2.2 -h 1 -H on -L off -l '' -m on -M 512 -o on -n 8 -O 2 -q 1 -Q 2 -r 1024 1024 -s 4 -S on -t 100 -T 100 -u off -U off -v 128 128 128 -w 0.05 -W off buildB.pane1.world.right1
+viewbackground -b off -q 1 -S file -F '' -O off -r 1 1 -C '' -p '(Default Color)' 1 -t on -a on -o 0 0 -s 1 1 -i off -m 0 0 -M 1 1 buildB.pane1.world.right1
+viewtransform buildB.pane1.world.right1 version ( 3 )  flag ( Fo )  orthowidth ( 2.22222 )  focal ( 50 )  aperture ( 41.4214 )  window ( 0 1 0 1 )  winroll ( 0 )  clear ( 1 )  nearfar ( 0.1 10000 )  resxy ( 1 1 )  aspect ( 1.33333 )  pixelaspect ( 1 )  txyz ( 0 0 3.68246 )  pxyz ( 0 0 0 )  rotation ( -4.37114e-08 0 1 0 1 0 -1 0 -4.37114e-08  )  homedistance ( 3.68246 )  homeadjboxwidth ( 2.22222 )  homeorthowidth ( 2.22222 )  homeradius ( 3.4641 )  homeaxis ( 0 )  homecustom ( 0.707107 -0.353553 0.612373 0 0.866025 0.5 -0.707107 -0.353553 0.612372  )  adjustlimits ( 0 )  
+vieworthogrid -d on -o 0 0 0 -s 1 1 -r 10 10 buildB.pane1.world.right1
+viewuvgrid -r off -s 0.1 0.1 -P on -S 1 1 -O 0 0 -C on -t on buildB.pane1.world.right1
+viewsnapshotoption -s off -h off -a 1 -v '*' buildB.pane1.world
+cplane -o -8 0 -8 -n 0 1 0 -x 0 0 1 -l n -s 1 1 -c 16 16 -r 8 8 -d on buildB.pane1.world
+glcache -M 1024
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/D_sim_geom_1/dopnet1 -3.59448  -6.44661 0.845726 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/box0 -4.3152  -8.21879 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/test_geomA -7.5314  -10.0578 0.681324 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/box1 -4.31892  -7.51515 0.833333 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/geo1 -2.07638  -5.42349 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/test_geomB -3.03521  -7.71173 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/box2 -3.97882  -6.97634 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/test_geomC -3.62344  -6.73527 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/empty_geo -3.32344  -5.23526 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/B_archy_test_1 -5.09209  -9.86349 0.584154 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/B_archy_test_A/box0 -3.87991  -8.68938 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/B_archy_test_B/box0 -5.39177  -6.72432 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/D_sim_geom_1 -4.90286  -6.18131 0.833333 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/nopety -2.11755  -4.23526 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/E_sim_geom_2/dopnet1 -0.010058  -3.09064 0.913277 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/D_heavy_geom_1 -4.16673  -5.60992 0.908723 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/C_archy_test_2/box2 -3.97882  -6.97634 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/abc_preview -1.82344  -5.9882 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/E_sim_geom_2 -5.00588  -5.95285 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/B_archy_test_A -4.72335  -6.39912 0.698549 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/B_archy_test_B -4.93008  -5.98551 0.777316 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/C_archy_test_2 -2.80284  -1.91225 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/D_heavy_geom_1/dopnet1 -5.42932  -4.21174 1 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj/A_single_geom -0.554051  -7.53039 0.974652 panetab22
+neteditor -d buildB -b 0 -l 0 -f '' -q 1.000000 -v /obj -2.85138  8.72368 1.02129 panetab22
+omparm "Follow Path" followpath /obj/E_sim_geom_2 "invisible(1)"
+omparm "Follow Path" followpath /obj/D_sim_geom_1 "invisible(1)"
+panepath -d buildB -f -p panetab8 /obj/E_sim_geom_2
+panepath -d buildB -f -p panetab22 /obj/E_sim_geom_2
+panepath -d buildB -f -p panetab23 /obj/
+panepath -d buildB -f -p panetab24 /obj/
+panepath -d buildB -f -p panetab19 /obj/E_sim_geom_2
+panepath -d buildB -f -p pane1 /obj/E_sim_geom_2
+panepath -d buildB -f -p panetab12 /obj/
+panepath -d buildB -f -p panetab11 /obj/E_sim_geom_2
+panepath -d buildB -f -p panetab27 /obj/
+panepath -d buildB -f -p panetab10 /obj/
+panepath -d buildB -f -p panetab5 /out/D_sim_geom_2
+panepath -d buildB -f -p panetab17 /obj/E_sim_geom_2
+panepath -d buildB -f -p panetab26 /obj/
+panepath -d buildB -f -p panetab20 /ch/
+panepath -d buildB -f -p panetab21 /obj/
+panepath -d buildB -f -p panetab9 /obj/E_sim_geom_2
+panepath -d buildB -f -p panetab14 /out/E_sim_geom_2
+panepath -d buildB -f -p panetab15 /out/E_sim_geom_2
+panepath -d buildB -f -p panetab18 /obj/E_sim_geom_2
+panepath -d buildB -f -p panetab25 /out/E_sim_geom_2
+panepath -d buildB -f -p panetab7 /obj/
+panepath -d buildB -f -p panetab2 /out/E_sim_geom_2
+panepath -d buildB -f -p panetab4 /out/E_sim_geom_2
+panepath -d buildB -f -p panetab13 /out/E_sim_geom_2
+panepath -d buildB -f -p panetab1 /out/E_sim_geom_2
+panepath -d buildB -f -p panetab6 /obj/E_sim_geom_2
+panepath -d buildB -f -p panetab3 /out/E_sim_geom_2
+desk set buildB
+performance -l window -c on -g off -o on -v on -f on -m off -r on -i off -h off -p off -s off -e off -F off -U ms -T 500
+viewupdate -u never
+audiopanel -s p ''
+audiopanel -s r off
+audiopanel -s s 1
+audiopanel -s f 45
+audiopanel -t p stop
+audiopanel -t l off
+audiopanel -t r on
+audiopanel -o m off
+audiopanel -o t on
+audiopanel -o u on
+audiopanel -o l 1
+audiopanel -o r 1
+audiopanel -o d 0
+audiopanel -r d 0.2
+audiopanel -m 0
+audiopanel -a ''
+audiopanel -f 1
+audiopanel -O 0
+colorsettings -D -A -g 2.2 -l "" -v -i -r -c
+compproject -r 640 480 -a 1 -d i8 -p 0 255 -P full -f 0 -F 0 -l on
+texcache  -a off -r 2048 2048 -m 10000 -M 2000
+shopvisible +OGL +OGL2 +I3D +VMantra +MI +RIB

@@ -1,0 +1,26 @@
+{
+    channel sx {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 value = 1 1 expr = lock(1) }
+    }
+    channel sy {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 value = 1 1 expr = lock(1) }
+    }
+    channel sz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 value = 1 1 expr = lock(1) }
+    }
+    channel scale {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 value = 1 1 expr = lock(1) }
+    }
+  }
