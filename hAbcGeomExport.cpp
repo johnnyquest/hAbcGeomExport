@@ -19,6 +19,7 @@
 */
 
 #define PLUGIN_VERSION_STR "0.02"
+#define _DEBUG
 
 
 #include "hAbcGeomExport.h"
