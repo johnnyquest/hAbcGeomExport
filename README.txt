@@ -1,6 +1,12 @@
 hAbcGeomExport 0.02
 ===================
-(Imre Tuske, 2011)
+(Imre Tuske @ DiGiC Pictures, 2011-11)
+
+
+(This is our small contribution for the Alembic project -- hopefully you'll
+find it useful. Many thanks and big respects go to all the people working
+on Alembic!)
+
 
 A simple geometry exporter to the Alembic file format, implemented as
 a ROP node (or output driver).
@@ -9,44 +15,101 @@ It exports a hierarchy of object nodes from the specified root object,
 including geometry (currently poly meshes only). The SOPs flagged as
 'renderable' are used.
 
+The exported objects will be either polymeshes (for OBJ_Nodes containing
+polygon data) or empty transforms (for everything else).
+
+For more information, see the github repository (especially the issues
+section). Also: "feedback is silver, contribution is gold" -- if you
+find a bug, good for you, if you can fix it, good for all of us ;)
+
+
 
 
 Known limitations
 -----------------
 
+Only the most regular type of polymesh supported (no open polylines, nurbs
+curves/surfaces or other fanciness.)
+
 Hierarchy is maintained, but all transforms are written out as local-space
 ones (as usual) -- this might give 'unexpected' results if a partial
-hierarchy is exported where the 'missing' parents also have various
+hierarchy is exported where the non-exported parents also have various
 transformations.
 
+Transforms are exported as matrices for now--meaning that the final
+placements will match, but the xyz rotation values might NOT.
+(Expect Euler-style rotation-popping for animated 360+ rotations.)
+
+There are a few issues that can cause Houdini or Maya crash or hang (see
+below), but the exported files are always correct (so far--knock on wood).
+
+
+
+Build notes
+-----------
+
+You probably have to build Alembic first (which can be a lot of fun :)).
+
+For building this ROP, see
+
+	./build.sh
+
+for testing, see
+
+	./data/test.sh
+
+(test.sh uses LD_LIBRARY_PATH to set some library paths explicitly, which
+is a quick hack, try to avoid that--compile with the exact same lib
+versions, or go for full static linking, if possible (?) )
 
 
 
 
-TODO
-----
-	- (DONE) normal/uv export
-		- (DONE) should support both per-point and per-vertex types
-		- should be thoroughly tested!
-	
-	- export transformations not as a 'raw' matrix but translate+rotate+etc.
-		with hints and all
+Houdini-related notes
+---------------------
 
-	- per-point velocity attribute (velocity blur) export
+If you compiled your own version of Alembic in order to compile this ROP
+(which is probably the case), and you use a different version of a library
+(say hdf5) than what comes with Houdini, the libraries might collide.
 
-	- export of all custom attributes
-		- per-point, per-vertex, per-prim, detail
+For instance: if you export geometry with this ROP, then try to import it
+right back in, Houdini might crash (with hdf5 complaining in the console).
+In such cases simply do a restart of Houdini before re-importing. (Your
+.abc files will be intact, no worries -- but you can use the various hdf5
+utils to check.)
 
-	- (?) support primitive groups as alembic face sets
-
-	- (?) export specified primitive groups as individual objects
-		- support a special case for fractured rigid bodies
-		  (export them as multiple transformed objects instead
-		  of a single 'deforming' one)
-
-	- a proper build script (waf?)
+You can probably avoid all unpleasantries by building/linking your Alembic
+version with the exact same lib-versions that the Houdini version uses.
 
 
 
-version 0.01 (2011-12-06)
+Maya-related notes
+------------------
+
+Maya by default uses per-face-vertex storage for both normals and UVs
+(called per-vertex in Houdini), but in Houdini it's possible to have them
+as per vertex (called per-point in Houdini). Although Alembic might be able
+to convert between these datatypes to a certain degree (?), you might want
+to use the data type that's more appropriate.
+
+In short: better to stick to per-face-vertex normals and UVs.
+
+Maya 2011 seems to have problems when it comes to importing any normals
+from alembic, which can result in crashes or hangs. Either upgrade or
+forget about importing normals (or have a few sad days, like I did :|).
+
+
+
+History
+-------
+
+version 0.02 (2011-12-06)
+	First version to export of hierarchies (transforms+shapes),
+	polymesh normals and UVs.
+
+
+
+version 0.01 (2011-12-02)
+	Can export a lonely polygonal shape.
+
 
