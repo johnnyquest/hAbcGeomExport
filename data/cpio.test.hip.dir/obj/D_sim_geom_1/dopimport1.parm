@@ -1,0 +1,20 @@
+{
+version 0.8
+doppath	[ 0	locks=0 ]	(	/obj/D_sim_geom_1/dopnet1	)
+objpattern	[ 0	locks=0 ]	(	`dopobjscreatedby(\"/obj/D_sim_geom_1/dopnet1/D_heavy_geom_1\")`	)
+singleobject	[ 0	locks=0 ]	(	"off"	)
+importstyle	[ 0	locks=0 ]	(	"xform"	)
+useobjidgroups	[ 0	locks=0 ]	(	"off"	)
+geodatapath	[ 0	locks=0 ]	(	""	)
+inverseop	[ 0	locks=0 ]	(	"off"	)
+doposxform	[ 0	locks=0 ]	(	"on"	)
+doxform	[ 0	locks=0 ]	(	"on"	)
+keepworldspacepos	[ 0	locks=0 ]	(	"on"	)
+adddopobjectname	[ 0	locks=0 ]	(	"on"	)
+addtoexistingvel	[ 0	locks=0 ]	(	"off"	)
+deleteabandoned	[ 0	locks=0 ]	(	"on"	)
+pointvels	[ 0	locks=0 ]	(	"instant"	)
+integrateovertime	[ 0	locks=0 ]	(	[ integrateovertime	0.0416666679 ] 	)
+attribslabel	[ 0	locks=0 ]	(	)
+xformattribs	[ 0	locks=0 ]	(	N	)
+}

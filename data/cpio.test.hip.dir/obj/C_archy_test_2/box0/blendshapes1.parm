@@ -1,0 +1,19 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+selectionidx	[ 0	locks=0 ]	(	0	)
+diff	[ 0	locks=0 ]	(	"on"	)
+dopos	[ 0	locks=0 ]	(	"on"	)
+doclr	[ 0	locks=0 ]	(	"off"	)
+donml	[ 0	locks=0 ]	(	"off"	)
+douvw	[ 0	locks=0 ]	(	"off"	)
+dovoxel	[ 0	locks=0 ]	(	"off"	)
+ptidattr	[ 0	locks=0 ]	(	""	)
+primidattr	[ 0	locks=0 ]	(	""	)
+fastrecache	[ 0	locks=0 ]	(	"off"	)
+morph	[ 0	locks=0 ]	(	"off"	)
+updatechannels	[ 0	locks=0 ]	(	0	)
+nblends	[ 0	locks=0 ]	(	2	)
+blend0	[ 0	locks=0 ]	(	1	)
+blend1	[ 0	locks=0 ]	(	[ blend1	1 ] 	)
+}

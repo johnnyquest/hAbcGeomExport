@@ -1,0 +1,8 @@
+{
+    channel t2 {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = 0.5*ch(\"radius\") }
+    }
+  }

@@ -1,0 +1,15 @@
+{
+version 0.8
+objname	[ 0	locks=0 ]	(	$OS	)
+display	[ 0	locks=0 ]	(	"on"	)
+color	[ 0	locks=0 ]	(	0.0481679998	0.0985175967	0.216000006	)
+grid_size	[ 0	locks=0 ]	(	20	20	)
+std_switcher_0	[ 0	locks=0 ]	(	0	0	)
+objpath	[ 0	locks=0 ]	(	/obj/groundplane_object1	)
+t	[ 0	locks=0 ]	(	0	0	0	)
+r	[ 0	locks=0 ]	(	0	0	0	)
+bounce	[ 0	locks=0 ]	(	0.5	)
+friction	[ 0	locks=0 ]	(	1	)
+dynamicfriction	[ 0	locks=0 ]	(	1	)
+temperature	[ 0	locks=0 ]	(	0	)
+}

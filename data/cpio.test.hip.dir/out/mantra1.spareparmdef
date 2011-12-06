@@ -1,0 +1,1607 @@
+    parm {
+	name	"execute"
+	baseparm
+	joinnext
+	export	none
+    }
+    parm {
+	name	"renderdialog"
+	baseparm
+	export	none
+    }
+    parm {
+	name	"trange"
+	baseparm
+	export	none
+    }
+    parm {
+	name	"f"
+	baseparm
+	export	none
+    }
+    parm {
+	name	"take"
+	baseparm
+	export	none
+    }
+    group {
+	name	"main5"
+	label	"Main"
+
+	parm {
+	    name	"soho_program"
+	    baseparm
+	    invisible
+	    export	none
+	}
+	parm {
+	    name	"soho_shopstyle"
+	    baseparm
+	    invisible
+	    export	none
+	}
+	parm {
+	    name	"target"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"camera"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"soho_pipecmd"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"soho_outputmode"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"soho_diskfile"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"soho_foreground"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"soho_initsim"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"soho_viewport_menu"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"main5_1"
+	label	"Objects"
+
+	parm {
+	    name	"vobject"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"forceobject"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"matte_objects"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"phantom_objects"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"excludeobject"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"obj_light_sep"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"sololight"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"alights"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"forcelights"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"excludelights"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"soho_autoheadlight"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"light_fog_sep"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"vfog"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"main5_2"
+	label	"Properties"
+
+	parm {
+	    name	"shop_propertiespath"
+	    baseparm
+	    export	none
+	}
+	group {
+	    name	"folder0"
+	    label	"Output"
+
+	    parm {
+		name	"vm_picture"
+		label	"Output Picture"
+		type	file
+		default	{ "ip" }
+		menureplace	{
+		    [ "echo `pythonexprs(\"__import__('toolutils').parseDialogScriptMenu('FBrender')\")`" ]
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "filechooser_mode" "write" }
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"vm_device"
+		label	"Output Device"
+		type	string
+		default	{ "" }
+		menu	{
+		    ""	"Infer from filename"
+		    "Houdini"	"Houdini .pic format"
+		    "TIFF"	"Tagged Image File Format (TIFF)"
+		    "OpenEXR"	"Open EXR"
+		    "PNG"	"Portable Network Graphics (PNG)"
+		    "JPEG"	"JPEG"
+		    "RAT"	"Random Access Texture (RAT)"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"vm_pfilter"
+		label	"Pixel Filter"
+		type	string
+		default	{ "gaussian 2 2" }
+		menureplace	{
+		    "box 1 1"	"Unit Box Filter"
+		    "gaussian 2 2"	"Gaussian 2x2"
+		    "gaussian 3 3"	"Gaussian 3x3 (softer)"
+		    "bartlett 2 2"	"Bartlett (triangle)"
+		    "catrom 2 2"	"Catmull-Rom"
+		    "hanning 2 2"	"Hanning"
+		    "blackman 2 2"	"Blackman"
+		    "sinc 2 2"	"Sinc (sharpening)"
+		    "minmax min"	"Closest Sample Filtering"
+		    "minmax max"	"Farthest Sample Filtering"
+		    "minmax edge"	"Disable Edge Antialiasing"
+		    "minmax ocover"	"Object With Most Pixel Coverage"
+		    "minmax idcover"	"Object With Most Pixel Coverage (no filtering)"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"vm_sfilter"
+		label	"Sample Filter"
+		type	string
+		default	{ "alpha" }
+		menu	{
+		    "alpha"	"Opacity Filtering"
+		    "closest"	"Closest Surface"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"vm_quantize"
+		label	"Quantization"
+		type	string
+		default	{ "half" }
+		menu	{
+		    "8"	"8 bit integer"
+		    "16"	"16 bit integer"
+		    "half"	"16 bit float"
+		    "float"	"32 bit float"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"vm_whitepoint"
+		label	"White Point"
+		type	float
+		default	{ "1" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"vm_subpixel"
+		label	"Sub-Pixel Output"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"override_camerares"
+		label	"Override Camera Resolution"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"res_fraction"
+		label	"Resolution Scale"
+		type	string
+		default	{ "specific" }
+		disablewhen	"{ override_camerares == 0 }"
+		menu	{
+		    "0.1"	"1/10 (One Tenth Resolution)"
+		    "0.2"	"1/5 (One Fifth Resolution)"
+		    "0.25"	"1/4 (Quarter Resolution)"
+		    "0.3333333"	"1/3 (One Third Resolution)"
+		    "0.5"	"1/2 (Half Resolution)"
+		    "0.6666666"	"2/3 (Two Thirds Resolution)"
+		    "0.75"	"3/4 (Three Quarter Resolution)"
+		    "specific"	"User Specified Resolution"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"res_override"
+		label	"Resolution"
+		type	intvector2
+		joinnext
+		size	2
+		default	{ "640" "480" }
+		disablewhen	"{ override_camerares == 0 } { res_fraction != specific }"
+		range	{ -1 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"res_overrideMenu"
+		label	"Choose Resolution"
+		type	button
+		nolabel
+		default	{ "0" }
+		disablewhen	"{ override_camerares == 0 } { res_fraction != specific }"
+		menumini	{
+		    [ "echo `pythonexprs(\"__import__('toolutils').parseDialogScriptMenu('FBres')\")`" ]
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+		parmtag	{ "script_callback" "opparm . res_override ( `arg(\"$script_value\", 0)` `arg(\"$script_value\", 1)` aspect_override ( `arg(\"$script_value\", 2)` )" }
+	    }
+	    parm {
+		name	"aspect_override"
+		label	"Pixel Aspect Ratio"
+		type	float
+		default	{ "1" }
+		disablewhen	"{ override_camerares == 0 }"
+		range	{ 0.05 2 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"vm_deepresolver"
+		label	"Deep Resolver"
+		type	string
+		default	{ "null" }
+		menu	{
+		    "null"	"No Deep Resolver"
+		    "shadow"	"Deep Shadow Map"
+		    "camera"	"Deep Camera Map"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    parm {
+		name	"vm_dcmfilename"
+		label	"DCM Filename"
+		type	file
+		default	{ "$HIP/dcm.rat" }
+		disablewhen	"{ vm_deepresolver != camera }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "filechooser_mode" "read_and_write" }
+		parmtag	{ "spare_category" "Output" }
+	    }
+	    multiparm {
+		name	"vm_numaux"
+		label	"Extra Image Planes"
+		parmtag	{ "spare_category" "Output" }
+
+		parm {
+		    name	"vm_disable_plane#"
+		    label	"Disable Plane #"
+		    type	toggle
+		    default	{ "0" }
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_variable_plane#"
+		    label	"VEX Variable"
+		    type	string
+		    default	{ "" }
+		    help	"The VEX variable (global or output parameter)"
+		    disablewhen	"{ vm_disable_plane# == 1 }"
+		    menureplace	{
+			"Cf"	"Cf (color)"
+			"Of"	"Of (opacity)"
+			"Af"	"Af (alpha)"
+			"P"	"P (position)"
+			"Pz"	"Pz (position-z)"
+			"N"	"N (normal)"
+			"Render_Time"	"Diagnostic: Render Time"
+			"Op_Id"	"Diagnostic: Node Id"
+			"Prim_Id"	"Diagnostic: Primitive Id"
+			"direct_diffuse"	"Direct diffuse"
+			"direct_specular"	"Direct specular"
+			"direct_reflect"	"Direct reflect"
+			"direct_refract"	"Direct refract"
+			"direct_volume"	"Direct volume"
+			"direct_emission"	"Direct emission"
+			"direct_noshadow"	"Direct unshadowed"
+			"direct_shadow"	"Direct shadow matte"
+			"indirect_diffuse"	"Indirect diffuse"
+			"indirect_specular"	"Indirect specular"
+			"indirect_reflect"	"Indirect reflect"
+			"indirect_refract"	"Indirect refract"
+			"indirect_volume"	"Indirect volume"
+			"indirect_emission"	"Indirect emission"
+			"indirect_noshadow"	"Indirect unshadowed"
+			"indirect_shadow"	"Indirect shadow matte"
+			"all_diffuse"	"Combined diffuse"
+			"all_specular"	"Combined specular"
+			"all_reflect"	"Combined reflect"
+			"all_refract"	"Combined refract"
+			"all_volume"	"Combined volume"
+			"all_emission"	"Combined emission"
+			"direct"	"Combined direct"
+			"indirect"	"Combined indirect"
+			"sss_single"	"Single scattering"
+			"sss_multi"	"Multi scattering"
+			"level"	"Ray-level"
+			"diffuselevel"	"Diffuse ray-level"
+			"specularlevel"	"Specular ray-level"
+			"volumelevel"	"Volume ray-level"
+			"direct_samples"	"Direct ray samples"
+			"indirect_samples"	"Indirect ray samples"
+		    }
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		    parmtag	{ "script_callback" "opparm . vm_vextype_plane$script_multiparm_index ( `ifs(index(\",Pz,Af,Render_Time,Op_Id,Prim_Id,level,specularlevel,diffuselevel,direct_samples,indirect_samples,\", \",$script_value,\")>=0, \"float\", \"vector\")` )" }
+		}
+		parm {
+		    name	"vm_vextype_plane#"
+		    label	"VEX Type"
+		    type	string
+		    default	{ "vector" }
+		    help	"The type associated with the VEX variable"
+		    disablewhen	"{ vm_disable_plane# == 1 }"
+		    menu	{
+			"float"	"Float Type"
+			"vector"	"Vector Type"
+			"vector4"	"Vector4 Type"
+		    }
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_channel_plane#"
+		    label	"Channel Name #"
+		    type	string
+		    default	{ "" }
+		    help	"The channel name -- if left blank, this will use the variable name"
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_usefile_plane#"
+		    label	"Different File"
+		    type	toggle
+		    nolabel
+		    joinnext
+		    default	{ "0" }
+		    help	"Save this deep raster plane to a different disk file than the main image.\\nThis does *not* work when rendering to mplay."
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" } { vm_picture == ip }"
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_filename_plane#"
+		    label	"Different File"
+		    type	file
+		    default	{ "" }
+		    help	"Save this deep raster plane to a different disk file than the main image.\\nThis does *not* work when rendering to mplay."
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" } { vm_picture == ip } { vm_usefile_plane# == 0 }"
+		    menureplace	{
+			[ "echo `pythonexprs(\"__import__('toolutils').parseDialogScriptMenu('FBrender')\")`" ]
+		    }
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "filechooser_mode" "write" }
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_quantize_plane#"
+		    label	"Quantize"
+		    type	string
+		    default	{ "float" }
+		    help	"image:quantize"
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    menu	{
+			"8"	"8 bit integer"
+			"16"	"16 bit integer"
+			"half"	"16 bit float"
+			"float"	"32 bit float"
+		    }
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_sfilter_plane#"
+		    label	"Sample Filter"
+		    type	string
+		    default	{ "alpha" }
+		    help	"image:sfilter"
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    menu	{
+			"alpha"	"Opacity Filtering"
+			"closest"	"Closest Surface"
+		    }
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_pfilter_plane#"
+		    label	"Pixel Filter"
+		    type	string
+		    default	{ "" }
+		    help	"image:pfilter"
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    menureplace	{
+			""	"Inherit from main plane"
+			"box 1 1"	"Unit Box Filter"
+			"gaussian 2 2"	"Gaussian 2x2"
+			"gaussian 3 3"	"Gaussian 3x3 (softer)"
+			"bartlett 2 2"	"Bartlett (triangle)"
+			"catrom 2 2"	"Catmull-Rom"
+			"hanning 2 2"	"Hanning"
+			"blackman 2 2"	"Blackman"
+			"sinc 2 2"	"Sinc (sharpening)"
+			"minmax min"	"Closest Sample Filtering"
+			"minmax max"	"Farthest Sample Filtering"
+			"minmax edge"	"Disable Edge Antialiasing"
+			"minmax ocover"	"Object With Most Pixel Coverage"
+			"minmax idcover"	"Object With Most Pixel Coverage (no filtering)"
+		    }
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_gamma_plane#"
+		    label	"Gamma"
+		    type	float
+		    default	{ "1" }
+		    help	"image:gamma"
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    range	{ 0.001 3 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_gain_plane#"
+		    label	"Gain"
+		    type	float
+		    default	{ "1" }
+		    help	"image:gain"
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    range	{ 0.001 10 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_dither_plane#"
+		    label	"Dither"
+		    type	float
+		    default	{ "0.5" }
+		    help	"image:dither"
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_whitepoint_plane#"
+		    label	"White Point"
+		    type	float
+		    default	{ "1" }
+		    help	"image:whitepoint"
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "spare_category" "Output" }
+		}
+		parm {
+		    name	"vm_lightexport#"
+		    label	"Light Exports"
+		    type	integer
+		    default	{ "0" }
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" }"
+		    menu	{
+			"0"	"No light exports"
+			"1"	"Export variable for each light"
+			"2"	"Merge all lights into single channel"
+		    }
+		    range	{ 0 10 }
+		    export	none
+		}
+		parm {
+		    name	"vm_lightexport_scope#"
+		    label	"Light Mask"
+		    type	oplist
+		    default	{ "*" }
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" } { vm_lightexport# == 0 }"
+		    range	{ 0 1 }
+		    export	none
+		    parmtag	{ "oprelative" "/" }
+		    parmtag	{ "opfilter" "!!OBJ/LIGHT!!" }
+		    parmtag	{ "opexpand" "1" }
+		}
+		parm {
+		    name	"vm_lightexport_select#"
+		    label	"Light Selection"
+		    type	string
+		    default	{ "*" }
+		    disablewhen	"{ vm_disable_plane# == 1 } { vm_variable_plane# == \"\" } { vm_lightexport# == 0 }"
+		    range	{ 0 1 }
+		    export	none
+		}
+	    }
+
+	}
+
+	group {
+	    name	"folder0_1"
+	    label	"Output Options"
+
+	    parm {
+		name	"vm_image_artist"
+		label	"Artist"
+		type	string
+		default	{ "" }
+		help	"Used by many image formats to store the artist"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output Options" }
+	    }
+	    parm {
+		name	"vm_image_comment"
+		label	"Comment"
+		type	string
+		default	{ "" }
+		help	"Used by many image formats to store a comment"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output Options" }
+	    }
+	    parm {
+		name	"vm_image_hostname"
+		label	"Hostname"
+		type	string
+		default	{ "" }
+		help	"Used by many image formats to store the rendering host"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output Options" }
+	    }
+	    parm {
+		name	"vm_image_mplay_direction"
+		label	"MPlay Tile Order"
+		type	string
+		default	{ "middle" }
+		menu	{
+		    "middle"	"Interactive (starting in middle)"
+		    "top"	"Top down"
+		    "bottom"	"Bottom up"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output Options" }
+	    }
+	    parm {
+		name	"vm_image_mplay_gamma"
+		label	"MPlay Gamma"
+		type	float
+		default	{ "1" }
+		range	{ 0.001 4 }
+		export	none
+		parmtag	{ "spare_category" "Output Options" }
+	    }
+	    parm {
+		name	"vm_image_jpeg_quality"
+		label	"JPEG Quality"
+		type	integer
+		default	{ "100" }
+		range	{ 20 100 }
+		export	none
+		parmtag	{ "spare_category" "Output Options" }
+	    }
+	    parm {
+		name	"vm_image_tiff_compression"
+		label	"TIFF Compression"
+		type	string
+		default	{ "LZW" }
+		menu	{
+		    "None"	"No compression"
+		    "LZW"	"LZW Compression"
+		    "AdobeDeflate"	"Adobe Deflate"
+		    "PackBits"	"PackBits"
+		    "JPEG"	"JPEG"
+		    "PixarLog"	"Pixar Log"
+		    "SGILog"	"LogLuv"
+		    "SGILog24"	"LogLuv (24 bit)"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output Options" }
+	    }
+	    parm {
+		name	"vm_image_exr_compression"
+		label	"EXR Compression"
+		type	string
+		default	{ "piz" }
+		menu	{
+		    "none"	"No compression"
+		    "rle"	"Runlength Encoding"
+		    "zips"	"ZIP, Single scanline"
+		    "zip"	"ZIP, Multi-scanline blocks"
+		    "piz"	"PIZ Wavelet"
+		    "pix"	"PXR24 (32 bit float compression, lossy)"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Output Options" }
+	    }
+	}
+
+	group {
+	    name	"folder0_2"
+	    label	"Render"
+
+	    parm {
+		name	"vm_renderengine"
+		label	"Rendering Engine"
+		type	string
+		default	{ "micropoly" }
+		menu	{
+		    "micropoly"	"Micropolygon Rendering"
+		    "raytrace"	"Ray Tracing"
+		    "pbrmicropoly"	"Micropolygon Physically Based Rendering"
+		    "pbrraytrace"	"Physically Based Rendering"
+		    "photon"	"Photon Map Generation"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_bucketsize"
+		label	"Tile Size"
+		type	integer
+		default	{ "16" }
+		range	{ 1 64 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_opacitylimit"
+		label	"Opacity Limit"
+		type	float
+		default	{ "0.995" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_usemaxthreads"
+		label	"Use Max Processors"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_threadcount"
+		label	"Thread Count"
+		type	integer
+		default	{ "1" }
+		disablewhen	"{ vm_usemaxthreads == 1 }"
+		range	{ 1 4 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_octreestyle"
+		label	"Ray Tracing Accelerator"
+		type	string
+		default	{ "kdtree" }
+		menu	{
+		    "kdtree"	"KD-Tree"
+		    "bboxtree"	"Bounding Volume Hierarchy"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_kdmemfactor"
+		label	"KD-Tree Memory Factor"
+		type	float
+		default	{ "1" }
+		disablewhen	"{ vm_octreestyle != kdtree }"
+		range	{ 0.001 2 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_geocachesize"
+		label	"Geometry Cache Size (Mb)"
+		type	integer
+		default	{ "256" }
+		range	{ 16 1024 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_texcachesize"
+		label	"Texture Cache Size (Mb)"
+		type	integer
+		default	{ "256" }
+		range	{ 16 1024 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_uvobject"
+		label	"UV Render Object"
+		type	oppath
+		default	{ "" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "oprelative" "/obj" }
+		parmtag	{ "opfilter" "!!OBJ/GEOMETRY!!" }
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_uvattribute"
+		label	"UV Attribute"
+		type	string
+		default	{ "uv" }
+		disablewhen	"{ vm_uvobject == \"\" }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_hidden"
+		label	"Enable Hiding"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"render_viewcamera"
+		label	"Create Image From Viewing Camera"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"render_any_shadowmap"
+		label	"Auto-Generate Shadow Maps"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"render_any_envmap"
+		label	"Auto-Generate Environment Maps"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"render_any_photonmap"
+		label	"Auto-Generate Photon Maps"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_otlfullpath"
+		label	"Output OTLs with full paths"
+		type	toggle
+		default	{ "0" }
+		help	"Toggling this parameter on will expand any variables in OTL paths, breaking the dependency on Houdini environment variables, but possibly making the IFD less portable"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	    parm {
+		name	"vm_embedvex"
+		label	"Force VEX Shader Embedding"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Render" }
+	    }
+	}
+
+	group {
+	    name	"folder0_3"
+	    label	"Sampling"
+
+	    parm {
+		name	"vm_dof"
+		label	"Enable Depth Of Field"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"allowmotionblur"
+		label	"Allow Motion Blur"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_traceblur"
+		label	"Raytrace Motion Blur"
+		type	toggle
+		default	{ "0" }
+		help	"Enables raytraced motion blur in micropolygon rendering"
+		disablewhen	"{ allowmotionblur == 0 } { vm_renderengine != micropoly vm_renderengine != pbrmicropoly }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_motionfactor"
+		label	"Motion Factor"
+		type	float
+		default	{ "0" }
+		disablewhen	"{ allowmotionblur == 0 vm_dof == 0 }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"xform_motionsamples"
+		label	"Xform Time Samples"
+		type	integer
+		default	{ "2" }
+		disablewhen	"{ allowmotionblur == 0 }"
+		range	{ 1 10 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"geo_motionsamples"
+		label	"Geo Time Samples"
+		type	integer
+		default	{ "1" }
+		disablewhen	"{ allowmotionblur == 0 }"
+		range	{ 1 10 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"motionstyle"
+		label	"Motion Blur Style"
+		type	string
+		default	{ "trailing" }
+		disablewhen	"{ allowmotionblur == 0 }"
+		menu	{
+		    "leading"	"Leading Blur"
+		    "centered"	"Frame Centered Blur"
+		    "trailing"	"Trailing Blur"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_imageblur"
+		label	"Allow Image Motion Blur"
+		type	toggle
+		default	{ "1" }
+		help	"This setting controls whether mantra computes motion blur for direct visibility.  When disabled, mantra will render without motion blur but still compute motion blurred positions so that you can use getBlurP() in shaders to export motion vectors."
+		disablewhen	"{ allowmotionblur == 0 }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_samples"
+		label	"Pixel Samples"
+		type	intvector2
+		size	2
+		default	{ "3" "3" }
+		range	{ 1 32 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_jitter"
+		label	"Jitter"
+		type	float
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_samplelock"
+		label	"Sample Lock"
+		type	toggle
+		default	{ "1" }
+		help	"When enabled, mantra will use the same pixel sampling pattern across frames in an animation to eliminate flicker.  If the static noise pattern produced by locked samples is visually distracting, this parameter can be disabled to produce a varying sampling pattern between frames"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_dorayvariance"
+		label	"Ray Variance Antialiasing"
+		type	toggle
+		default	{ "1" }
+		help	"Enables variance antialiasing for raytracing."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_minraysamples"
+		label	"Min Ray Samples"
+		type	integer
+		default	{ "1" }
+		help	"Minimum number of raytracing samples per micropolygon or pixel sample"
+		range	{ 1 64 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_maxraysamples"
+		label	"Max Ray Samples"
+		type	integer
+		default	{ "9" }
+		help	"Maximum number of raytracing samples per micropolygon or pixel sample"
+		disablewhen	"{ vm_dorayvariance == 0 }"
+		range	{ 1 64 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_variance"
+		label	"Noise Level"
+		type	float
+		default	{ "0.05" }
+		help	"Noise threshold used for ray variance antialiasing.  Lower values produce less noisy images."
+		disablewhen	"{ vm_dorayvariance == 0 }"
+		range	{ 0 0.1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_volumestepsize"
+		label	"Volume Step Size"
+		type	float
+		default	{ "0.1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_volumeshadowquality"
+		label	"Volume Shadow Quality"
+		type	float
+		default	{ "1" }
+		help	"A factor to proportionally decrease the sampling quality for volume shadows.  Smaller values will cause mantra to use a larger step size for shadow rays.  A value of 1 will produce equal quality for shadow rays and shading rays."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	    parm {
+		name	"vm_randomseed"
+		label	"Random Seed"
+		type	integer
+		default	{ "0" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Sampling" }
+	    }
+	}
+
+	group {
+	    name	"folder0_4"
+	    label	"Shading"
+
+	    parm {
+		name	"vm_reflectlimit"
+		label	"Reflect Limit"
+		type	integer
+		default	{ "10" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_refractlimit"
+		label	"Refract Limit"
+		type	integer
+		default	{ "10" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_diffuselimit"
+		label	"Diffuse Limit"
+		type	integer
+		default	{ "0" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_volumelimit"
+		label	"Volume Limit"
+		type	integer
+		default	{ "0" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_raybias"
+		label	"Raytracing Bias"
+		type	float
+		default	{ "0.01" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_biasnormal"
+		label	"Bias Along Normal"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_colorspace"
+		label	"Color Space"
+		type	string
+		default	{ "linear" }
+		help	"Sampling color space for variance antialiasing.  Setting this to Gamma 2.2 will cause darker parts of the image to receive more samples."
+		menu	{
+		    "linear"	"Linear"
+		    "gamma"	"Gamma 2.2"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_raylimiteval"
+		label	"At Ray Limit"
+		type	string
+		default	{ "none" }
+		menu	{
+		    "none"	"Use Black Background"
+		    "direct"	"Use Direct Lighting as Background Color"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"vm_smoothcolor"
+		label	"Smooth Grid Colors"
+		type	toggle
+		default	{ "1" }
+		disablewhen	"{ vm_renderengine != micropoly vm_renderengine != pbrmicropoly }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"reflectcategories"
+		label	"Reflection Selection"
+		type	string
+		default	{ "*" }
+		help	"These parameters determine the set of objects which will be visible in reflection rays."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"refractcategories"
+		label	"Refraction Selection"
+		type	string
+		default	{ "*" }
+		help	"These parameters determine the set of objects which will be visible in refraction rays."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	    parm {
+		name	"lightcategories"
+		label	"Light Selection"
+		type	string
+		default	{ "*" }
+		help	"A pattern of lights (by category) which are used to illuminate the fog object."
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Shading" }
+	    }
+	}
+
+	group {
+	    name	"folder0_5"
+	    label	"PBR"
+
+	    parm {
+		name	"vm_pbrshader"
+		label	"PBR Shader"
+		type	oppath
+		default	{ "" }
+		disablewhen	"{ vm_renderengine == micropoly } { vm_renderengine == raytrace }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "oprelative" "." }
+		parmtag	{ "opfilter" "!!SHOP/ATMOSPHERE!!" }
+		parmtag	{ "spare_category" "PBR" }
+	    }
+	    parm {
+		name	"vm_pbrphotonshader"
+		label	"PBR Photon Shader"
+		type	oppath
+		default	{ "" }
+		disablewhen	"{ vm_renderengine == micropoly } { vm_renderengine == raytrace }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "oprelative" "." }
+		parmtag	{ "opfilter" "!!SHOP/ATMOSPHERE!!" }
+		parmtag	{ "spare_category" "PBR" }
+	    }
+	    parm {
+		name	"vm_pbrpathtype"
+		label	"Allowable Paths"
+		type	string
+		default	{ "diffuse" }
+		disablewhen	"{ vm_renderengine == micropoly } { vm_renderengine == raytrace }"
+		menu	{
+		    "diffuse"	"Specular, Diffuse Paths"
+		    "all"	"All Paths"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "PBR" }
+	    }
+	    parm {
+		name	"vm_colorlimit"
+		label	"Color Limit"
+		type	float
+		default	{ "10" }
+		disablewhen	"{ vm_renderengine != pbrraytrace vm_renderengine != pbrmicropoly }"
+		range	{ 0 20 }
+		export	none
+		parmtag	{ "spare_category" "PBR" }
+	    }
+	    parm {
+		name	"vm_pbrreflectratio"
+		label	"Min Reflection Ratio"
+		type	float
+		default	{ "0" }
+		disablewhen	"{ vm_renderengine == micropoly } { vm_renderengine == raytrace }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "PBR" }
+	    }
+	}
+
+	group {
+	    name	"folder0_6"
+	    label	"Statistics"
+
+	    parm {
+		name	"vm_verbose"
+		label	"Verbose Level"
+		type	integer
+		default	{ "0" }
+		range	{ 0 5 }
+		export	none
+		parmtag	{ "spare_category" "Statistics" }
+	    }
+	    parm {
+		name	"vm_vexprofile"
+		label	"VEX Profiling"
+		type	integer
+		default	{ "0" }
+		menu	{
+		    "0"	"No VEX Profiling"
+		    "1"	"Execution profiling"
+		    "2"	"Profiling and NAN detection"
+		}
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Statistics" }
+	    }
+	    parm {
+		name	"vm_alfprogress"
+		label	"Alfred Style Progress"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Statistics" }
+	    }
+	    parm {
+		name	"vm_tilecallback"
+		label	"Python Tile Callback"
+		type	file
+		default	{ "" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "filechooser_mode" "read" }
+		parmtag	{ "spare_category" "Statistics" }
+	    }
+	}
+
+	group {
+	    name	"folder0_7"
+	    label	"Dicing"
+
+	    parm {
+		name	"vm_shadingfactor"
+		label	"Shading Quality Multiplier"
+		type	float
+		default	{ "1" }
+		disablewhen	"{ vm_renderengine != micropoly vm_renderengine != pbrmicropoly }"
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_rayshadingfactor"
+		label	"Ray Shading Quality Multiplier"
+		type	float
+		default	{ "1" }
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_measure"
+		label	"Micropolygon Measuring"
+		type	string
+		default	{ "nonraster" }
+		disablewhen	"{ vm_renderengine != micropoly vm_renderengine != pbrmicropoly }"
+		menu	{
+		    "nonraster"	"Non-Raster Measuring"
+		    "raster"	"Raster Space Measuring"
+		    "uniform"	"Uniform Measuring"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_measurezimportance"
+		label	"Z-Importance"
+		type	float
+		default	{ "0" }
+		disablewhen	"{ vm_renderengine != micropoly vm_renderengine != pbrmicropoly } { vm_measure != nonraster }"
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_raymeasure"
+		label	"Ray Measuring"
+		type	string
+		default	{ "nonraster" }
+		menu	{
+		    "nonraster"	"Non-Raster Measuring"
+		    "raster"	"Raster Space Measuring"
+		    "uniform"	"Uniform Measuring"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	    parm {
+		name	"vm_raymeasurezimportance"
+		label	"Ray Z-Importance"
+		type	float
+		default	{ "1" }
+		disablewhen	"{ vm_raymeasure != nonraster }"
+		range	{ 0 10 }
+		export	none
+		parmtag	{ "spare_category" "Dicing" }
+	    }
+	}
+
+	group {
+	    name	"folder0_8"
+	    label	"Geometry"
+
+	    parm {
+		name	"vm_binarygeometry"
+		label	"Save Binary Geometry"
+		type	toggle
+		default	{ "1" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	    parm {
+		name	"vm_savegroups"
+		label	"Save Geometry Groups"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Geometry" }
+	    }
+	}
+
+	group {
+	    name	"folder0_9"
+	    label	"Irradiance"
+
+	    parm {
+		name	"vm_gienable"
+		label	"Enable Irradiance Cache"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Irradiance" }
+	    }
+	    parm {
+		name	"vm_gierror"
+		label	"Irradiance Error"
+		type	float
+		default	{ "0.1" }
+		disablewhen	"{ vm_gienable != 1 }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Irradiance" }
+	    }
+	    parm {
+		name	"vm_gimaxspacing"
+		label	"Max Spacing (Pixels)"
+		type	float
+		default	{ "20" }
+		disablewhen	"{ vm_gienable != 1 }"
+		range	{ 0 20 }
+		export	none
+		parmtag	{ "spare_category" "Irradiance" }
+	    }
+	    parm {
+		name	"vm_giminspacing"
+		label	"Min Spacing (Pixels)"
+		type	float
+		default	{ "1.5" }
+		disablewhen	"{ vm_gienable != 1 }"
+		range	{ 0 20 }
+		export	none
+		parmtag	{ "spare_category" "Irradiance" }
+	    }
+	    parm {
+		name	"vm_gifile"
+		label	"Irradiance Cache File"
+		type	file
+		default	{ "" }
+		disablewhen	"{ vm_gienable != 1 }"
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "filechooser_mode" "read_and_write" }
+		parmtag	{ "spare_category" "Irradiance" }
+	    }
+	    parm {
+		name	"vm_gifilemode"
+		label	"Read/Write Mode"
+		type	string
+		default	{ "" }
+		disablewhen	"{ vm_gienable != 1 }"
+		menu	{
+		    ""	"None"
+		    "r"	"Read"
+		    "w"	"Write"
+		    "rw"	"Read/Write"
+		}
+		range	{ 0 1 }
+		export	none
+		parmtag	{ "spare_category" "Irradiance" }
+	    }
+	}
+
+    }
+
+    group {
+	name	"main5_3"
+	label	"Scripts"
+
+	parm {
+	    name	"tprerender"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"prerender"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"lprerender"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"tpreframe"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"preframe"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"lpreframe"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"tpostframe"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"postframe"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"lpostframe"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"tpostrender"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"postrender"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"lpostrender"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"main5_4"
+	label	"Shadow"
+
+	parm {
+	    name	"shadowcategories"
+	    label	"Shadow Selection"
+	    type	string
+	    default	{ "*" }
+	    help	"The pattern of object categories which are considered for ray-traced shadows."
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "spare_category" "Shadow" }
+	}
+    }
+

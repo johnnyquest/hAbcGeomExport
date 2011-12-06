@@ -1,0 +1,23 @@
+{
+    channel rx {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      start = 1.9583333730697632
+      segment { length = 0 accel = 0.333333 0.333333 expr = bezier() }
+    }
+    channel ry {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      start = 1.9583333730697632
+      segment { length = 0 accel = 0.333333 0.333333 expr = bezier() }
+    }
+    channel rz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      start = 1.9583333730697632
+      segment { length = 0 accel = 0.333333 0.333333 expr = bezier() }
+    }
+  }

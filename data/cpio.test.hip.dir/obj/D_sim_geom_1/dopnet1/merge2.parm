@@ -1,0 +1,7 @@
+{
+version 0.8
+activation	[ 0	locks=0 ]	(	[ activation	1 ] 	)
+activationrules	[ 0	locks=0 ]	(	0	)
+affectortype	[ 0	locks=0 ]	(	"ordered"	)
+relationship	[ 0	locks=0 ]	(	SIM_RelationshipCollide	)
+}

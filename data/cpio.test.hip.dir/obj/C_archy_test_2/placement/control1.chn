@@ -1,0 +1,51 @@
+{
+    channel colorr {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = "if (ch(\"../use_dcolor\"), ch(\"../dcolorr\"), 0.7)" }
+    }
+    channel colorg {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = "if (ch(\"../use_dcolor\"), ch(\"../dcolorg\"), 0.7)" }
+    }
+    channel colorb {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = "if (ch(\"../use_dcolor\"), ch(\"../dcolorb\"), 0.7)" }
+    }
+    channel scale {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = ch(\"../geoscale\") }
+    }
+    channel displayicon {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../displayicon\") }
+    }
+    channel controltype {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../controltype\") }
+    }
+    channel orientation {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../orientation\") }
+    }
+    channel shadedmode {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"../shadedmode\") }
+    }
+  }

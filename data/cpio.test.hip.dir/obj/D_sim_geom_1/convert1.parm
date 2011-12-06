@@ -1,0 +1,21 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+fromtype	[ 0	locks=0 ]	(	"all"	)
+totype	[ 0	locks=0 ]	(	"poly"	)
+surftype	[ 0	locks=0 ]	(	"quads"	)
+stdswitcher	[ 0	locks=0 ]	(	0	0	)
+lodu	[ 0	locks=0 ]	(	0.200000003	)
+lodv	[ 0	locks=0 ]	(	0.400000006	)
+lodtrim	[ 0	locks=0 ]	(	1	)
+divu	[ 0	locks=0 ]	(	2	)
+divv	[ 0	locks=0 ]	(	2	)
+divtrim	[ 0	locks=0 ]	(	1	)
+orderu	[ 0	locks=0 ]	(	4	)
+orderv	[ 0	locks=0 ]	(	4	)
+pastecoord	[ 0	locks=0 ]	(	"cfeature"	)
+pasteattrib	[ 0	locks=0 ]	(	"afeature"	)
+new	[ 0	locks=0 ]	(	"off"	)
+interphull	[ 0	locks=0 ]	(	"off"	)
+offset	[ 0	locks=0 ]	(	0	)
+}

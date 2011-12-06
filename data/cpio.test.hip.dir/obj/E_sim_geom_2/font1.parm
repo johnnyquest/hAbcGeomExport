@@ -1,0 +1,16 @@
+{
+version 0.8
+type	[ 0	locks=0 ]	(	"poly"	)
+installer	[ 0	locks=0 ]	(	0	)
+file	[ 0	locks=0 ]	(	Helvetica-Bold	)
+text	[ 0	locks=0 ]	(	"this is just\\na test / this\\nis just a test\\nthis is just\\na test / this\\nis just a test\\nthis is just\\na test / this\\nis just a test\\nthis is just\\na test / this\\nis just a test\\n"	)
+hcenter	[ 0	locks=0 ]	(	"on"	)
+vcenter	[ 0	locks=0 ]	(	"on"	)
+t	[ 0	locks=0 ]	(	0	0	0	)
+s	[ 0	locks=0 ]	(	1	1	)
+fontsize	[ 0	locks=0 ]	(	1	)
+kern	[ 0	locks=0 ]	(	0	-0.100000001	)
+italic	[ 0	locks=0 ]	(	0	)
+lod	[ 0	locks=0 ]	(	0.600000024	)
+hole	[ 0	locks=0 ]	(	"on"	)
+}

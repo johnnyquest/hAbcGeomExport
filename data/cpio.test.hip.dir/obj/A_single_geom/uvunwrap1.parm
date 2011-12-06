@@ -1,0 +1,11 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+planegroup	[ 0	locks=0 ]	(	""	)
+nplanes	[ 0	locks=0 ]	(	"planes4"	)
+layout	[ 0	locks=0 ]	(	"square"	)
+scale	[ 0	locks=0 ]	(	"uniform"	)
+spacing	[ 0	locks=0 ]	(	2	)
+rOrd	[ 0	locks=0 ]	(	"xyz"	)
+r	[ 0	locks=0 ]	(	0	0	0	)
+}
