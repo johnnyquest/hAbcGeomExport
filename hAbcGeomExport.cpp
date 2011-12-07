@@ -445,6 +445,28 @@ bool GeoObject::writeSample( float time )
 		uv_samp.setVals( AbcGeom::V2fArraySample( (const AbcGeom::V2f *)&g_uv[0], g_uv.size()/2) );
 	}
 
+
+	// collect other geometry attribute data
+	// (NOTE: make sure these dict don't get out of scope until the attrs are exported!)
+	//
+	GEO_PointAttribDict	d_pt = gdp->pointAttribs();
+	GEO_PrimAttribDict	d_pr = gdp->primitiveAttribs();
+	GEO_VertexAttribDict	d_vtx = gdp->vertexAttribs();
+	GB_AttributeTable	d_dtl = gdp->attribs();
+
+	AttrArray	attrs_pt,
+			attrs_prim,
+			attrs_vtx,
+			attrs_detail;
+	if (true)
+	{
+		get_attrs(d_pt, attrs_pt, "point");		// AbcGeom::kVertexScope
+		get_attrs(d_pr, attrs_prim, "prim");		// AbcGeom::kUniformScope
+		get_attrs(d_vtx, attrs_vtx, "vtx");		// AbcGeom::kFacevaryingScope
+		get_attrs(d_dtl, attrs_detail, "detail");	// AbcGeom::kConstantScope
+	}
+
+
 	// construct mesh sample
 	//
 	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
