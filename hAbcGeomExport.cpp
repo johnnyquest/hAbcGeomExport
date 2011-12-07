@@ -219,6 +219,29 @@ size_t get_attribtype_size( GB_AttribType t )
 
 
 
+/**		Get number of components for an attribute.
+*/
+int get_num_comps( GB_Attribute *attr ) {
+	assert(attr);
+	return attr->getSize() / get_attribtype_size(attr->getType());
+}
+
+
+
+/**	Store 2 components of a vector in a container.
+*/
+template<class T, class V> inline void push_v2( T & container, V const & v ) {
+	container.push_back(v.x());
+	container.push_back(v.y());
+}
+
+/**	Store 3 components of a vector in a container.
+*/
+template<class T, class V> inline void push_v3( T & container, V const & v ) {
+	container.push_back(v.x());
+	container.push_back(v.y());
+	container.push_back(v.z());
+}
 
 
 
@@ -365,9 +388,7 @@ bool GeoObject::writeSample( float time )
 	FOR_ALL_GPOINTS(gdp, pt)
 	{
 		UT_Vector4 const & P = pt->getPos();
-		g_pts.push_back(P.x());
-		g_pts.push_back(P.y());
-		g_pts.push_back(P.z());
+		push_v3<FloatVec, UT_Vector4>(g_pts, P);
 
 		// collect per-point normals/uvs
 		//
@@ -376,17 +397,14 @@ bool GeoObject::writeSample( float time )
 		if ( N_pt ) {
 			h_pN.setElement(pt);
 			V = h_pN.getV3();
-			g_N.push_back(V.x());
-			g_N.push_back(V.y());
-			g_N.push_back(V.z());
+			push_v3<FloatVec, UT_Vector3>(g_N, V);
 			//DBG << " -- pN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 		}
 
 		if ( uv_pt ) {
 			h_pUV.setElement(pt);
 			V = h_pUV.getV3();
-			g_uv.push_back(V.x());
-			g_uv.push_back(V.y());
+			push_v2<FloatVec, UT_Vector3>(g_uv, V);
 			//DBG << " -- pUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 		}
 
@@ -417,17 +435,14 @@ bool GeoObject::writeSample( float time )
 				if ( N_vtx ) {
 					h_vN.setElement(&vtx);
 					V = h_vN.getV3();
-					g_N.push_back(V.x());
-					g_N.push_back(V.y());
-					g_N.push_back(V.z());
+					push_v3<FloatVec, UT_Vector3>(g_N, V);
 					//DBG << " -- vN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 				}
 
 				if ( uv_vtx ) {
 					h_vUV.setElement(&vtx);
 					V = h_vUV.getV3();
-					g_uv.push_back(V.x());
-					g_uv.push_back(V.y());
+					push_v2<FloatVec, UT_Vector3>(g_uv, V);
 					//DBG << " -- vUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 				}
 			}
