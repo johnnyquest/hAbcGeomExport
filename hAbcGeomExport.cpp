@@ -47,6 +47,8 @@
 #include <GEO/GEO_PrimPoly.h>
 #include <GEO/GEO_AttributeHandle.h>
 
+#include <GB/GB_AttributeDictOffsetIterator.h>
+
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
 
@@ -161,6 +163,60 @@ hAbcGeomExport::hAbcGeomExport(
 hAbcGeomExport::~hAbcGeomExport()
 {
 }
+
+
+
+
+
+/**		Collect all attributes from an attribute dict.
+		(Used to get all point/prim/vertex/... attribute names).
+*/
+void get_attrs(
+	GB_AttributeDict & dict,
+	AttrArray & names,
+	char const *type="?" // TODO: remove this
+)
+{
+	DBG << "get_attr_names() (" << type << ")\n";
+	GB_AttributeDictOffsetIterator it(dict);
+
+	for(; !it.atEnd(); ++it)
+	{
+		GB_Attribute *attr = it.attrib();
+		names[ attr->getName() ] = attr;
+		DBG
+			<< " - ATTR:" << attr->getName()
+			<< " type=" << attr->getType()
+			<< " size=" << attr->getSize()
+			<< "\n";
+	}
+}
+
+
+
+/**		Get the size of a given attribute type (in bytes).
+*/
+size_t get_attribtype_size( GB_AttribType t )
+{
+	typedef  std::map<GB_AttribType, size_t> SizeMap;
+	static SizeMap _gb_ts;
+
+	if ( _gb_ts.size()==0 ) {
+		// one-time init of static map
+		//dbg << "(( get_attribtype_size() init/static )) ";
+		_gb_ts[GB_ATTRIB_INT] = sizeof(int);
+		_gb_ts[GB_ATTRIB_FLOAT] = sizeof(float);
+		_gb_ts[GB_ATTRIB_VECTOR] = sizeof(float)*3; // TODO: this is to be corrected!
+		dbg << _gb_ts.size();
+	}
+
+	SizeMap::const_iterator i = _gb_ts.find(t);
+	size_t r =  i!=_gb_ts.end()  ?  i->second  :  0;
+
+	assert(r>0 && "unknown/unsupported type...");
+	return r;
+}
+
 
 
 
