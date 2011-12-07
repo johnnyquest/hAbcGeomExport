@@ -347,12 +347,14 @@ bool GeoObject::writeSample( float time )
 	//
 	std::map<GEO_Point const *, int> ptmap; 	// (this should be replaced if possible)
 
-	std::vector<Abc::float32_t>	g_pts;			// point coordinates (3 values)
+	typedef std::vector<Abc::float32_t> FloatVec;
+
+	FloatVec			g_pts;			// point coordinates (3 values)
 	std::vector<Abc::int32_t>	g_pts_ids;		// point indices for each per-face-vertex
 	std::vector<Abc::int32_t>	g_facevtxcounts;	// vertex count for each face
 	
-	std::vector<Abc::float32_t>	g_N;			// normals (3 values; per-point or per-vertex)
-	std::vector<Abc::float32_t>	g_uv;			// uv coords (2 values; per-point or per-vertex)
+	FloatVec			g_N;			// normals (3 values; per-point or per-vertex)
+	FloatVec			g_uv;			// uv coords (2 values; per-point or per-vertex)
 
 	GEO_Point const		*pt;
 	GEO_Primitive const	*prim;
