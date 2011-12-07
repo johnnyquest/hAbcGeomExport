@@ -87,7 +87,6 @@ static PRM_Default	prm_abcoutput_d(0, "./out.abc");
 
 
 
-
 static PRM_Template * getTemplates()
 {
 	static PRM_Template *t=0;
@@ -113,10 +112,6 @@ static PRM_Template * getTemplates()
 	return t;
 }
 
-
-
-
-
 OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 {
 	static OP_TemplatePair *ropPair=0;
@@ -129,19 +124,12 @@ OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 	return ropPair;
 }
 
-
-
-
-
 OP_VariablePair * hAbcGeomExport::getVariablePair()
 {
 	static OP_VariablePair *pair=0;
 	if (!pair) pair = new OP_VariablePair(ROP_Node::myVariableList);
 	return pair;
 }
-
-
-
 
 
 OP_Node * hAbcGeomExport::myConstructor(
@@ -152,9 +140,6 @@ OP_Node * hAbcGeomExport::myConstructor(
 {
 	return new hAbcGeomExport(net, name, op);
 }
-
-
-
 
 
 hAbcGeomExport::hAbcGeomExport(
