@@ -157,9 +157,6 @@ hAbcGeomExport::hAbcGeomExport(
 }
 
 
-
-
-
 hAbcGeomExport::~hAbcGeomExport()
 {
 }
@@ -180,8 +177,7 @@ void get_attrs(
 	DBG << "get_attr_names() (" << type << ")\n";
 	GB_AttributeDictOffsetIterator it(dict);
 
-	for(; !it.atEnd(); ++it)
-	{
+	for(; !it.atEnd(); ++it) {
 		GB_Attribute *attr = it.attrib();
 		names[ attr->getName() ] = attr;
 		DBG
@@ -203,7 +199,6 @@ size_t get_attribtype_size( GB_AttribType t )
 
 	if ( _gb_ts.size()==0 ) {
 		// one-time init of static map
-		//dbg << "(( get_attribtype_size() init/static )) ";
 		_gb_ts[GB_ATTRIB_INT] = sizeof(int);
 		_gb_ts[GB_ATTRIB_FLOAT] = sizeof(float);
 		_gb_ts[GB_ATTRIB_VECTOR] = sizeof(float)*3; // TODO: this is to be corrected!
@@ -242,6 +237,9 @@ template<class T, class V> inline void push_v3( T & container, V const & v ) {
 	container.push_back(v.y());
 	container.push_back(v.z());
 }
+
+
+
 
 
 
@@ -297,7 +295,7 @@ GeoObject::~GeoObject()
 /**		GeoObject: write a sample (xform+geom) for the specified time.
 
 @TODO
-		- export normals/uvs (support both per-point and per-vertex)
+		- (DONE) export normals/uvs (support both per-point and per-vertex)
 		- export point velocities
 		- export other attributes
 		- support for particles
@@ -398,14 +396,12 @@ bool GeoObject::writeSample( float time )
 			h_pN.setElement(pt);
 			V = h_pN.getV3();
 			push_v3<FloatVec, UT_Vector3>(g_N, V);
-			//DBG << " -- pN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 		}
 
 		if ( uv_pt ) {
 			h_pUV.setElement(pt);
 			V = h_pUV.getV3();
 			push_v2<FloatVec, UT_Vector3>(g_uv, V);
-			//DBG << " -- pUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 		}
 
 		ptmap[pt]=c; // store point in point->ptindex map
@@ -436,14 +432,12 @@ bool GeoObject::writeSample( float time )
 					h_vN.setElement(&vtx);
 					V = h_vN.getV3();
 					push_v3<FloatVec, UT_Vector3>(g_N, V);
-					//DBG << " -- vN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 				}
 
 				if ( uv_vtx ) {
 					h_vUV.setElement(&vtx);
 					V = h_vUV.getV3();
 					push_v2<FloatVec, UT_Vector3>(g_uv, V);
-					//DBG << " -- vUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
 				}
 			}
 		}
