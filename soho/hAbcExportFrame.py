@@ -10,14 +10,11 @@ import sys
 import string
 import re
 
+import hou
 from soho import Precision
 from soho import SohoParm
 
-import hou
-
-
 import hAbcExport as G
-
 
 
 def msg(m):	sys.__stderr__.write("[hAbcExportFrame.py]: %s\n" % str(m))
@@ -25,12 +22,7 @@ def dbg(m):	msg("(dbg) %s" % str(m))
 def warn(m):	msg("WARNING: %s" % str(m))
 
 
-
-
 #dbg("(hAbcExportFrame.py)")
-
-
-
 
 
 
@@ -58,6 +50,24 @@ def collect_archy( objname, parentname=None, archy=None, level=1 ):
 
 
 
+def abc_init(abcfile):
+	"""Create a new alembic archive."""
+	dbg("abc_init() abcfile=%s" % str(abcfile))
+
+	return True
+
+
+
+def abc_cleanup():
+	"""Clean up and close alembic archive."""
+	dbg("abc_cleanup()")
+	pass
+
+
+
+
+
+
 
 def export():
 	"""Main export function."""
@@ -78,13 +88,14 @@ def export():
 
 	if not soho.initialize(now):
 		soho.error("couldn't initialize soho")
+		abc_cleanup()
 		return
 
 	# NOTE: this is prone to float inaccuracies
 	frame = now*fps + 1.0
 
 	objpath   = ps['objpath'].Value[0]
-	abcoutput = ps['abcoutput'].Value[0]
+	abc_file  = ps['abcoutput'].Value[0]
 	trange    = ps['trange'].Value[0]
 	f         = ps['f'].Value
 
@@ -98,7 +109,7 @@ def export():
 	dbg("now=%.3f fps=%.3f -> %f" % (now, fps, frame))
 
 	dbg("objpath=%s abcoutput=%s trange=%d f=%s" % \
-		(objpath, abcoutput, trange, str(f)))
+		(objpath, abc_file, trange, str(f)))
 
 
 	# collect hierarchy to be exported
@@ -167,6 +178,7 @@ def export():
 	# (parentname, objname, exportname, soppath)
 	#
 	archy_objs = [ n[1] for n in archy ]
+	skip_frame = False
 
 	# first frame: init all internal stuff
 	#
@@ -177,14 +189,37 @@ def export():
 
 		# TODO: export hierarchy, allocate outmesh objs, etc.
 
+		"""
+		alembic todo:
+		- create an oarchive
+		- create new time sampling obj (AbcGeom::TimeSampling)
+		- for each object, create new abc objects
+			- obj/transform: AbcGeom::OXform
+			- if geometry (mesh): AbcGeom::OPolyMesh
+		"""
+
+		s = abc_init(abc_file)
+		if not s:
+			warn("couldn't output to file %s--aborting" % abc_file)
+			skip_frame = True
+			is_last = True
+
 
 
 	# frame export: collect xforms, geoms, and export them
 	#
-	if archy_objs == G.archy_objs:
+	if archy_objs==G.archy_objs  and  not skip_frame:
+
 		dbg(" -- exporting frame %.1f" % frame)
 		pass
-	
+
+		"""
+		alembic todo:
+		- for each object
+			- read/export xform matrix
+			- if geom: read/export geometry (polymesh)
+		"""
+
 	else:
 		#soho.error("couldn't export frame %.1f--no. of objects changed" % frame)
 		warn("couldn't export frame %.1f--no. of objects changed" % frame)
@@ -199,6 +234,16 @@ def export():
 
 		# TODO: close export process
 		pass
+
+		"""
+		alembic todo:
+		- delete all alembic objs
+			- transforms: OXform
+			- geometry (mesh): OPolyMesh
+		- delete oarchive
+		"""
+
+		abc_cleanup()
 
 
 
