@@ -1,10 +1,9 @@
 
 S=`pwd`/soho
-T=~/houdini11.0/soho
+T=$HIH/soho
 
 rm -rf $T/hAbcExport.py
 rm -rf $T/*.pyc
-rm -rf $T/parameters/*
 
 ln -sf $S/hAbcExport.py $T
 
