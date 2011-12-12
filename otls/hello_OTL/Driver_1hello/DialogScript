@@ -1,0 +1,59 @@
+# Dialog script for hello automatically generated 07/10/09 10:24:53
+
+{
+    name	hello
+    script	hello
+    label	"Hello SOHO"
+
+    help {
+	""
+    }
+
+    parm {
+	name	"execute"
+	baseparm
+	joinnext
+	export	none
+    }
+    parm {
+	name	"renderdialog"
+	baseparm
+	export	none
+    }
+    parm {
+	name	"trange"
+	baseparm
+	export	none
+    }
+    parm {
+	name	"f"
+	baseparm
+	export	none
+    }
+    parm {
+	name	"take"
+	baseparm
+	export	none
+    }
+    parm {
+	name	"soho_program"
+	label	"SOHO Program"
+	type	string
+	default	{ "Hello1.py" }
+	menureplace	{
+	    "Hello1.py"	"Hello1.py"
+	    "Hello2.py"	"Hello2.py"
+	    "Hello3.py"	"Hello3.py"
+	}
+	range	{ 0 1 }
+	export	none
+    }
+    parm {
+	name	"soho_outputmode"
+	label	"Output Mode"
+	type	integer
+	default	{ "2" }
+	range	{ 0 10 }
+	export	none
+    }
+}

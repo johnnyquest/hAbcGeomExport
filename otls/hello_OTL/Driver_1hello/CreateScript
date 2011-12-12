@@ -1,0 +1,13 @@
+# Automatically generated script: Friday July 10, 10:24
+\set noalias = 1
+#
+#  Creation script for hello operator
+#
+
+if ( "$arg1" == "" ) then
+    echo This script is intended as a creation script
+    exit
+endif
+
+# Node $arg1 (Driver/hello)
+opexprlanguage -s hscript $arg1
