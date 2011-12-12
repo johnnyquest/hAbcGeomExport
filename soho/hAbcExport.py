@@ -14,18 +14,43 @@ from soho import SohoParm
 
 import hou
 
+
 def msg(m):
-	sys.__stderr__.write("%s\n" % str(m))
+	sys.__stderr__.write("[hAbcExport.py]: %s\n" % str(m))
+
+
+def dbg(m):
+	msg("(debug) %s" % str(m))
 
 
 
 
+dbg("hAbcExport.py -- RUNNING")
 
-msg("hAbcExport.py -- RUNNING")
+
+
+def collect_archy( objname, archy=None, level=1 ):
+
+	n = hou.node(objname)
+
+	if n:
+		if archy is None: archy = []
+		dbg( " %s %s"  %  ('-' * level, n.path() ) )
+		archy.append(n.path())
+
+		cs = [ c.path() for c in n.outputs() ]
+		for c in cs:
+			archy = collect_archy(c, archy, level+1)
+		return archy
+	
+	return []
+
+
+
 
 
 def export():
-	msg("1")
+	dbg("1")
 
 	ps = soho.evaluate({
 		'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
@@ -37,7 +62,7 @@ def export():
 		'f':		SohoParm('f',			'int',		None, False)
 	})
 	
-	msg("2")
+	dbg("2")
 
 	now = ps['now'].Value[0]
 	fps = ps['fps'].Value[0]
@@ -54,27 +79,37 @@ def export():
 	trange = ps['trange'].Value[0]
 	f = ps['f'].Value
 
-	msg("3")
+	dbg("3")
 
-	msg("now=%.3f fps=%.3f -> %.3f" % (now, fps, frame))
+	dbg("now=%.3f fps=%.3f -> %.3f" % (now, fps, frame))
 
-	msg("objpath=%s abcoutput=%s trange=%d f=%s" % \
+	dbg("objpath=%s abcoutput=%s trange=%d f=%s" % \
 		(objpath, abcoutput, trange, str(f)))
 
-	soho.addObjects(now, objpath, '', '', True)
-	
-	msg("4")
-
-	objlist = soho.objectList('objlist:instance')
+	soho.addObjects(now, '*', '*', '', True)
 	soho.lockObjects(now)
 
-	msg("5")
+	dbg("4")
+
+	objlist = soho.objectList('objlist:instance')
+
+	dbg("5")
+
+	sop_dict = {} # {objname: sopname}
 
 	for obj in objlist:
-		msg(" -- %s" % obj.getName())
+		dbg(" -- %s" % obj.getName())
+		path = obj.getDefaultedString('object:soppath', now, [''])[0]
+		dbg(" ---- %s" % path)
+		sop_dict[obj.getName()] = path
 
+	archy = collect_archy(objpath)
 
+	for obj in archy:
+		pass
 
 
 export()
+
+
 
