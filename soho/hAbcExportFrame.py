@@ -8,6 +8,7 @@ import time
 import soho
 import sys
 import string
+import re
 
 from soho import Precision
 from soho import SohoParm
@@ -20,7 +21,7 @@ def msg(m):
 
 
 def dbg(m):
-	msg("(debug) %s" % str(m))
+	msg("(dbg) %s" % str(m))
 
 
 
@@ -29,18 +30,23 @@ dbg("hAbcExportFrame.py -- RUNNING")
 
 
 
-def collect_archy( objname, archy=None, level=1 ):
+def collect_archy( objname, parentname=None, archy=None, level=1 ):
+	"""
+	Collect obj hierarchy. Returns array of (<parentpath>, <objpath>) tuples.
+	"""
 
 	n = hou.node(objname)
 
 	if n:
 		if archy is None: archy = []
-		dbg( " %s %s"  %  ('-' * level, n.path() ) )
-		archy.append(n.path())
+
+		p = n.path()
+		dbg( " %s %s"  %  ('-' * level, p ) )
+		archy.append( (parentname, p) )
 
 		cs = [ c.path() for c in n.outputs() ]
 		for c in cs:
-			archy = collect_archy(c, archy, level+1)
+			archy = collect_archy(c, p, archy, level+1)
 		return archy
 	
 	return []
@@ -50,7 +56,7 @@ def collect_archy( objname, archy=None, level=1 ):
 
 
 def export():
-	dbg("1")
+	dbg("export")
 
 	ps = soho.evaluate({
 		'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
@@ -62,53 +68,97 @@ def export():
 		'f':		SohoParm('f',			'int',		None, False)
 	})
 	
-	dbg("2")
-
 	now = ps['now'].Value[0]
 	fps = ps['fps'].Value[0]
 	hver = ps['hver'].Value[0]
 
 	if not soho.initialize(now):
-		soho.error("couldn't initialize")
+		soho.error("couldn't initialize soho")
 		return
 
 	frame = int(now*fps)+1
 
-	objpath = ps['objpath'].Value[0]
+	objpath   = ps['objpath'].Value[0]
 	abcoutput = ps['abcoutput'].Value[0]
-	trange = ps['trange'].Value[0]
-	f = ps['f'].Value
-
-	dbg("3")
+	trange    = ps['trange'].Value[0]
+	f         = ps['f'].Value
 
 	dbg("now=%.3f fps=%.3f -> %.3f" % (now, fps, frame))
 
 	dbg("objpath=%s abcoutput=%s trange=%d f=%s" % \
 		(objpath, abcoutput, trange, str(f)))
 
+
+	# collect hierarchy to be exported
+	# (read from scene directly, ie. not containing instances, etc.)
+	# results in array [ (parentname, objname) [, ...]  ] -- (full pathnames)
+	#
+	archy = collect_archy(objpath)
+	empty_xforms = []
+	dbg("archy: %s" % str(archy))
+	# TODO: include all non-geom in empty_xforms
+
+
+	# collect geometry to be exported and their render SOPS
+	# (including point- and other instances, etc)
+	#
 	soho.addObjects(now, '*', '*', '', True)
 	soho.lockObjects(now)
 
-	dbg("4")
-
-	objlist = soho.objectList('objlist:instance')
-
-	dbg("5")
-
+	objs = soho.objectList('objlist:instance')
+	obj_list = []
 	sop_dict = {} # {objname: sopname}
 
-	for obj in objlist:
-		dbg(" -- %s" % obj.getName())
-		path = obj.getDefaultedString('object:soppath', now, [''])[0]
-		#dbg(" ---- %s" % path)
-		sop_dict[obj.getName()] = path
-
-	archy = collect_archy(objpath)
-
-	for obj in archy:
-		pass
+	for obj in objs:
+		n = obj.getName() # full pathname
+		dbg(" -- %s" % n )
+		obj_list.append(n)
+		path = obj.getDefaultedString('object:soppath', now, [None])[0]
+		dbg(" ---- %s" % path)
+		if path and path!="": sop_dict[n] = path
 
 
+	# extend hierarchy with per-point instances
+	#
+	p1 = re.compile(":[^:]+:")
+	for obj in obj_list:
+		if re.search(p1, obj):
+			m = obj.split(":")
+			p = m[-2] # parent: 2nd from right
+			archy.append( ( p, obj, "%s->%s" % (m[-2], m[-1]) )  )
+			empty_xforms.append(p)
+			dbg(" -+- %s %s" % (p, obj))
 
+
+	# fill rest of the archy array
+	# elem: (parentpath, objpath, exportname, soppath)
+	#
+	if True:
+		archy2 = []
+
+		for a in archy:
+			N = a[:]
+			if len(N)<3: N = (N[0], N[1], N[1])
+			if N[1] in sop_dict:
+				N = (N[0], N[1], N[2], sop_dict[N[1]])
+				archy2.append(N)
+			#elif N[1] in empty_xforms:
+			else:
+				N = (N[0], N[1], N[1], None)
+				archy2.append(N)
+
+		archy = archy2
+
+	dbg( '-' * 40 )
+
+	dbg("archy:")
+	for a in archy:
+		#dbg("- %s: %s" % (a[1], a[3]))
+		dbg("- %s" % str(a))
+
+
+	# we now have a list of all objects to be exported
+	# (parentname, objname, exportname, soppath)
+	#
 
 
