@@ -16,17 +16,21 @@ from soho import SohoParm
 import hou
 
 
-def msg(m):
-	sys.__stderr__.write("[hAbcExportFrame.py]: %s\n" % str(m))
-
-
-def dbg(m):
-	msg("(dbg) %s" % str(m))
+import hAbcExport as G
 
 
 
+def msg(m):	sys.__stderr__.write("[hAbcExportFrame.py]: %s\n" % str(m))
+def dbg(m):	msg("(dbg) %s" % str(m))
+def warn(m):	msg("WARNING: %s" % str(m))
 
-dbg("hAbcExportFrame.py -- RUNNING")
+
+
+
+#dbg("(hAbcExportFrame.py)")
+
+
+
 
 
 
@@ -41,7 +45,7 @@ def collect_archy( objname, parentname=None, archy=None, level=1 ):
 		if archy is None: archy = []
 
 		p = n.path()
-		dbg( " %s %s"  %  ('-' * level, p ) )
+		#dbg( " %s %s"  %  ('-' * level, p ) )
 		archy.append( (parentname, p) )
 
 		cs = [ c.path() for c in n.outputs() ]
@@ -56,7 +60,7 @@ def collect_archy( objname, parentname=None, archy=None, level=1 ):
 
 
 def export():
-	dbg("export")
+	"""Main export function."""
 
 	ps = soho.evaluate({
 		'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
@@ -76,14 +80,22 @@ def export():
 		soho.error("couldn't initialize soho")
 		return
 
-	frame = int(now*fps)+1
+	# NOTE: this is prone to float inaccuracies
+	frame = now*fps + 1.0
 
 	objpath   = ps['objpath'].Value[0]
 	abcoutput = ps['abcoutput'].Value[0]
 	trange    = ps['trange'].Value[0]
 	f         = ps['f'].Value
 
-	dbg("now=%.3f fps=%.3f -> %.3f" % (now, fps, frame))
+	is_first  = frame < f[0]+1 # working around float funniness
+	is_last   = frame > f[1]-1
+
+	if trange==0:
+		is_first= is_last= True
+
+	dbg("is_first=%d is_last=%d" % (is_first, is_last))
+	dbg("now=%.3f fps=%.3f -> %f" % (now, fps, frame))
 
 	dbg("objpath=%s abcoutput=%s trange=%d f=%s" % \
 		(objpath, abcoutput, trange, str(f)))
@@ -94,9 +106,7 @@ def export():
 	# results in array [ (parentname, objname) [, ...]  ] -- (full pathnames)
 	#
 	archy = collect_archy(objpath)
-	empty_xforms = []
-	dbg("archy: %s" % str(archy))
-	# TODO: include all non-geom in empty_xforms
+	#dbg("archy: %s" % str(archy))
 
 
 	# collect geometry to be exported and their render SOPS
@@ -111,11 +121,12 @@ def export():
 
 	for obj in objs:
 		n = obj.getName() # full pathname
-		dbg(" -- %s" % n )
+		#dbg(" -- %s" % n )
 		obj_list.append(n)
 		path = obj.getDefaultedString('object:soppath', now, [None])[0]
-		dbg(" ---- %s" % path)
-		if path and path!="": sop_dict[n] = path
+		#dbg(" ---- %s" % path)
+		if path and path!="":
+			sop_dict[n] = path
 
 
 	# extend hierarchy with per-point instances
@@ -126,39 +137,69 @@ def export():
 			m = obj.split(":")
 			p = m[-2] # parent: 2nd from right
 			archy.append( ( p, obj, "%s->%s" % (m[-2], m[-1]) )  )
-			empty_xforms.append(p)
-			dbg(" -+- %s %s" % (p, obj))
+			#dbg(" -+- %s %s" % (p, obj))
 
 
 	# fill rest of the archy array
 	# elem: (parentpath, objpath, exportname, soppath)
 	#
-	if True:
-		archy2 = []
-
-		for a in archy:
-			N = a[:]
-			if len(N)<3: N = (N[0], N[1], N[1])
-			if N[1] in sop_dict:
-				N = (N[0], N[1], N[2], sop_dict[N[1]])
-				archy2.append(N)
-			#elif N[1] in empty_xforms:
-			else:
-				N = (N[0], N[1], N[1], None)
-				archy2.append(N)
-
-		archy = archy2
-
-	dbg( '-' * 40 )
-
-	dbg("archy:")
+	archy2 = []
 	for a in archy:
-		#dbg("- %s: %s" % (a[1], a[3]))
-		dbg("- %s" % str(a))
+		N = a[:]
+		if len(N)<3: N = (N[0], N[1], N[1])
+		if N[1] in sop_dict:
+			N = (N[0], N[1], N[2], sop_dict[N[1]])
+			archy2.append(N)
+		else:
+			N = (N[0], N[1], N[1], None)
+			archy2.append(N)
+	archy = archy2
+
+	if False:
+		dbg( '-' * 40 )
+		dbg("archy:")
+		for a in archy:
+			#dbg("- %s: %s" % (a[1], a[3]))
+			dbg("- %s" % str(a))
 
 
 	# we now have a list of all objects to be exported
 	# (parentname, objname, exportname, soppath)
 	#
+	archy_objs = [ n[1] for n in archy ]
+
+	# first frame: init all internal stuff
+	#
+	if is_first:
+		dbg("IS_FIRST--INIT")
+		G.archy = archy[:]
+		G.archy_objs = archy_objs[:]
+
+		# TODO: export hierarchy, allocate outmesh objs, etc.
+
+
+
+	# frame export: collect xforms, geoms, and export them
+	#
+	if archy_objs == G.archy_objs:
+		dbg(" -- exporting frame %.1f" % frame)
+		pass
+	
+	else:
+		#soho.error("couldn't export frame %.1f--no. of objects changed" % frame)
+		warn("couldn't export frame %.1f--no. of objects changed" % frame)
+
+
+
+	# last frame: cleanup all internal stuff,
+	# finish export
+	#
+	if is_last:
+		dbg("IS_LAST--FINISHING...")
+
+		# TODO: close export process
+		pass
+
+
 
 
