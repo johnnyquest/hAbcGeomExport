@@ -24,9 +24,9 @@ def msg(m):
 msg("hAbcExport.py -- RUNNING")
 
 
-if True:
+def export():
 	msg("1")
-	
+
 	ps = soho.evaluate({
 		'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
 		'fps':		SohoParm('state:fps',			'real', [24],  False, key='fps'),
@@ -43,6 +43,10 @@ if True:
 	fps = ps['fps'].Value[0]
 	hver = ps['hver'].Value[0]
 
+	if not soho.initialize(now):
+		soho.error("couldn't initialize")
+		return
+
 	frame = int(now*fps)+1
 
 	objpath = ps['objpath'].Value[0]
@@ -57,5 +61,20 @@ if True:
 	msg("objpath=%s abcoutput=%s trange=%d f=%s" % \
 		(objpath, abcoutput, trange, str(f)))
 
+	soho.addObjects(now, objpath, '', '', True)
+	
+	msg("4")
 
+	objlist = soho.objectList('objlist:instance')
+	soho.lockObjects(now)
+
+	msg("5")
+
+	for obj in objlist:
+		msg(" -- %s" % obj.getName())
+
+
+
+
+export()
 
