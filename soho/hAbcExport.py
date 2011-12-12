@@ -4,58 +4,20 @@
 #
 #
 
-import time
-import soho
 import sys
-import string
 
-from soho import Precision
-from soho import SohoParm
-
-import hou
-
-def msg(m):
-	sys.__stderr__.write("%s\n" % str(m))
+def msg(m):	sys.__stderr__.write("[hAbcExport.py]: %s\n" % str(m))
+def dbg(m):	msg("(debug) %s" % str(m))
 
 
+archy = []		# objects to be exported (array of tuples)
+archy_objs = []		# object names to be exported (for incremental-checking purposes)
 
 
+import hAbcExportFrame
+reload(hAbcExportFrame)
 
-msg("hAbcExport.py -- RUNNING")
-
-
-if True:
-	msg("1")
-	
-	ps = soho.evaluate({
-		'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
-		'fps':		SohoParm('state:fps',			'real', [24],  False, key='fps'),
-		'hver':		SohoParm('state:houdiniversion',	'string', [''],  False, key='hver'),
-		'objpath':	SohoParm('objpath',		'string',	[''], False),
-		'abcoutput':	SohoParm('abcoutput',		'string',	[''], False),
-		'trange':	SohoParm('trange',		'int',		[0], False),
-		'f':		SohoParm('f',			'int',		None, False)
-	})
-	
-	msg("2")
-
-	now = ps['now'].Value[0]
-	fps = ps['fps'].Value[0]
-	hver = ps['hver'].Value[0]
-
-	frame = int(now*fps)+1
-
-	objpath = ps['objpath'].Value[0]
-	abcoutput = ps['abcoutput'].Value[0]
-	trange = ps['trange'].Value[0]
-	f = ps['f'].Value
-
-	msg("3")
-
-	msg("now=%.3f fps=%.3f -> %.3f" % (now, fps, frame))
-
-	msg("objpath=%s abcoutput=%s trange=%d f=%s" % \
-		(objpath, abcoutput, trange, str(f)))
+hAbcExportFrame.export()
 
 
 
