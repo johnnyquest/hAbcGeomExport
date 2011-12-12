@@ -1,4 +1,4 @@
-# Dialog script for hello automatically generated 07/10/09 10:24:53
+# Dialog script for hello automatically generated 12/12/11 12:39:40
 
 {
     name	hello
@@ -54,6 +54,24 @@
 	type	integer
 	default	{ "2" }
 	range	{ 0 10 }
+	export	none
+    }
+    parm {
+	name	"objpath"
+	label	"Path to Root Object"
+	type	oppath
+	default	{ "/obj" }
+	range	{ 0 1 }
+	export	none
+	parmtag	{ "oprelative" "." }
+	parmtag	{ "opfilter" "!!OBJ!!" }
+    }
+    parm {
+	name	"abcoutput"
+	label	"Save to File"
+	type	file
+	default	{ "./out.abc" }
+	range	{ 0 1 }
 	export	none
     }
 }
