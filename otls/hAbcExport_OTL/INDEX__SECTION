@@ -1,6 +1,6 @@
-Operator:     hello
+Operator:     hAbcExport
 Label:        Alembic Export
-Path:         oplib:/Driver/hello?Driver/hello
+Path:         oplib:/Driver/hAbcExport?Driver/hAbcExport
 Icon:         ROP_soho
 Table:        Driver
 License:      
@@ -9,5 +9,5 @@ Inputs:       0 to 0
 Subnet:       false
 Python:       false
 Empty:        false
-Modified:     Mon Dec 12 12:49:20 2011
+Modified:     Mon Dec 12 13:00:17 2011
 

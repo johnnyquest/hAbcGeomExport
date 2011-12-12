@@ -1,7 +1,7 @@
-# Automatically generated script: Monday December 12, 12:49 2011
+# Automatically generated script: Monday December 12, 13:00 2011
 \set noalias = 1
 #
-#  Creation script for hello operator
+#  Creation script for hAbcExport operator
 #
 
 if ( "$arg1" == "" ) then
@@ -9,5 +9,5 @@ if ( "$arg1" == "" ) then
     exit
 endif
 
-# Node $arg1 (Driver/hello)
+# Node $arg1 (Driver/hAbcExport)
 opexprlanguage -s hscript $arg1
