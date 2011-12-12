@@ -126,14 +126,17 @@ def export():
 	soho.addObjects(now, '*', '*', '', True)
 	soho.lockObjects(now)
 
-	objs = soho.objectList('objlist:instance')
+	soho_objs = {} # {objname: soho_obj}
+
 	obj_list = []
 	sop_dict = {} # {objname: sopname}
+	objs = soho.objectList('objlist:instance')
 
 	for obj in objs:
 		n = obj.getName() # full pathname
 		#dbg(" -- %s" % n )
 		obj_list.append(n)
+		soho_objs[n] = obj
 		path = obj.getDefaultedString('object:soppath', now, [None])[0]
 		#dbg(" ---- %s" % path)
 		if path and path!="":
@@ -199,7 +202,24 @@ def export():
 		"""
 
 		s = abc_init(abc_file)
-		if not s:
+		if s:
+			# build objects for oarchive
+			#
+			for E in archy:
+				objname = E[1]
+				parent  = E[0]
+				outname = E[2]
+				soppath = E[3]
+
+				dbg(" - new xform %s (obj=%s parent=%s)" % (outname, objname, parent))
+
+				if soppath:
+					dbg(" -- new geom shape")
+				else:
+					dbg(" -- (no SOP/geom)")
+					pass
+
+		else:
 			warn("couldn't output to file %s--aborting" % abc_file)
 			skip_frame = True
 			is_last = True
@@ -219,6 +239,40 @@ def export():
 			- read/export xform matrix
 			- if geom: read/export geometry (polymesh)
 		"""
+
+		for E in archy:
+			objname = E[1]
+			soppath = E[3]
+			dbg(" - OBJ: %s" % E[1])
+
+			# get xform matrix (TODO: get pretransform too!)
+			#
+			xform = None
+
+			if objname in soho_objs:
+				# get matrix from soho
+				dbg(" --- (mtx from soho)")
+				xform = []
+				soho_objs[objname].evalFloat('space:local', now, xform)
+				xform = hou.Matrix4(xform)
+			else:
+				# get matrix from hou
+				dbg(" --- (mtx from hou)")
+				n = hou.node(objname) # should be an hou.ObjNode
+				pre = n.preTransform()
+				xform = n.parmTransform()
+				xform = pre * xform
+			
+			#dbg(" --- mtx: %s" % str(xform.asTupleOfTuples()))
+
+
+			# get geom shape (if geometry)
+			#
+			if soppath:
+				dbg(" --- SOP: %s" % soppath)
+				pass
+			else:
+				dbg(" --- (no SOP)")
 
 	else:
 		#soho.error("couldn't export frame %.1f--no. of objects changed" % frame)
