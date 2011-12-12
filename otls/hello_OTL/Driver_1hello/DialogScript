@@ -1,9 +1,9 @@
-# Dialog script for hello automatically generated 12/12/11 12:39:40
+# Dialog script for hello automatically generated 12/12/11 12:49:20
 
 {
-    name	hello
-    script	hello
-    label	"Hello SOHO"
+    name	hAbcExport
+    script	hAbcExport
+    label	"Alembic Export"
 
     help {
 	""
@@ -35,43 +35,196 @@
 	baseparm
 	export	none
     }
-    parm {
-	name	"soho_program"
-	label	"SOHO Program"
-	type	string
-	default	{ "Hello1.py" }
-	menureplace	{
-	    "Hello1.py"	"Hello1.py"
-	    "Hello2.py"	"Hello2.py"
-	    "Hello3.py"	"Hello3.py"
+    group {
+	name	"main"
+	label	"Main"
+
+	parm {
+	    name	"soho_program"
+	    label	"SOHO Program"
+	    type	string
+	    default	{ "hAbcExport.py" }
+	    menureplace	{
+		"hAbcExport.py"	"hAbcExport.py"
+		"Hello1.py"	"Hello1.py"
+		"Hello2.py"	"Hello2.py"
+		"Hello3.py"	"Hello3.py"
+	    }
+	    range	{ 0 1 }
+	    export	none
 	}
-	range	{ 0 1 }
-	export	none
+	parm {
+	    name	"soho_outputmode"
+	    label	"Output Mode"
+	    type	integer
+	    default	{ "2" }
+	    range	{ 0 10 }
+	    export	none
+	}
+	parm {
+	    name	"objpath"
+	    label	"Path to Root Object"
+	    type	oppath
+	    default	{ "/obj" }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "oprelative" "." }
+	    parmtag	{ "opfilter" "!!OBJ!!" }
+	}
+	parm {
+	    name	"abcoutput"
+	    label	"Save to File"
+	    type	file
+	    default	{ "./out.abc" }
+	    range	{ 0 1 }
+	    export	none
+	}
     }
-    parm {
-	name	"soho_outputmode"
-	label	"Output Mode"
-	type	integer
-	default	{ "2" }
-	range	{ 0 10 }
-	export	none
+
+    group {
+	name	"main_1"
+	label	"Scripts"
+
+	parm {
+	    name	"tprerender"
+	    label	"tprerender"
+	    type	toggle
+	    nolabel
+	    joinnext
+	    default	{ "1" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"prerender"
+	    label	"Pre-Render Script"
+	    type	file
+	    joinnext
+	    default	{ "" }
+	    disablewhen	"{ tprerender == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "filechooser_mode" "read" }
+	}
+	parm {
+	    name	"lprerender"
+	    label	"lprerender"
+	    type	ordinal
+	    nolabel
+	    default	{ "0" }
+	    disablewhen	"{ tprerender == 0 }"
+	    menu	{
+		"hscript"	"Hscript"
+		"python"	"Python"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"tpreframe"
+	    label	"tpreframe"
+	    type	toggle
+	    nolabel
+	    joinnext
+	    default	{ "1" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"preframe"
+	    label	"Pre-Frame Script"
+	    type	file
+	    joinnext
+	    default	{ "" }
+	    disablewhen	"{ tpreframe == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "filechooser_mode" "read" }
+	}
+	parm {
+	    name	"lpreframe"
+	    label	"lpreframe"
+	    type	ordinal
+	    nolabel
+	    default	{ "0" }
+	    disablewhen	"{ tpreframe == 0 }"
+	    menu	{
+		"hscript"	"Hscript"
+		"python"	"Python"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"tpostframe"
+	    label	"tpostframe"
+	    type	toggle
+	    nolabel
+	    joinnext
+	    default	{ "1" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"postframe"
+	    label	"Post-Frame Script"
+	    type	file
+	    joinnext
+	    default	{ "" }
+	    disablewhen	"{ tpostframe == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "filechooser_mode" "read" }
+	}
+	parm {
+	    name	"lpostframe"
+	    label	"lpostframe"
+	    type	ordinal
+	    nolabel
+	    default	{ "0" }
+	    disablewhen	"{ tpostframe == 0 }"
+	    menu	{
+		"hscript"	"Hscript"
+		"python"	"Python"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"tpostrender"
+	    label	"tpostrender"
+	    type	toggle
+	    nolabel
+	    joinnext
+	    default	{ "1" }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"postrender"
+	    label	"Post-Render Script"
+	    type	file
+	    joinnext
+	    default	{ "" }
+	    disablewhen	"{ tpostrender == 0 }"
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "filechooser_mode" "read" }
+	}
+	parm {
+	    name	"lpostrender"
+	    label	"lpostrender"
+	    type	ordinal
+	    nolabel
+	    default	{ "0" }
+	    disablewhen	"{ tpostrender == 0 }"
+	    menu	{
+		"hscript"	"Hscript"
+		"python"	"Python"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	}
     }
-    parm {
-	name	"objpath"
-	label	"Path to Root Object"
-	type	oppath
-	default	{ "/obj" }
-	range	{ 0 1 }
-	export	none
-	parmtag	{ "oprelative" "." }
-	parmtag	{ "opfilter" "!!OBJ!!" }
-    }
-    parm {
-	name	"abcoutput"
-	label	"Save to File"
-	type	file
-	default	{ "./out.abc" }
-	range	{ 0 1 }
-	export	none
-    }
+
 }
