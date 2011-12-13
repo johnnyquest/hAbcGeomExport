@@ -7,6 +7,26 @@
 
 */
 
+/*
+
+		commands:
+
+		- new oarchive + time sampling
+		- new object (xform + optional mesh shape)
+		- object: output new xform matrix sample
+		- object: output new (mesh) geometry sample
+		- cleanup: delete all objects (xform+mesh), time sampling, oarchive
+
+
+		commands:
+
+		oarchive <filename>
+		timesampling <v1> <v2>
+		newobject <ObjNode_name> <parent obj name> <SOP_name>
+		xformsample <time> <objname> <matrix>
+		geosample <time> <objname> [<sopname>]
+		cleanup
+*/
 #include <UT/UT_DSOVersion.h>
 #include <CMD/CMD_Args.h>
 #include <CMD/CMD_Manager.h>
