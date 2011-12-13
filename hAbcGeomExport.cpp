@@ -30,6 +30,7 @@
 #include <vector>
 #include <map>
 
+#include <UT/UT_Version.h>
 #include <UT/UT_DSOVersion.h>
 #include <CH/CH_LocalVariable.h>
 #include <PRM/PRM_Include.h>
@@ -383,7 +384,11 @@ bool GeoObject::writeSample( float time )
 	// collect point coords
 	//
 	int c=0;
+#if UT_MAJOR_VERSION_INT >= 12
+	GA_FOR_ALL_GPOINTS(gdp, pt)
+#else
 	FOR_ALL_GPOINTS(gdp, pt)
+#endif
 	{
 		UT_Vector4 const & P = pt->getPos();
 		push_v3<FloatVec, UT_Vector4>(g_pts, P);
@@ -410,11 +415,19 @@ bool GeoObject::writeSample( float time )
 
 	// collect primitives
 	//
+#if UT_MAJOR_VERSION_INT >= 12
+	GA_FOR_ALL_PRIMITIVES(gdp, prim)
+#else
 	FOR_ALL_PRIMITIVES(gdp, prim)
+#endif
 	{
+#if UT_MAJOR_VERSION_INT >= 12
+		int prim_id = prim->getTypeId().get();
+		if ( prim_id == GEO_PRIMPOLY )
+#else
 		int prim_id = prim->getPrimitiveId();
-
 		if ( prim_id == GEOPRIMPOLY )
+#endif
 		{
 			int num_verts = prim->getVertexCount();
 			g_facevtxcounts.push_back(num_verts);
