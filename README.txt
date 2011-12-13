@@ -22,6 +22,9 @@ For more information, see the github repository (especially the issues
 section). Also "feedback is silver, contribution is gold" -- if you
 find a bug, good for you, if you can fix it, good for all of us ;)
 
+And while I'm at it, thanks to Lucas Miller and Mark Elendt for their help.
+
+
 
 
 IMPORTANT WINDOWS-RELATED NOTE
