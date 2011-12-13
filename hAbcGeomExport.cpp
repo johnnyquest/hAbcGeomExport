@@ -509,7 +509,7 @@ void collect_geo_objs(
 
 /**		Called by Houdini before the rendering of frame(s).
 */
-int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
+int hAbcGeomExport::startRender( int nframes, fpreal tstart, fpreal tend )
 {
 	DBG << "startRender(): " << nframes << " (" << tstart << " -> " << tend << ")\n";
 
@@ -586,7 +586,7 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 
 		(Can return ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER)
 */
-ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
+ROP_RENDER_CODE hAbcGeomExport::renderFrame( fpreal time, UT_Interrupt * )
 {
 	DBG << "renderFrame() time=" << time << "\n";
 
