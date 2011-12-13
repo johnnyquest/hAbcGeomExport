@@ -26,6 +26,8 @@
 #include <map>
 
 
+#include "GeoObject.h"
+
 
 #define STR_PARM(name, idx, vi, t) \
 		{ evalString(str, name, &ifdIndirect[idx], vi, (float)t); }
@@ -46,62 +48,6 @@ namespace HDK_AbcExportSimple
 {
 	typedef std::map< std::string, GB_Attribute * >
 		AttrArray;
-
-
-
-	/**		Class for storing all related stuff about an object to be exported.
-
-			The object is an Obj/SOP (xform+geometry) combination.
-			Currently only poly meshes are supported.
-	*/
-	class GeoObject
-	{
-	public:
-		/**	Initialize data shared between all objects.
-		*/
-		static void init(
-			Alembic::AbcGeom::OArchive *archive,
-			Alembic::AbcGeom::TimeSamplingPtr & timesampling
-		)
-		{
-			assert(archive && timesampling);
-			_oarchive = archive;
-			_ts = timesampling;
-		}
-
-	public:
-		GeoObject( OP_Node *obj_node, GeoObject *parent=0 );
-		~GeoObject();
-
-	public:
-		bool		writeSample( float time );
-		char const *	pathname() const { return _path.c_str(); }
-		char const *	sop_name() const { return _sopname.c_str(); }
-
-
-	private:
-		/// output archive 'stream' to work in
-		static Alembic::AbcGeom::OArchive *
-						_oarchive;
-
-		/// time-sampling spec (boost shared_ptr)
-		static Alembic::AbcGeom::TimeSamplingPtr
-						_ts;
-	private:
-		GeoObject *			_parent;	///< hierarchy parent
-		OBJ_Node *			_op_obj;	///< geometry xform node
-		SOP_Node *			_op_sop;	///< SOP node to export
-		std::string			_name;		///< obj (xform) name
-		std::string			_path;		///< obj full path
-		std::string			_sopname;	///< SOP name
-		Alembic::AbcGeom::OXform *	_xform;		///< output xform obj
-		Alembic::AbcGeom::OPolyMesh *	_outmesh;	///< output polymesh obj
-	};
-
-
-
-	/// Type: array of GeoObjects.
-	typedef std::vector< boost::shared_ptr<GeoObject> > GeoObjects;
 
 
 
