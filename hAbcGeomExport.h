@@ -15,6 +15,8 @@
 #include <SOP/SOP_Node.h>
 #include <OP/OP_Node.h>
 
+#include <GB/GB_Attribute.h>
+
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
 
@@ -42,6 +44,11 @@ class OP_VariablePair;
 
 namespace HDK_AbcExportSimple
 {
+	typedef std::map< std::string, GB_Attribute * >
+		AttrArray;
+
+
+
 	/**		Class for storing all related stuff about an object to be exported.
 
 			The object is an Obj/SOP (xform+geometry) combination.

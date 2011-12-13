@@ -47,6 +47,8 @@
 #include <GEO/GEO_PrimPoly.h>
 #include <GEO/GEO_AttributeHandle.h>
 
+#include <GB/GB_AttributeDictOffsetIterator.h>
+
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
 
@@ -87,7 +89,6 @@ static PRM_Default	prm_abcoutput_d(0, "./out.abc");
 
 
 
-
 static PRM_Template * getTemplates()
 {
 	static PRM_Template *t=0;
@@ -113,10 +114,6 @@ static PRM_Template * getTemplates()
 	return t;
 }
 
-
-
-
-
 OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 {
 	static OP_TemplatePair *ropPair=0;
@@ -129,19 +126,12 @@ OP_TemplatePair * hAbcGeomExport::getTemplatePair()
 	return ropPair;
 }
 
-
-
-
-
 OP_VariablePair * hAbcGeomExport::getVariablePair()
 {
 	static OP_VariablePair *pair=0;
 	if (!pair) pair = new OP_VariablePair(ROP_Node::myVariableList);
 	return pair;
 }
-
-
-
 
 
 OP_Node * hAbcGeomExport::myConstructor(
@@ -152,9 +142,6 @@ OP_Node * hAbcGeomExport::myConstructor(
 {
 	return new hAbcGeomExport(net, name, op);
 }
-
-
-
 
 
 hAbcGeomExport::hAbcGeomExport(
@@ -170,12 +157,87 @@ hAbcGeomExport::hAbcGeomExport(
 }
 
 
-
-
-
 hAbcGeomExport::~hAbcGeomExport()
 {
 }
+
+
+
+
+
+/**		Collect all attributes from an attribute dict.
+		(Used to get all point/prim/vertex/... attribute names).
+*/
+void get_attrs(
+	GB_AttributeDict & dict,
+	AttrArray & names,
+	char const *type="?" // TODO: remove this
+)
+{
+	DBG << "get_attr_names() (" << type << ")\n";
+	GB_AttributeDictOffsetIterator it(dict);
+
+	for(; !it.atEnd(); ++it) {
+		GB_Attribute *attr = it.attrib();
+		names[ attr->getName() ] = attr;
+		DBG
+			<< " - ATTR:" << attr->getName()
+			<< " type=" << attr->getType()
+			<< " size=" << attr->getSize()
+			<< "\n";
+	}
+}
+
+
+
+/**		Get the size of a given attribute type (in bytes).
+*/
+size_t get_attribtype_size( GB_AttribType t )
+{
+	typedef  std::map<GB_AttribType, size_t> SizeMap;
+	static SizeMap _gb_ts;
+
+	if ( _gb_ts.size()==0 ) {
+		// one-time init of static map
+		_gb_ts[GB_ATTRIB_INT] = sizeof(int);
+		_gb_ts[GB_ATTRIB_FLOAT] = sizeof(float);
+		_gb_ts[GB_ATTRIB_VECTOR] = sizeof(float)*3; // TODO: this is to be corrected!
+		dbg << _gb_ts.size();
+	}
+
+	SizeMap::const_iterator i = _gb_ts.find(t);
+	size_t r =  i!=_gb_ts.end()  ?  i->second  :  0;
+
+	assert(r>0 && "unknown/unsupported type...");
+	return r;
+}
+
+
+
+/**		Get number of components for an attribute.
+*/
+int get_num_comps( GB_Attribute *attr ) {
+	assert(attr);
+	return attr->getSize() / get_attribtype_size(attr->getType());
+}
+
+
+
+/**	Store 2 components of a vector in a container.
+*/
+template<class T, class V> inline void push_v2( T & container, V const & v ) {
+	container.push_back(v.x());
+	container.push_back(v.y());
+}
+
+/**	Store 3 components of a vector in a container.
+*/
+template<class T, class V> inline void push_v3( T & container, V const & v ) {
+	container.push_back(v.x());
+	container.push_back(v.y());
+	container.push_back(v.z());
+}
+
 
 
 
@@ -233,7 +295,7 @@ GeoObject::~GeoObject()
 /**		GeoObject: write a sample (xform+geom) for the specified time.
 
 @TODO
-		- export normals/uvs (support both per-point and per-vertex)
+		- (DONE) export normals/uvs (support both per-point and per-vertex)
 		- export point velocities
 		- export other attributes
 		- support for particles
@@ -306,12 +368,14 @@ bool GeoObject::writeSample( float time )
 	//
 	std::map<GEO_Point const *, int> ptmap; 	// (this should be replaced if possible)
 
-	std::vector<Abc::float32_t>	g_pts;			// point coordinates (3 values)
+	typedef std::vector<Abc::float32_t> FloatVec;
+
+	FloatVec			g_pts;			// point coordinates (3 values)
 	std::vector<Abc::int32_t>	g_pts_ids;		// point indices for each per-face-vertex
 	std::vector<Abc::int32_t>	g_facevtxcounts;	// vertex count for each face
 	
-	std::vector<Abc::float32_t>	g_N;			// normals (3 values; per-point or per-vertex)
-	std::vector<Abc::float32_t>	g_uv;			// uv coords (2 values; per-point or per-vertex)
+	FloatVec			g_N;			// normals (3 values; per-point or per-vertex)
+	FloatVec			g_uv;			// uv coords (2 values; per-point or per-vertex)
 
 	GEO_Point const		*pt;
 	GEO_Primitive const	*prim;
@@ -322,9 +386,7 @@ bool GeoObject::writeSample( float time )
 	FOR_ALL_GPOINTS(gdp, pt)
 	{
 		UT_Vector4 const & P = pt->getPos();
-		g_pts.push_back(P.x());
-		g_pts.push_back(P.y());
-		g_pts.push_back(P.z());
+		push_v3<FloatVec, UT_Vector4>(g_pts, P);
 
 		// collect per-point normals/uvs
 		//
@@ -333,18 +395,13 @@ bool GeoObject::writeSample( float time )
 		if ( N_pt ) {
 			h_pN.setElement(pt);
 			V = h_pN.getV3();
-			g_N.push_back(V.x());
-			g_N.push_back(V.y());
-			g_N.push_back(V.z());
-			//DBG << " -- pN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+			push_v3<FloatVec, UT_Vector3>(g_N, V);
 		}
 
 		if ( uv_pt ) {
 			h_pUV.setElement(pt);
 			V = h_pUV.getV3();
-			g_uv.push_back(V.x());
-			g_uv.push_back(V.y());
-			//DBG << " -- pUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+			push_v2<FloatVec, UT_Vector3>(g_uv, V);
 		}
 
 		ptmap[pt]=c; // store point in point->ptindex map
@@ -374,18 +431,13 @@ bool GeoObject::writeSample( float time )
 				if ( N_vtx ) {
 					h_vN.setElement(&vtx);
 					V = h_vN.getV3();
-					g_N.push_back(V.x());
-					g_N.push_back(V.y());
-					g_N.push_back(V.z());
-					//DBG << " -- vN: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+					push_v3<FloatVec, UT_Vector3>(g_N, V);
 				}
 
 				if ( uv_vtx ) {
 					h_vUV.setElement(&vtx);
 					V = h_vUV.getV3();
-					g_uv.push_back(V.x());
-					g_uv.push_back(V.y());
-					//DBG << " -- vUV: " << V.x() << " " << V.y() << " " << V.z() << "\n";
+					push_v2<FloatVec, UT_Vector3>(g_uv, V);
 				}
 			}
 		}
@@ -403,6 +455,7 @@ bool GeoObject::writeSample( float time )
 		uv_samp.setScope( uv_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
 		uv_samp.setVals( AbcGeom::V2fArraySample( (const AbcGeom::V2f *)&g_uv[0], g_uv.size()/2) );
 	}
+
 
 	// construct mesh sample
 	//
