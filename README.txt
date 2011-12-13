@@ -38,6 +38,14 @@ put together an MSVC++ project file, or something to that effect. Thanks!
 Known limitations
 -----------------
 
+1.
+
+It only exports hierarchies as connected Obj nodes -- subnets are not supported.
+(It's actually quite the opposite of how the Alembic importer builds a scene,
+for example.)
+
+2.
+
 Only the most regular type of polymesh supported (no open polylines, nurbs
 curves/surfaces or other fanciness.)
 
