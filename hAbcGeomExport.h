@@ -120,8 +120,8 @@ namespace HDK_AbcExportSimple
 		hAbcGeomExport(OP_Network * net, const char *name, OP_Operator * entry);
 		virtual ~hAbcGeomExport();
 
-		virtual int			startRender( int nframes, float s, float e );
-		virtual ROP_RENDER_CODE		renderFrame( float time, UT_Interrupt * boss );
+		virtual int			startRender( int nframes, fpreal s, fpreal e );
+		virtual ROP_RENDER_CODE		renderFrame( fpreal time, UT_Interrupt * boss );
 		virtual ROP_RENDER_CODE		endRender();
 
 	public:

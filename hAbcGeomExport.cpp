@@ -30,6 +30,7 @@
 #include <vector>
 #include <map>
 
+#include <UT/UT_Version.h>
 #include <UT/UT_DSOVersion.h>
 #include <CH/CH_LocalVariable.h>
 #include <PRM/PRM_Include.h>
@@ -241,13 +242,23 @@ template<class T, class V> inline void push_v3( T & container, V const & v ) {
 
 
 
+/**		Get to the render SOP from an (obj) node.
+*/
+SOP_Node *get_render_sop( OP_Node *op )
+{
+	assert(op && "invalid OP ptr given");
+	OBJ_Node *obj = op->castToOBJNode();
+	return obj ? obj->getRenderSopPtr() : 0;
+}
+
+
 
 
 /**		GeoObject, constructor.
 */
 GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 : _parent(parent)
-, _op_sop( (SOP_Node *) ((OBJ_Node *)obj_node)->getRenderSopPtr() )
+, _op_sop( get_render_sop(obj_node) )
 , _name( obj_node->getName() )
 , _sopname( _op_sop ? _op_sop->getName() : "<no SOP>" )
 , _xform(0)
@@ -256,8 +267,8 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 	UT_String s; obj_node->getFullPath(s);
 	_path = s.toStdString();
 
-	// TODO: make sure this is an OBJ_Node!
-	_op_obj = (OBJ_Node *) obj_node;
+	// TODO: this shouldn't be zero
+	_op_obj = obj_node->castToOBJNode(); // either an OBJ_Node or zero
 
 	dbg << "(" << _path << "): " << _sopname;
 
@@ -268,7 +279,7 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 		_parent ? *(_parent->_xform) : _oarchive->getTop(),
 		_name, _ts);
 
-	if ( _op_obj->getObjectType()==OBJ_GEOMETRY  && _op_sop )
+	if ( _op_obj && _op_obj->getObjectType()==OBJ_GEOMETRY  && _op_sop )
 	{
 		dbg << " [GEO]";
 		_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
@@ -307,6 +318,10 @@ bool GeoObject::writeSample( float time )
 
 	OP_Context ctx(time);
 
+	if ( _op_obj==0 ) {
+		dbg << "empty object\n";
+		return true;
+	}
 
 	// * xform sample *
 	//
@@ -383,7 +398,11 @@ bool GeoObject::writeSample( float time )
 	// collect point coords
 	//
 	int c=0;
+#if UT_MAJOR_VERSION_INT >= 12
+	GA_FOR_ALL_GPOINTS(gdp, pt)
+#else
 	FOR_ALL_GPOINTS(gdp, pt)
+#endif
 	{
 		UT_Vector4 const & P = pt->getPos();
 		push_v3<FloatVec, UT_Vector4>(g_pts, P);
@@ -410,11 +429,19 @@ bool GeoObject::writeSample( float time )
 
 	// collect primitives
 	//
+#if UT_MAJOR_VERSION_INT >= 12
+	GA_FOR_ALL_PRIMITIVES(gdp, prim)
+#else
 	FOR_ALL_PRIMITIVES(gdp, prim)
+#endif
 	{
+#if UT_MAJOR_VERSION_INT >= 12
+		int prim_id = prim->getTypeId().get();
+		if ( prim_id == GEO_PRIMPOLY )
+#else
 		int prim_id = prim->getPrimitiveId();
-
 		if ( prim_id == GEOPRIMPOLY )
+#endif
 		{
 			int num_verts = prim->getVertexCount();
 			g_facevtxcounts.push_back(num_verts);
@@ -509,7 +536,7 @@ void collect_geo_objs(
 
 /**		Called by Houdini before the rendering of frame(s).
 */
-int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
+int hAbcGeomExport::startRender( int nframes, fpreal tstart, fpreal tend )
 {
 	DBG << "startRender(): " << nframes << " (" << tstart << " -> " << tend << ")\n";
 
@@ -586,7 +613,7 @@ int hAbcGeomExport::startRender( int nframes, float tstart, float tend )
 
 		(Can return ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER)
 */
-ROP_RENDER_CODE hAbcGeomExport::renderFrame( float time, UT_Interrupt * )
+ROP_RENDER_CODE hAbcGeomExport::renderFrame( fpreal time, UT_Interrupt * )
 {
 	DBG << "renderFrame() time=" << time << "\n";
 
