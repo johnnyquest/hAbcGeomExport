@@ -75,8 +75,7 @@ using namespace HDK_AbcExportSimple;
 
 // static (shared) per-class data
 //
-Alembic::AbcGeom::OArchive * GeoObject::_oarchive(0);
-Alembic::AbcGeom::TimeSamplingPtr GeoObject::_ts;
+GEOOBJECT_STATICS_HERE
 
 
 int *			hAbcGeomExport::ifdIndirect = 0;
@@ -224,6 +223,13 @@ int get_num_comps( GB_Attribute *attr ) {
 
 
 
+
+
+
+
+
+
+
 /**	Store 2 components of a vector in a container.
 */
 template<class T, class V> inline void push_v2( T & container, V const & v ) {
@@ -242,35 +248,41 @@ template<class T, class V> inline void push_v3( T & container, V const & v ) {
 
 
 
-/**		Get to the render SOP from an (obj) node.
-*/
-SOP_Node *get_render_sop( OP_Node *op )
-{
-	assert(op && "invalid OP ptr given");
-	OBJ_Node *obj = op->castToOBJNode();
-	return obj ? obj->getRenderSopPtr() : 0;
-}
-
-
-
-
 /**		GeoObject, constructor.
+
+@note
+		Instances returned by SOHO might not have an obj node that is
+		exactly the same as the instance name: in this case pass the
+		ptr to the 'original' obj_node, and pass the instance name
+		in the outname parameter.
 */
-GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
+GeoObject::GeoObject(
+	OP_Node *	obj_node,
+	GeoObject *	parent,
+	SOP_Node *	sop_node,
+	std::string *	outname
+)
 : _parent(parent)
-, _op_sop( get_render_sop(obj_node) )
-, _name( obj_node->getName() )
+, _op_sop(sop_node)
+, _name( outname ? *outname : obj_node->getName().toStdString() )
 , _sopname( _op_sop ? _op_sop->getName() : "<no SOP>" )
+, _mtx_soho(false)
+, _matrix()
 , _xform(0)
 , _outmesh(0)
 {
 	UT_String s; obj_node->getFullPath(s);
 	_path = s.toStdString();
 
-	// TODO: this shouldn't be zero
 	_op_obj = obj_node->castToOBJNode(); // either an OBJ_Node or zero
+	assert(_op_obj && "this should always be an obj node");
 
-	dbg << "(" << _path << "): " << _sopname;
+	if (_op_obj) {
+		if (!sop_node) _op_sop = _op_obj->getRenderSopPtr();
+		_obj_type = _op_obj->getObjectType();
+	}
+
+	dbg << "(" << _path << "): " << _name << " | " << _sopname;
 
 	assert(_oarchive && "no oarchive given");
 	assert(_ts && "no timesampling given");
@@ -279,7 +291,7 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 		_parent ? *(_parent->_xform) : _oarchive->getTop(),
 		_name, _ts);
 
-	if ( _op_obj && _op_obj->getObjectType()==OBJ_GEOMETRY  && _op_sop )
+	if ( _op_obj && _obj_type==OBJ_GEOMETRY && _op_sop )
 	{
 		dbg << " [GEO]";
 		_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
@@ -303,6 +315,32 @@ GeoObject::~GeoObject()
 
 
 
+
+/**		Get the object's xforms using plain HDK API (as opposed to SOHO).
+*/
+bool GeoObject::get_mtx_from_api( OP_Context & ctx )
+{
+	if ( _op_obj ) {
+		UT_DMatrix4 const & hou_prexform = _op_obj->getPreTransform();
+		UT_DMatrix4 hou_dmtx;
+		_op_obj->getParmTransform(ctx, hou_dmtx);
+		_matrix = hou_prexform * hou_dmtx; // apply pretransform
+		return true;
+	}
+	
+	return false;
+}
+
+/**		Get the object's xforms from SOHO.
+*/
+bool GeoObject::get_mtx_from_soho( OP_Context & ctx )
+{
+	// TODO: write this function
+	return false;
+}
+
+
+
 /**		GeoObject: write a sample (xform+geom) for the specified time.
 
 @TODO
@@ -314,14 +352,10 @@ GeoObject::~GeoObject()
 bool GeoObject::writeSample( float time )
 {
 	dbg << "sample for " << _path << " @ " << time << ": ";
+	assert(_op_obj && "an obj should be given");
 	assert(_xform && "no abc output xform");
 
 	OP_Context ctx(time);
-
-	if ( _op_obj==0 ) {
-		dbg << "empty object\n";
-		return true;
-	}
 
 	// * xform sample *
 	//
@@ -329,13 +363,10 @@ bool GeoObject::writeSample( float time )
 	// TODO: fill the xform sample with the proper data (local transformations)
 	// with hints and all (how to include preTransform elegantly?)
 
-	UT_DMatrix4 const & hou_prexform = _op_obj->getPreTransform();
-	UT_DMatrix4 hou_dmtx;
-	
-	_op_obj->getParmTransform(ctx, hou_dmtx);
-	hou_dmtx = hou_prexform * hou_dmtx; // apply pretransform
+	if (_mtx_soho) get_mtx_from_soho(ctx);
+	else get_mtx_from_api(ctx);
 
-	AbcGeom::M44d mtx( (const double (*)[4]) hou_dmtx.data() );
+	AbcGeom::M44d mtx( (const double (*)[4]) _matrix.data() );
 	xform_samp.setMatrix(mtx);
 
 	_xform->getSchema().set(xform_samp); // export xform sample
