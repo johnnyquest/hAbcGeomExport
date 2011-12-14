@@ -126,6 +126,7 @@ def export():
 
 	# collect geometry to be exported and their render SOPS
 	# (including point- and other instances, etc)
+	# (NOTE: the entire scene is to be searched, unfortunately)
 	#
 	soho.addObjects(now, '*', '*', '', do_culling=False)
 	soho.lockObjects(now)
@@ -205,8 +206,7 @@ def export():
 			- if geometry (mesh): AbcGeom::OPolyMesh
 		"""
 
-		# TODO: get timesampling values
-		s = abc_init(abc_file, tstep=1.0/24.0, tstart=0.0)
+		s = abc_init(abc_file, tstep=1.0/fps, tstart=now)
 		if s:
 			# build objects for oarchive
 			#
@@ -218,7 +218,7 @@ def export():
 
 				dbg(" - new xform %s (obj=%s parent=%s)" % (outname, objname, parent))
 
-				hou.hscript('%s newobject %s %s %s %s' % \
+				hou.hscript('%s newobject "%s" "%s" "%s" "%s"' % \
 					(CCMD, objname, parent, outname, soppath))
 
 		else:
@@ -268,7 +268,7 @@ def export():
 			#dbg(" --- mtx: %s" % str(xform.asTupleOfTuples()))
 
 			if True:
-				hou.hscript('%s xformsample %f %s %s' % \
+				hou.hscript('%s xformsample %f "%s" %s' % \
 					(CCMD, now, objname, " ".join([ str(n) for n in xform.asTuple() ]) ))
 
 
@@ -277,9 +277,8 @@ def export():
 			if soppath:
 				dbg(" --- SOP: %s" % soppath)
 
-				hou.hscript('%s geosample %f %s %s' % \
-					(CCMD, now, objname, soppath))
-
+				hou.hscript('%s geosample %f "%s"' % \
+					(CCMD, now, objname))
 			else:
 				dbg(" --- (no SOP)")
 

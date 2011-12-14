@@ -163,8 +163,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 		else if (func=="xformsample")
 		{
 			CHK(2+16, "xformsample <time> <obj_name> <matrix array ... (16 floats)>");
-			// TODO: easiest way of reading a float from args?
-			fpreal		time=0;
+			fpreal		now=atof(args(2));
 			std::string	objpath(args(3));
 			// TODO: read matrix from args (16 floats)
 
@@ -177,9 +176,8 @@ static void cmd_abcexportctrl( CMD_Args & args )
 		}
 		else if (func=="geosample")
 		{
-			CHK(2, "geosample <time> <obj_name> [<sop_name>]");
-			// TODO: easiest way of reading a float from args?
-			fpreal		time=0;
+			CHK(2, "geosample <time> <obj_name>");
+			fpreal		now=atof(args(2));
 			std::string	objpath(args(3));
 			
 			DBG << "GEO SAMPLE"
