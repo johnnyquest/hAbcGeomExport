@@ -84,6 +84,7 @@ namespace HDK_AbcExportSimple
 		GeoObject *			_parent;	///< hierarchy parent
 		OBJ_Node *			_op_obj;	///< geometry xform node
 		SOP_Node *			_op_sop;	///< SOP node to export
+		OBJ_OBJECT_TYPE			_obj_type;	///< obj node type (see OBJ/OBJ_Node.h)
 
 		std::string			_name;		///< obj (xform) name
 		std::string			_path;		///< obj full path

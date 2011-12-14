@@ -248,18 +248,6 @@ template<class T, class V> inline void push_v3( T & container, V const & v ) {
 
 
 
-/**		Get to the render SOP from an (obj) node.
-*/
-SOP_Node *get_render_sop( OP_Node *op )
-{
-	assert(op && "invalid OP ptr given");
-	OBJ_Node *obj = op->castToOBJNode();
-	return obj ? obj->getRenderSopPtr() : 0;
-}
-
-
-
-
 /**		GeoObject, constructor.
 */
 GeoObject::GeoObject(
@@ -268,7 +256,7 @@ GeoObject::GeoObject(
 	SOP_Node *	sop_node
 )
 : _parent(parent)
-, _op_sop( sop_node ? sop_node : get_render_sop(obj_node) )
+, _op_sop(sop_node)
 , _name( obj_node->getName() )
 , _sopname( _op_sop ? _op_sop->getName() : "<no SOP>" )
 , _mtx_soho(false)
@@ -281,6 +269,12 @@ GeoObject::GeoObject(
 
 	// TODO: this shouldn't be zero
 	_op_obj = obj_node->castToOBJNode(); // either an OBJ_Node or zero
+	assert(_op_obj && "this should always be an obj node");
+
+	if (_op_obj) {
+		if (!sop_node) _op_sop = _op_obj->getRenderSopPtr();
+		_obj_type = _op_obj->getObjectType();
+	}
 
 	dbg << "(" << _path << "): " << _sopname;
 
@@ -291,7 +285,7 @@ GeoObject::GeoObject(
 		_parent ? *(_parent->_xform) : _oarchive->getTop(),
 		_name, _ts);
 
-	if ( _op_obj && _op_obj->getObjectType()==OBJ_GEOMETRY  && _op_sop )
+	if ( _op_obj && _obj_type==OBJ_GEOMETRY && _op_sop )
 	{
 		dbg << " [GEO]";
 		_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
