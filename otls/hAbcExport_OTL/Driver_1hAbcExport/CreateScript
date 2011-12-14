@@ -1,0 +1,13 @@
+# Automatically generated script: Monday December 12, 13:00 2011
+\set noalias = 1
+#
+#  Creation script for hAbcExport operator
+#
+
+if ( "$arg1" == "" ) then
+    echo This script is intended as a creation script
+    exit
+endif
+
+# Node $arg1 (Driver/hAbcExport)
+opexprlanguage -s hscript $arg1

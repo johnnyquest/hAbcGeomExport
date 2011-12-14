@@ -7,4 +7,29 @@
 *.mb
 *.ma
 
+*.pyc
+*~
+tags
+backup/*
+*/backup/*
+
+images/*
+*/images/*
+*.tif
+*.exr
+
+tmp*/*
+
+*.otl
+
+*.hip
+*.ass
+*.ifd
+*.mi
+
+# temporarily ignored:
+config/*
+#otls/*
+
+
 
