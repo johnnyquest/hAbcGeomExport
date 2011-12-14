@@ -253,11 +253,12 @@ template<class T, class V> inline void push_v3( T & container, V const & v ) {
 GeoObject::GeoObject(
 	OP_Node *	obj_node,
 	GeoObject *	parent,
-	SOP_Node *	sop_node
+	SOP_Node *	sop_node,
+	std::string *	outname
 )
 : _parent(parent)
 , _op_sop(sop_node)
-, _name( obj_node->getName() )
+, _name( outname ? *outname : obj_node->getName().toStdString() )
 , _sopname( _op_sop ? _op_sop->getName() : "<no SOP>" )
 , _mtx_soho(false)
 , _matrix()
@@ -276,7 +277,7 @@ GeoObject::GeoObject(
 		_obj_type = _op_obj->getObjectType();
 	}
 
-	dbg << "(" << _path << "): " << _sopname;
+	dbg << "(" << _path << "): " << _name << " | " << _sopname;
 
 	assert(_oarchive && "no oarchive given");
 	assert(_ts && "no timesampling given");

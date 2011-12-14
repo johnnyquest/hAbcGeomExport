@@ -58,7 +58,8 @@ namespace HDK_AbcExportSimple
 		GeoObject(
 			OP_Node *	obj_node,
 			GeoObject *	parent=0,
-			SOP_Node *	sop_node=0
+			SOP_Node *	sop_node=0,
+			std::string *	outname=0
 		);
 		~GeoObject();
 
