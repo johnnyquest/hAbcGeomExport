@@ -95,20 +95,28 @@ static void cmd_abcexportctrl( CMD_Args & args )
 
 		if (func=="oarchive")
 		{
-			CHK(1, "oarchive <output file>");
-			std::string abc_file(args(2));
-			DBG << "NEW OARCHIVE file=" << abc_file << "\n";
+			CHK(3, "oarchive <output file> <timestep> <timestart>");
+			std::string	abc_file(args(2));
+			fpreal		step = atof(args(3)),
+					start = atof(args(4));
+
+			DBG << "NEW OARCHIVE"
+				<< " file=" << abc_file
+				<< " step=" << step
+				<< " start=" << start
+				<< "\n";
 
 			_oarchive = new Alembic::AbcGeom::OArchive(
 				Alembic::AbcCoreHDF5::WriteArchive(),
 				abc_file);
-		}
-		else if (func=="timesamping")
-		{
-			CHK(2, "timesampling <v1> <v2>");
-			// TODO: easiest way of reading a float from args?
-			DBG << "TIMESAMPLING\n";
 			
+			_ts = AbcGeom::TimeSamplingPtr(
+				new AbcGeom::TimeSampling(step, start)
+			);
+		}
+		else if (func=="timesampling")
+		{
+			CHK(2, "timesampling <timestep> <timestart>");
 			;
 		}
 		else if (func=="newobject")
@@ -208,7 +216,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 void CMDextendLibrary( CMD_Manager *cmgr )
 {
 	// install command
-	cmgr->installCommand("abcexportctrl", "e:", cmd_abcexportctrl);
+	cmgr->installCommand("abcexportctrl", "", cmd_abcexportctrl);
 
 	// print the regular startup message to stderr
 	//

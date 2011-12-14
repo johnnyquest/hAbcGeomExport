@@ -53,10 +53,10 @@ def collect_archy( objname, parentname=None, archy=None, level=1 ):
 
 
 
-def abc_init(abcfile):
+def abc_init(abcfile, tstart=0.0, tstep=1.0/24.0):
 	"""Create a new alembic archive."""
 	dbg("abc_init() abcfile=%s" % str(abcfile))
-	hou.hscript('%s oarchive "%s"' % (CCMD, abcfile))
+	hou.hscript('%s oarchive "%s" %f %f' % (CCMD, abcfile, tstep, tstart+tstep))
 	return True
 
 
@@ -205,11 +205,9 @@ def export():
 			- if geometry (mesh): AbcGeom::OPolyMesh
 		"""
 
-		s = abc_init(abc_file)
+		# TODO: get timesampling values
+		s = abc_init(abc_file, tstep=1.0/24.0, tstart=0.0)
 		if s:
-			# TODO: timesampling
-			hou.hscript('%s timesampling %f %f' % (CCMD, 1.0, 1.0))
-
 			# build objects for oarchive
 			#
 			for E in archy:
