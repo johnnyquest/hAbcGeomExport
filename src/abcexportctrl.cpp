@@ -72,6 +72,26 @@ using namespace HDK_AbcExportSimple;
 
 static Alembic::AbcGeom::OArchive *		_oarchive=0;
 static Alembic::AbcGeom::TimeSamplingPtr	_ts;
+static HDK_AbcExportSimple::GeoObjects		_objs;
+
+
+
+typedef std::map<std::string, GeoObject *>	ObjMap;
+static ObjMap					_objmap;
+
+
+
+GeoObject * find_obj( std::string & objname, bool do_throw=true )
+{
+	DBG << "( find_obj() " << objname << " )\n";
+	ObjMap::iterator p = _objmap.find(objname);
+	if (p==_objmap.end()) {
+		if (do_throw) throw("couldn't look up "+objname);
+		else return 0;
+	}
+	DBG << "( find_obj() " << objname << " -> " << (p->second) << " )\n";
+	return p->second;
+}
 
 
 
@@ -113,6 +133,10 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			_ts = AbcGeom::TimeSamplingPtr(
 				new AbcGeom::TimeSampling(step, start)
 			);
+
+			GeoObject::init(_oarchive, _ts);
+			_objs.clear();
+			_objmap.clear();
 		}
 		else if (func=="timesampling")
 		{
@@ -170,6 +194,9 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			DBG << "CLEANUP--...\n";
 
 			// TODO: finish this
+
+			_objmap.clear();
+			_objs.clear();
 			
 			if (_oarchive) delete _oarchive;
 			_oarchive=0;
