@@ -8,7 +8,7 @@
 */
 
 #ifndef __GeoObject_h__
-#define __GeoObject_H__
+#define __GeoObject_h__
 
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
