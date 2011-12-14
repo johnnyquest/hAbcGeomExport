@@ -249,6 +249,12 @@ template<class T, class V> inline void push_v3( T & container, V const & v ) {
 
 
 /**		GeoObject, constructor.
+
+@note
+		Instances returned by SOHO might not have an obj node that is
+		exactly the same as the instance name: in this case pass the
+		ptr to the 'original' obj_node, and pass the instance name
+		in the outname parameter.
 */
 GeoObject::GeoObject(
 	OP_Node *	obj_node,
@@ -268,7 +274,6 @@ GeoObject::GeoObject(
 	UT_String s; obj_node->getFullPath(s);
 	_path = s.toStdString();
 
-	// TODO: this shouldn't be zero
 	_op_obj = obj_node->castToOBJNode(); // either an OBJ_Node or zero
 	assert(_op_obj && "this should always be an obj node");
 
@@ -347,14 +352,10 @@ bool GeoObject::get_mtx_from_soho( OP_Context & ctx )
 bool GeoObject::writeSample( float time )
 {
 	dbg << "sample for " << _path << " @ " << time << ": ";
+	assert(_op_obj && "an obj should be given");
 	assert(_xform && "no abc output xform");
 
 	OP_Context ctx(time);
-
-	if ( _op_obj==0 ) {
-		dbg << "empty object\n";
-		return true;
-	}
 
 	// * xform sample *
 	//
