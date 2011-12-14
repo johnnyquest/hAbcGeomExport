@@ -1,10 +1,10 @@
 # Makefile.
 #
 
-DSONAME = $(HIH)/dso/hAbcGeomExport.so
+DSONAME = $(HIH)/dso/hAbcExport.so
 
 
-SOURCES = src/hAbcGeomExport.cpp
+SOURCES = src/hAbcGeomExport.cpp src/abcexportctrl.cpp
 
 #INCDIRS = \
 #	-I/usr/include/OpenEXR \

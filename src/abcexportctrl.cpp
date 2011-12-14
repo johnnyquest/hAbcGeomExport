@@ -34,7 +34,6 @@
 #define _DEBUG
 
 
-#include <UT/UT_DSOVersion.h>
 #include <CMD/CMD_Args.h>
 #include <CMD/CMD_Manager.h>
 
