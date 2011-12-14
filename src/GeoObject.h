@@ -104,7 +104,6 @@ namespace HDK_AbcExportSimple
 	typedef std::vector< boost::shared_ptr<GeoObject> > GeoObjects;
 
 
-
 }
 
 #endif

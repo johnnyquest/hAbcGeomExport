@@ -127,7 +127,7 @@ def export():
 	# collect geometry to be exported and their render SOPS
 	# (including point- and other instances, etc)
 	#
-	soho.addObjects(now, '*', '*', '', False)
+	soho.addObjects(now, '*', '*', '', do_culling=False)
 	soho.lockObjects(now)
 
 	soho_objs = {} # {objname: soho_obj}

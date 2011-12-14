@@ -50,7 +50,8 @@
 #include "GeoObject.h"
 
 
-using namespace std;
+namespace Abc = Alembic::Abc;
+namespace AbcGeom = Alembic::AbcGeom;
 
 
 
@@ -63,8 +64,14 @@ using namespace std;
 #endif
 
 
-Alembic::AbcGeom::OArchive *		_oarchive=0;
-Alembic::AbcGeom::TimeSamplingPtr	_ts;
+
+using namespace std;
+using namespace HDK_AbcExportSimple;
+
+
+
+static Alembic::AbcGeom::OArchive *		_oarchive=0;
+static Alembic::AbcGeom::TimeSamplingPtr	_ts;
 
 
 
