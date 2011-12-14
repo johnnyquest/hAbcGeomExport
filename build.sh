@@ -56,9 +56,9 @@ hcustom -g \
 	-I $OPENEXR_INCLUDES \
 	-I $ALEMBIC_INCLUDES \
 	-I $ALEMBIC_SUPPORT_INCLUDES \
-	hAbcGeomExport.cpp
+	src/hAbcGeomExport.cpp
 
 # delete leftover stuff
 #
-rm -f *.o
+rm -f src/*.o
 
