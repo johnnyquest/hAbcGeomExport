@@ -47,6 +47,8 @@
 #include <vector>
 #include <map>
 
+#include "GeoObject.h"
+
 
 using namespace std;
 
@@ -61,6 +63,8 @@ using namespace std;
 #endif
 
 
+Alembic::AbcGeom::OArchive *		_oarchive=0;
+Alembic::AbcGeom::TimeSamplingPtr	_ts;
 
 
 
@@ -88,7 +92,9 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			std::string abc_file(args(2));
 			DBG << "NEW OARCHIVE file=" << abc_file << "\n";
 
-			;
+			_oarchive = new Alembic::AbcGeom::OArchive(
+				Alembic::AbcCoreHDF5::WriteArchive(),
+				abc_file);
 		}
 		else if (func=="timesamping")
 		{
@@ -149,7 +155,9 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			DBG << "CLEANUP--...\n";
 
 			// TODO: finish this
-			;
+			
+			if (_oarchive) delete _oarchive;
+			_oarchive=0;
 		}
 		else
 		{
