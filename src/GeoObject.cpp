@@ -172,8 +172,9 @@ bool GeoObject::writeSample( float time )
 	// TODO: fill the xform sample with the proper data (local transformations)
 	// with hints and all (how to include preTransform elegantly?)
 
-	if (_mtx_soho) get_mtx_from_soho(ctx);
-	else get_mtx_from_api(ctx);
+
+	if (!_mtx_soho) get_mtx_from_api(ctx);
+	// else: if it's a soho matrix, we already have it
 
 	AbcGeom::M44d mtx( (const double (*)[4]) _matrix.data() );
 	xform_samp.setMatrix(mtx);

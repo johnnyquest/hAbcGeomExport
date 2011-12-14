@@ -67,6 +67,9 @@ namespace HDK_AbcExportSimple
 		bool		writeSample( float time );
 		char const *	pathname() const { return _path.c_str(); }
 		char const *	sop_name() const { return _sopname.c_str(); }
+
+		void		useExplicitMatrix( bool use=true ) { _mtx_soho = use; }
+		void		setMatrix( UT_DMatrix4 const & mtx ) { _matrix = mtx; useExplicitMatrix(); }
 	
 	private:
 		bool		get_mtx_from_api( OP_Context & ctx );
@@ -91,7 +94,7 @@ namespace HDK_AbcExportSimple
 		std::string			_path;		///< obj full path
 		std::string			_sopname;	///< SOP name
 
-		bool				_mtx_soho;	///< flag: get xform from soho?
+		bool				_mtx_soho;	///< flag: get xform from soho? (TODO: should be named '_mtx_explicit')
 		UT_DMatrix4			_matrix;	///< xform matrix to be output
 
 		Alembic::AbcGeom::OXform *	_xform;		///< output xform obj
