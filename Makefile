@@ -4,7 +4,7 @@
 DSONAME = $(HIH)/dso/hAbcExport.so
 
 
-SOURCES = src/hAbcGeomExport.cpp src/abcexportctrl.cpp
+SOURCES = src/GeoObject.cpp src/hAbcGeomExport.cpp src/abcexportctrl.cpp
 
 #INCDIRS = \
 #	-I/usr/include/OpenEXR \
