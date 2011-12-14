@@ -101,14 +101,16 @@ static void cmd_abcexportctrl( CMD_Args & args )
 		}
 		else if (func=="newobject")
 		{
-			CHK(2, "newobject <obj full pathname> <parent full pathname> [<sop full pathname>]");
+			CHK(3, "newobject <obj full pathname> <parent full pathname> <obj outname> [<sop full pathname>]");
 			std::string	objpath(args(2)),
 					parentp(args(3)),
-					soppath(args(4));
+					outname(args(4)),
+					soppath(args(5));
 
 			DBG << "NEW OBJECT"
 				<< " obj=" << objpath
 				<< " parent=" << parentp
+				<< " obj=" << outname
 				<< " sop=" << soppath
 				<< "\n";
 

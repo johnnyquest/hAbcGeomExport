@@ -25,6 +25,9 @@ def warn(m):	msg("WARNING: %s" % str(m))
 #dbg("(hAbcExportFrame.py)")
 
 
+# hscript command for abc export control
+CCMD = 'abcexportctrl'
+
 
 def collect_archy( objname, parentname=None, archy=None, level=1 ):
 	"""
@@ -53,7 +56,7 @@ def collect_archy( objname, parentname=None, archy=None, level=1 ):
 def abc_init(abcfile):
 	"""Create a new alembic archive."""
 	dbg("abc_init() abcfile=%s" % str(abcfile))
-
+	hou.hscript('%s oarchive "%s"' % (CCMD, abcfile))
 	return True
 
 
@@ -61,6 +64,7 @@ def abc_init(abcfile):
 def abc_cleanup():
 	"""Clean up and close alembic archive."""
 	dbg("abc_cleanup()")
+	hou.hscript('%s cleanup' % CCMD)
 	pass
 
 
@@ -203,6 +207,9 @@ def export():
 
 		s = abc_init(abc_file)
 		if s:
+			# TODO: timesampling
+			hou.hscript('%s timesampling %f %f' % (CCMD, 1.0, 1.0))
+
 			# build objects for oarchive
 			#
 			for E in archy:
@@ -213,11 +220,8 @@ def export():
 
 				dbg(" - new xform %s (obj=%s parent=%s)" % (outname, objname, parent))
 
-				if soppath:
-					dbg(" -- new geom shape")
-				else:
-					dbg(" -- (no SOP/geom)")
-					pass
+				hou.hscript('%s newobject %s %s %s %s' % \
+					(CCMD, objname, parent, outname, soppath))
 
 		else:
 			warn("couldn't output to file %s--aborting" % abc_file)
@@ -265,12 +269,19 @@ def export():
 			
 			#dbg(" --- mtx: %s" % str(xform.asTupleOfTuples()))
 
+			if True:
+				hou.hscript('%s xformsample %f %s %s' % \
+					(CCMD, now, objname, " ".join([ str(n) for n in xform.asTuple() ]) ))
+
 
 			# get geom shape (if geometry)
 			#
 			if soppath:
 				dbg(" --- SOP: %s" % soppath)
-				pass
+
+				hou.hscript('%s geosample %f %s %s' % \
+					(CCMD, now, objname, soppath))
+
 			else:
 				dbg(" --- (no SOP)")
 
