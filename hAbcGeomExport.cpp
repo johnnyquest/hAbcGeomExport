@@ -262,9 +262,13 @@ SOP_Node *get_render_sop( OP_Node *op )
 
 /**		GeoObject, constructor.
 */
-GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
+GeoObject::GeoObject(
+	OP_Node *	obj_node,
+	GeoObject *	parent,
+	SOP_Node *	sop_node
+)
 : _parent(parent)
-, _op_sop( get_render_sop(obj_node) )
+, _op_sop( sop_node ? sop_node : get_render_sop(obj_node) )
 , _name( obj_node->getName() )
 , _sopname( _op_sop ? _op_sop->getName() : "<no SOP>" )
 , _mtx_soho(false)

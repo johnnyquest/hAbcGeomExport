@@ -55,7 +55,11 @@ namespace HDK_AbcExportSimple
 		}
 
 	public:
-		GeoObject( OP_Node *obj_node, GeoObject *parent=0 );
+		GeoObject(
+			OP_Node *	obj_node,
+			GeoObject *	parent=0,
+			SOP_Node *	sop_node=0
+		);
 		~GeoObject();
 
 	public:
