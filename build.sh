@@ -18,12 +18,9 @@ HOUDINI_PREFS=$HIH
 #
 rm -f $HOUDINI_PREFS/dso/abcexportctrl.so
 
+make clean
+make
 
-# perform build (link library order is important!)
-#
-export SESI_TAGINFO="Johnny Quest / Questetics Inc."
-hcustom -g \
-	src/abcexportctrl.cpp
 
 # delete leftover stuff
 #
