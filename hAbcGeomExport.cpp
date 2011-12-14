@@ -223,6 +223,13 @@ int get_num_comps( GB_Attribute *attr ) {
 
 
 
+
+
+
+
+
+
+
 /**	Store 2 components of a vector in a container.
 */
 template<class T, class V> inline void push_v2( T & container, V const & v ) {
@@ -260,6 +267,8 @@ GeoObject::GeoObject( OP_Node *obj_node, GeoObject *parent )
 , _op_sop( get_render_sop(obj_node) )
 , _name( obj_node->getName() )
 , _sopname( _op_sop ? _op_sop->getName() : "<no SOP>" )
+, _mtx_soho(false)
+, _matrix()
 , _xform(0)
 , _outmesh(0)
 {
@@ -302,6 +311,32 @@ GeoObject::~GeoObject()
 
 
 
+
+/**		Get the object's xforms using plain HDK API (as opposed to SOHO).
+*/
+bool GeoObject::get_mtx_from_api( OP_Context & ctx )
+{
+	if ( _op_obj ) {
+		UT_DMatrix4 const & hou_prexform = _op_obj->getPreTransform();
+		UT_DMatrix4 hou_dmtx;
+		_op_obj->getParmTransform(ctx, hou_dmtx);
+		_matrix = hou_prexform * hou_dmtx; // apply pretransform
+		return true;
+	}
+	
+	return false;
+}
+
+/**		Get the object's xforms from SOHO.
+*/
+bool GeoObject::get_mtx_from_soho( OP_Context & ctx )
+{
+	// TODO: write this function
+	return false;
+}
+
+
+
 /**		GeoObject: write a sample (xform+geom) for the specified time.
 
 @TODO
@@ -328,13 +363,10 @@ bool GeoObject::writeSample( float time )
 	// TODO: fill the xform sample with the proper data (local transformations)
 	// with hints and all (how to include preTransform elegantly?)
 
-	UT_DMatrix4 const & hou_prexform = _op_obj->getPreTransform();
-	UT_DMatrix4 hou_dmtx;
-	
-	_op_obj->getParmTransform(ctx, hou_dmtx);
-	hou_dmtx = hou_prexform * hou_dmtx; // apply pretransform
+	if (_mtx_soho) get_mtx_from_soho(ctx);
+	else get_mtx_from_api(ctx);
 
-	AbcGeom::M44d mtx( (const double (*)[4]) hou_dmtx.data() );
+	AbcGeom::M44d mtx( (const double (*)[4]) _matrix.data() );
 	xform_samp.setMatrix(mtx);
 
 	_xform->getSchema().set(xform_samp); // export xform sample

@@ -16,6 +16,7 @@
 #include <OBJ/OBJ_Node.h>
 #include <SOP/SOP_Node.h>
 #include <OP/OP_Node.h>
+#include <UT/UT_DMatrix4.h>
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
@@ -61,6 +62,10 @@ namespace HDK_AbcExportSimple
 		bool		writeSample( float time );
 		char const *	pathname() const { return _path.c_str(); }
 		char const *	sop_name() const { return _sopname.c_str(); }
+	
+	private:
+		bool		get_mtx_from_api( OP_Context & ctx );
+		bool		get_mtx_from_soho( OP_Context & ctx );
 
 
 	private:
@@ -75,9 +80,14 @@ namespace HDK_AbcExportSimple
 		GeoObject *			_parent;	///< hierarchy parent
 		OBJ_Node *			_op_obj;	///< geometry xform node
 		SOP_Node *			_op_sop;	///< SOP node to export
+
 		std::string			_name;		///< obj (xform) name
 		std::string			_path;		///< obj full path
 		std::string			_sopname;	///< SOP name
+
+		bool				_mtx_soho;	///< flag: get xform from soho?
+		UT_DMatrix4			_matrix;	///< xform matrix to be output
+
 		Alembic::AbcGeom::OXform *	_xform;		///< output xform obj
 		Alembic::AbcGeom::OPolyMesh *	_outmesh;	///< output polymesh obj
 	};
