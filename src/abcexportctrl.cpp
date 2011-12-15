@@ -119,7 +119,15 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				<< "\n\tstep=  " << step
 				<< "\n\tstart= " << start
 				<< "\n";
-			
+
+			// (re-)init internal structs
+			// (do these first as they cannot fail)
+			//			
+			_objs.clear();
+			_objmap.clear();
+
+			// create time sampling + output archive
+			//
 			AbcGeom::TimeSamplingPtr
 				ts( new AbcGeom::TimeSampling(step, start) );
 
@@ -127,9 +135,6 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				new Alembic::AbcGeom::OArchive(
 					Alembic::AbcCoreHDF5::WriteArchive(),
 					abc_file), ts);
-
-			_objs.clear();
-			_objmap.clear();
 		}
 		else if (func=="newobject")
 		{
