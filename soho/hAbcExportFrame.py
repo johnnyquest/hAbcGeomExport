@@ -252,7 +252,7 @@ def export():
 
 	# check for user abort
 	#
-	if (False) # TODO: check for user abort!
+	if False: # TODO: check for user abort!
 		skip_frame = True
 		is_last = True
 		warn("user abort")
