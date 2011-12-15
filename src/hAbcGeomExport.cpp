@@ -384,9 +384,7 @@ ROP_RENDER_CODE hAbcGeomExport::endRender()
 	// (so it gets flushed to disk)
 	//
 	_objs.clear();
-
-	if (_oarchive) delete _oarchive;
-	_oarchive=0;
+	GeoObject::cleanup();
 
 	if (error() < UT_ERROR_ABORT)
 		executePostRenderScript(_end_time); // run post-render cmd

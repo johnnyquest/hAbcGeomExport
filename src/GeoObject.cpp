@@ -31,7 +31,8 @@ using namespace HDK_AbcExportSimple;
 
 // static (shared) per-class data
 //
-GEOOBJECT_STATICS_HERE
+Alembic::AbcGeom::OArchive * HDK_AbcExportSimple::GeoObject::_oarchive(0);
+Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts;
 
 
 

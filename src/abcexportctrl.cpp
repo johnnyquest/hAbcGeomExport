@@ -178,9 +178,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 
 			_objmap.clear();
 			_objs.clear();
-			
-			if (_oarchive) delete _oarchive;
-			_oarchive=0;
+			GeoObject::cleanup();
 		}
 		else
 		{

@@ -26,9 +26,6 @@
 
 /**		Macro for placing class-static data.
 */
-#define GEOOBJECT_STATICS_HERE \
-Alembic::AbcGeom::OArchive * HDK_AbcExportSimple::GeoObject::_oarchive(0); \
-Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts; \
 
 
 
@@ -52,6 +49,13 @@ namespace HDK_AbcExportSimple
 			assert(archive && timesampling);
 			_oarchive = archive;
 			_ts = timesampling;
+		}
+
+		static void cleanup()
+		{
+			if (_oarchive) delete _oarchive;
+			_oarchive=0;
+			// delete _ts?
 		}
 
 	public:
