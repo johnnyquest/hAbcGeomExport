@@ -82,6 +82,7 @@ def export():
 		'hver':		SohoParm('state:houdiniversion',	'string', [''],  False, key='hver'),
 		'objpath':	SohoParm('objpath',		'string',	[''], False),
 		'abcoutput':	SohoParm('abcoutput',		'string',	[''], False),
+		'camera':	SohoParm('camera',		'string',	[None], False),
 		'trange':	SohoParm('trange',		'int',		[0], False),
 		'f':		SohoParm('f',			'int',		None, False)
 	})
@@ -89,9 +90,12 @@ def export():
 	now = ps['now'].Value[0]
 	fps = ps['fps'].Value[0]
 	hver = ps['hver'].Value[0]
+	camera = ps['camera'].Value[0]
 
-	if not soho.initialize(now):
-		soho.error("couldn't initialize soho")
+	dbg("now=%.3f fps=%.3f" % (now, fps))
+
+	if not soho.initialize(now, camera):
+		soho.error("couldn't initialize soho (make sure camera is set)")
 		abc_cleanup()
 		return
 
