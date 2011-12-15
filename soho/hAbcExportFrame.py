@@ -103,8 +103,8 @@ def export():
 	trange    = ps['trange'].Value[0]
 	f         = ps['f'].Value
 
-	is_first  = frame < f[0]+1 # working around float funniness
-	is_last   = frame > f[1]-1
+	is_first  = frame < f[0]+0.5 # working around float funniness
+	is_last   = frame > f[1]-0.5
 
 	if trange==0:
 		is_first= is_last= True
