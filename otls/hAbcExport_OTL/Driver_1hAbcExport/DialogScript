@@ -81,13 +81,18 @@
 	    parmtag	{ "oprelative" "." }
 	    parmtag	{ "opfilter" "!!OBJ/CAMERA!!" }
 	}
-	parm {
-	    name	"abcoutput"
-	    label	"Save to File"
-	    type	file
-	    default	{ "./out.abc" }
-	    range	{ 0 1 }
-	    export	none
+	group {
+	    name	"folder0"
+	    label	"Geometry"
+
+	    parm {
+		name	"abc_staticgeo"
+		label	"Static Geometry"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+	    }
 	}
     }
 
