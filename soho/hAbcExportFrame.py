@@ -2,6 +2,10 @@
 #		@author		xy
 #		@since		2011-12-12
 #
+#		@brief		Alembic-export of object(s).
+#
+#		@todo		Clean up this mess. :|
+#
 #
 
 import time
@@ -205,6 +209,14 @@ def export():
 
 	now_out = now+(1.0/fps)
 
+	# check for user abort
+	#
+	if (False) # TODO: check for user abort!
+		skip_frame = True
+		is_last = True
+		warn("user abort")
+
+
 	# first frame: init all internal stuff
 	#
 	if is_first:
@@ -213,24 +225,12 @@ def export():
 		G.archy = archy[:]
 		G.archy_objs = archy_objs[:]
 
-		# TODO: export hierarchy, allocate outmesh objs, etc.
-
-		"""
-		alembic todo:
-		- create an oarchive
-		- create new time sampling obj (AbcGeom::TimeSampling)
-		- for each object, create new abc objects
-			- obj/transform: AbcGeom::OXform
-			- if geometry (mesh): AbcGeom::OPolyMesh
-		"""
-
 		s = abc_init(abc_file, tstep=1.0/fps, tstart=now_out)
 		if s:
 			# build objects for oarchive
 			#
 			for E in archy:
 				objname = E[1]
-				obj_src = objname
 				parent  = E[0]
 				outname = E[2]
 				soppath = E[3]
@@ -238,7 +238,7 @@ def export():
 				if soppath is None: soppath="-"
 
 				# TODO: if instance, objname should be the base obj name
-				pass
+				obj_src = objname
 				if objname in soho_only:
 					obj_src = soho_only[objname]
 
@@ -260,13 +260,6 @@ def export():
 
 		dbg("\n")
 		dbg(" -- EXPORTING frame %.1f" % frame)
-
-		"""
-		alembic todo:
-		- for each object
-			- read/export xform matrix
-			- if geom: read/export geometry (polymesh)
-		"""
 
 		for E in archy:
 			#dbg("\n-")
@@ -307,18 +300,6 @@ def export():
 	if is_last:
 		dbg("\n\n\n")
 		dbg("IS_LAST--FINISHING...")
-
-		# TODO: close export process
-		pass
-
-		"""
-		alembic todo:
-		- delete all alembic objs
-			- transforms: OXform
-			- geometry (mesh): OPolyMesh
-		- delete oarchive
-		"""
-
 		abc_cleanup()
 
 
