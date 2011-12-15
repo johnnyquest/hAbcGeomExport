@@ -1,0 +1,18 @@
+comment ""
+position -0.0648 -0.6765
+cachesize 1
+flags =  lock off model off template off footprint off xray off bypass off display on render on highlight off unload off savedata off compress off exposed on
+inputs
+{
+}
+stat
+{
+  create 1323876949
+  modify 1323990861
+  author tusi@johnnyquestlin.digicpictures.local
+  access 0777
+}
+color UT_Color RGB 0.8 0.8 0.8 
+delscript ""
+exprlanguage hscript
+end

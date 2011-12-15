@@ -1,0 +1,14 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+grouptype	[ 0	locks=0 ]	(	"guess"	)
+name	[ 0	locks=0 ]	(	"`strreplace(opname(\".\"), \"attr_\", \"\")`"	)
+varname	[ 0	locks=0 ]	(	`toupper(chs(\"name\"))`	)
+class	[ 0	locks=0 ]	(	"point"	)
+type	[ 0	locks=0 ]	(	"index"	)
+size	[ 0	locks=0 ]	(	1	)
+default	[ 0	locks=0 ]	(	0	0	0	0	)
+writevalues	[ 0	locks=0 ]	(	"on"	)
+value	[ 0	locks=0 ]	(	1	0	0	0	)
+string	[ 0	locks=0 ]	(	/obj/letter_inst_2	)
+}

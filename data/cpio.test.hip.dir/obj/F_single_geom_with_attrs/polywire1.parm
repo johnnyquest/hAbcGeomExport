@@ -1,0 +1,17 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+radius	[ 0	locks=0 ]	(	0.100000001	)
+maxscale	[ 0	locks=0 ]	(	100	)
+smooth	[ 0	locks=0 ]	(	1	)
+div	[ 0	locks=0 ]	(	6	)
+segs	[ 0	locks=0 ]	(	4	)
+segscale	[ 8	locks=0 ]	(	[ segscale1	0.25 ] 	[ segscale2	0.75 ] 	)
+jointcorrect	[ 0	locks=0 ]	(	"off"	)
+dotexture	[ 0	locks=0 ]	(	"on"	)
+uoff	[ 0	locks=0 ]	(	0	)
+textu	[ 0	locks=0 ]	(	0	1	)
+textv	[ 0	locks=0 ]	(	0	1	)
+upenable	[ 0	locks=0 ]	(	"off"	)
+upvector	[ 0	locks=0 ]	(	0	1	0	)
+}

@@ -1,0 +1,15 @@
+{
+    channel segscale1 {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = "1.0 / $NSEG" }
+    }
+    channel segscale2 {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = "1.0 - 1.0 / $NSEG" }
+    }
+  }
