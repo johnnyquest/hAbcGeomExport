@@ -178,6 +178,19 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			else throw("object "+objpath+" already added");
 
 		}
+		else if (func=="objset")
+		{
+			CHK(2, "objset <obj_name> <option>");
+			std::string	objpath(args(2)),
+					opt(args(3));
+
+			GeoObject *obj = find_obj(objpath);
+
+			if (opt=="static") {
+				DBG << " -- " << objpath << " set as static\n";
+				obj->setStaticGeo(true);
+			}
+		}
 		else if (func=="writesample")
 		{
 			// write an xform (+geom--optional) sample
