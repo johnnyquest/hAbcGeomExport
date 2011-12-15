@@ -170,11 +170,12 @@ def export():
 		if len(N)<3: N.append(N[1]) # N = [ N[0], N[1], N[1] ]
 		if N[1] in sop_dict:
 			N = [ N[0], N[1], N[2], sop_dict[N[1]] ]
-			archy2.append(N)
 		else:
 			# empty xform (no sop)
 			N = [ N[0], N[1], N[1], None ]
-			archy2.append(N)
+		
+		N[2] = re.search("[^/]+$", N[2]).group(0)
+		archy2.append(N)
 	archy = archy2
 
 	if False:
