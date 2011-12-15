@@ -1,4 +1,4 @@
-# Dialog script for hAbcExport automatically generated 12/12/11 13:00:17
+# Dialog script for hAbcExport automatically generated 12/15/11 16:18:12
 
 {
     name	hAbcExport
@@ -70,6 +70,16 @@
 	    export	none
 	    parmtag	{ "oprelative" "." }
 	    parmtag	{ "opfilter" "!!OBJ!!" }
+	}
+	parm {
+	    name	"camera"
+	    label	"Camera"
+	    type	oppath
+	    default	{ "/obj/cam1" }
+	    range	{ 0 1 }
+	    export	none
+	    parmtag	{ "oprelative" "." }
+	    parmtag	{ "opfilter" "!!OBJ/CAMERA!!" }
 	}
 	parm {
 	    name	"abcoutput"

@@ -82,6 +82,7 @@ def export():
 		'hver':		SohoParm('state:houdiniversion',	'string', [''],  False, key='hver'),
 		'objpath':	SohoParm('objpath',		'string',	[''], False),
 		'abcoutput':	SohoParm('abcoutput',		'string',	[''], False),
+		'camera':	SohoParm('camera',		'string',	[None], False),
 		'trange':	SohoParm('trange',		'int',		[0], False),
 		'f':		SohoParm('f',			'int',		None, False)
 	})
@@ -89,9 +90,12 @@ def export():
 	now = ps['now'].Value[0]
 	fps = ps['fps'].Value[0]
 	hver = ps['hver'].Value[0]
+	camera = ps['camera'].Value[0]
 
-	if not soho.initialize(now):
-		soho.error("couldn't initialize soho")
+	dbg("now=%.3f fps=%.3f" % (now, fps))
+
+	if not soho.initialize(now, camera):
+		soho.error("couldn't initialize soho (make sure camera is set)")
 		abc_cleanup()
 		return
 
@@ -103,8 +107,8 @@ def export():
 	trange    = ps['trange'].Value[0]
 	f         = ps['f'].Value
 
-	is_first  = frame < f[0]+1 # working around float funniness
-	is_last   = frame > f[1]-1
+	is_first  = frame < f[0]+0.5 # working around float funniness
+	is_last   = frame > f[1]-0.5
 
 	if trange==0:
 		is_first= is_last= True
@@ -162,7 +166,7 @@ def export():
 			m = obj.split(":")
 			p = m[-2] # parent: 2nd from right
 			if p in archy_objs:
-				archy.append( ( p, obj, "%s->%s" % (m[-2], m[-1]) )  )
+				archy.append( ( p, obj, "%s__%s" % (m[-2], m[-1]) )  )
 				soho_only[obj]=p
 				#dbg(" -+- %s %s" % (p, obj))
 
