@@ -1,0 +1,16 @@
+{
+version 0.8
+type	[ 0	locks=0 ]	(	"prim"	)
+surftype	[ 0	locks=0 ]	(	"quads"	)
+rad	[ 0	locks=0 ]	(	0.100000001	0.100000001	0.100000001	)
+t	[ 0	locks=0 ]	(	0	0.875	0	)
+orient	[ 0	locks=0 ]	(	"y"	)
+freq	[ 0	locks=0 ]	(	2	)
+rows	[ 0	locks=0 ]	(	10	)
+cols	[ 0	locks=0 ]	(	10	)
+orderu	[ 0	locks=0 ]	(	4	)
+orderv	[ 0	locks=0 ]	(	4	)
+imperfect	[ 0	locks=0 ]	(	"on"	)
+upole	[ 0	locks=0 ]	(	"off"	)
+accurate	[ 0	locks=0 ]	(	"on"	)
+}

@@ -1,0 +1,18 @@
+{
+version 0.8
+subdivide	[ 0	locks=0 ]	(	""	)
+creases	[ 0	locks=0 ]	(	""	)
+iterations	[ 0	locks=0 ]	(	1	)
+overridecrease	[ 0	locks=0 ]	(	"off"	)
+creaseweight	[ 0	locks=0 ]	(	0	)
+outputcrease	[ 0	locks=0 ]	(	"off"	)
+outcreasegroup	[ 0	locks=0 ]	(	creases	)
+closeholes	[ 0	locks=0 ]	(	"pull"	)
+surroundpoly	[ 0	locks=0 ]	(	"edges"	)
+bias	[ 0	locks=0 ]	(	1	)
+updatenmls	[ 0	locks=0 ]	(	"on"	)
+smoothvertex	[ 0	locks=0 ]	(	"on"	)
+consisttopology	[ 0	locks=0 ]	(	"off"	)
+linearcreases	[ 0	locks=0 ]	(	"off"	)
+mantrastyle	[ 0	locks=0 ]	(	"off"	)
+}

@@ -1,9 +1,11 @@
-8
+10
 view
 cam1
 A_single_geom
 B_archy_test_1
 C_archy_test_2
-abc_preview
 D_sim_geom_1
 E_sim_geom_2
+F_single_geom_with_attrs
+H_ptinstances_per_pt
+I_inst_ppt_B

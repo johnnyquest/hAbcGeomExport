@@ -1,5 +1,5 @@
 fplayback -i on -r off -f 1 -e on -h on -t on -a on -k on -s 1
-tcur 0
+tcur 2.9583332538604736
 fps 24
 tset 0 10
 frange 1 120

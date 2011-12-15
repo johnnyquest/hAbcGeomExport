@@ -1,0 +1,89 @@
+{
+    channel px {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $CEX }
+    }
+    channel py {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $CEY }
+    }
+    channel pz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $CEZ }
+    }
+    channel upvectorx {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $NX }
+    }
+    channel upvectory {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $NY }
+    }
+    channel upvectorz {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $NZ }
+    }
+    channel diffr {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $CR }
+    }
+    channel diffg {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $CG }
+    }
+    channel diffb {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $CB }
+    }
+    channel alpha {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $CA }
+    }
+    channel crease {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $CREASE }
+    }
+    channel metaweight {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $WEIGHT }
+    }
+    channel prblur {
+      lefttype = extend
+      righttype = extend
+      default = 0.0333333
+      flags = 0
+      segment { length = 0 value = 0.033333335071802139 0.033333335071802139 expr = 1/$FPS }
+    }
+  }

@@ -29,6 +29,47 @@ def warn(m):	msg("WARNING: %s" % str(m))
 #dbg("(hAbcExportFrame.py)")
 
 
+
+class timer(object):
+	"""Timer class, for performance measurements."""
+
+	def ct(self):
+		#return time.clock()
+		return time.time()
+
+	def __init__(self, name='timer'):
+		self.name = name
+		t = self.ct()
+		self.t0 = t
+		self.last = t
+		self.times = []
+
+	def elapsed(self):
+		return self.ct()-self.t0
+
+	def lap(self, name):
+		t = self.ct()
+		d = t-self.last
+		self.last = t
+		self.times.append( (str(name), d) )
+
+	def __str__(self):
+		return '\n'.join([ '%20s: %.2f' % (v[0], v[1]) for v in self.times ])
+
+	def stats(self, name=None):
+		if True:
+			if not name: name=self.name
+			msg("TIMER STATS for %s:\n%s" % (name, self.__str__()))
+		else:
+			# keep quiet
+			pass
+
+
+
+
+
+
+
 # hscript command for abc export control
 CCMD = 'abcexportctrl'
 
@@ -80,6 +121,8 @@ def abc_cleanup():
 def export():
 	"""Main export function."""
 
+	T = timer('FrameExport')
+
 	ps = soho.evaluate({
 		'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
 		'fps':		SohoParm('state:fps',			'real', [24],  False, key='fps'),
@@ -123,6 +166,7 @@ def export():
 	dbg("objpath=%s camera=%s abcoutput=%s trange=%d f=%s" % \
 		(objpath, camera, abc_file, trange, str(f)))
 
+	T.lap('init')
 
 	# collect hierarchy to be exported
 	# (read from scene directly, ie. not containing instances, etc.)
@@ -157,6 +201,8 @@ def export():
 		#dbg(" -- %s (sop:%s)" % (n, str(path)) )
 		if path and path!="":
 			sop_dict[n] = path
+
+	T.lap('collect-objs')
 
 	if False:
 		dbg( '-' * 40 )
@@ -200,6 +246,7 @@ def export():
 
 	dbg("COLLECTED ARCHY: %d elems" % len(archy))
 
+	T.lap('got-archy')
 
 	# we now have a list of all objects to be exported
 	# (parentname, objname, exportname, soppath)
@@ -211,7 +258,7 @@ def export():
 
 	# check for user abort
 	#
-	if (False) # TODO: check for user abort!
+	if False: # TODO: check for user abort!
 		skip_frame = True
 		is_last = True
 		warn("user abort")
@@ -247,11 +294,22 @@ def export():
 				hou.hscript('%s newobject "%s" "%s" "%s" "%s" "%s"' % \
 					(CCMD, objname, obj_src, parent, outname, soppath))
 
+				# set object flags (static, etc.)
+				#
+				if objname in soho_objs:
+					ps = soho_objs[objname].evaluate({
+						'abc_staticgeo': SohoParm('abc_staticgeo', 'int', [0], False)
+					}, now)
+
+					if ps['abc_staticgeo'].Value[0]!=0:
+						hou.hscript('%s objset "%s" static' % (CCMD, objname))
+
 		else:
 			warn("couldn't output to file %s--aborting" % abc_file)
 			skip_frame = True
 			is_last = True
 
+	T.lap('frame-first')
 
 
 	# frame export: collect xforms, geoms, and export them
@@ -285,13 +343,16 @@ def export():
 			# perform sample write
 			# (c++ code decides if geom is to be written)
 			#
-			hou.hscript('%s writesample %f "%s" %s' % \
-				(CCMD, now_out, objname, xform))
+			if True:
+				hou.hscript('%s writesample %f "%s" %s' % \
+					(CCMD, now_out, objname, xform))
 
 	else:
 		#soho.error("couldn't export frame %.1f--no. of objects changed" % frame)
 		warn("couldn't export frame %.1f--no. of objects changed" % frame)
 
+
+	T.lap('frame-export')
 
 
 	# last frame: cleanup all internal stuff,
@@ -302,6 +363,9 @@ def export():
 		dbg("IS_LAST--FINISHING...")
 		abc_cleanup()
 
+	T.lap('frame-last')
+
+	T.stats()
 
 
 

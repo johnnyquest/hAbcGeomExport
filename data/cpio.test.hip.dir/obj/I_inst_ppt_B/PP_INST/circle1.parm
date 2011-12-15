@@ -1,0 +1,12 @@
+{
+version 0.8
+type	[ 0	locks=0 ]	(	"poly"	)
+orient	[ 0	locks=0 ]	(	"zx"	)
+rad	[ 0	locks=0 ]	(	4	4	)
+t	[ 0	locks=0 ]	(	0	0	0	)
+order	[ 0	locks=0 ]	(	4	)
+divs	[ 0	locks=0 ]	(	10	)
+arc	[ 0	locks=0 ]	(	"closed"	)
+angle	[ 0	locks=0 ]	(	0	360	)
+imperfect	[ 0	locks=0 ]	(	"on"	)
+}

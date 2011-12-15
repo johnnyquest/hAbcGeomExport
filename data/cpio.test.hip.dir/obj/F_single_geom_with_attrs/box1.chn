@@ -1,0 +1,9 @@
+{
+    channel ty {
+      lefttype = extend
+      righttype = extend
+      default = 0.5
+      flags = 0
+      segment { length = 0 value = 0.5 0.5 expr = 0.5*ch(\"sizey\") }
+    }
+  }

@@ -1,4 +1,4 @@
-# Dialog script for hAbcExport automatically generated 12/15/11 16:18:12
+# Dialog script for hAbcExport automatically generated 12/15/11 23:58:08
 
 {
     name	hAbcExport
@@ -40,25 +40,19 @@
 	label	"Main"
 
 	parm {
-	    name	"soho_program"
-	    label	"SOHO Program"
-	    type	string
-	    default	{ "hAbcExport.py" }
-	    menureplace	{
-		"hAbcExport.py"	"hAbcExport.py"
-		"Hello1.py"	"Hello1.py"
-		"Hello2.py"	"Hello2.py"
-		"Hello3.py"	"Hello3.py"
-	    }
+	    name	"abcoutput"
+	    label	"Output File"
+	    type	file
+	    default	{ "./out.abc" }
 	    range	{ 0 1 }
 	    export	none
 	}
 	parm {
-	    name	"soho_outputmode"
-	    label	"Output Mode"
-	    type	integer
-	    default	{ "2" }
-	    range	{ 0 10 }
+	    name	"perframe"
+	    label	"Single File per Frame (TODO)"
+	    type	toggle
+	    default	{ "0" }
+	    range	{ 0 1 }
 	    export	none
 	}
 	parm {
@@ -81,14 +75,46 @@
 	    parmtag	{ "oprelative" "." }
 	    parmtag	{ "opfilter" "!!OBJ/CAMERA!!" }
 	}
-	parm {
-	    name	"abcoutput"
-	    label	"Save to File"
-	    type	file
-	    default	{ "./out.abc" }
-	    range	{ 0 1 }
-	    export	none
+	group {
+	    name	"folder0"
+	    label	"Geometry"
+
+	    parm {
+		name	"abc_staticgeo"
+		label	"Static Geometry"
+		type	toggle
+		default	{ "0" }
+		range	{ 0 1 }
+		export	none
+	    }
 	}
+
+	group {
+	    name	"folder0_1"
+	    label	"Attributes (TODO)"
+
+	    parm {
+		name	"abc_addattrs"
+		label	"Allow Attrs"
+		type	string
+		default	{ "*" }
+		range	{ 0 1 }
+		export	none
+	    }
+	    parm {
+		name	"abc_excludeattrs"
+		label	"Exclude Attrs"
+		type	string
+		default	{ "N" }
+		menutoggle	{
+		    "N"	"Normals (N)"
+		    "uv"	"Texture UVs (uv)"
+		}
+		range	{ 0 1 }
+		export	none
+	    }
+	}
+
     }
 
     group {
@@ -233,6 +259,34 @@
 		"python"	"Python"
 	    }
 	    range	{ 0 1 }
+	    export	none
+	}
+    }
+
+    group {
+	name	"main_2"
+	label	"soho internals"
+
+	parm {
+	    name	"soho_program"
+	    label	"SOHO Program"
+	    type	string
+	    default	{ "hAbcExport.py" }
+	    menureplace	{
+		"hAbcExport.py"	"hAbcExport.py"
+		"Hello1.py"	"Hello1.py"
+		"Hello2.py"	"Hello2.py"
+		"Hello3.py"	"Hello3.py"
+	    }
+	    range	{ 0 1 }
+	    export	none
+	}
+	parm {
+	    name	"soho_outputmode"
+	    label	"Output Mode"
+	    type	integer
+	    default	{ "2" }
+	    range	{ 0 10 }
 	    export	none
 	}
     }

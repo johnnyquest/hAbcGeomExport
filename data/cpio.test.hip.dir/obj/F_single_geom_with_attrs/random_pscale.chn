@@ -1,0 +1,147 @@
+{
+    channel tx {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $TX }
+    }
+    channel ty {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $TY }
+    }
+    channel tz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $TZ }
+    }
+    channel weight {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $WEIGHT }
+    }
+    channel diffr {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $CR }
+    }
+    channel diffg {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $CG }
+    }
+    channel diffb {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $CB }
+    }
+    channel alpha {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $CA }
+    }
+    channel nx {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $NX }
+    }
+    channel ny {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $NY }
+    }
+    channel nz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $NZ }
+    }
+    channel mapu {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $MAPU }
+    }
+    channel mapv {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $MAPV }
+    }
+    channel mapw {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $MAPW }
+    }
+    channel tension {
+      lefttype = extend
+      righttype = extend
+      default = 1
+      flags = 0
+      segment { length = 0 value = 1 1 expr = $TENSION }
+    }
+    channel springk {
+      lefttype = extend
+      righttype = extend
+      default = 30
+      flags = 0
+      segment { length = 0 value = 30 30 expr = $SPRINGK }
+    }
+    channel vx {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $VX }
+    }
+    channel vy {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $VY }
+    }
+    channel vz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $VZ }
+    }
+    channel upx {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $UPX }
+    }
+    channel upy {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $UPY }
+    }
+    channel upz {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = $UPZ }
+    }
+    channel pscale {
+      lefttype = extend
+      righttype = extend
+      flags = 0
+      segment { length = 0 expr = ch(\"sizeMin\")+rand($PT+ch(\"seed\"))*(ch(\"sizeMax\")-ch(\"sizeMin\")) }
+    }
+  }

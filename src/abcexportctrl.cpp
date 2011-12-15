@@ -119,7 +119,15 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				<< "\n\tstep=  " << step
 				<< "\n\tstart= " << start
 				<< "\n";
-			
+
+			// (re-)init internal structs
+			// (do these first as they cannot fail)
+			//			
+			_objs.clear();
+			_objmap.clear();
+
+			// create time sampling + output archive
+			//
 			AbcGeom::TimeSamplingPtr
 				ts( new AbcGeom::TimeSampling(step, start) );
 
@@ -127,9 +135,6 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				new Alembic::AbcGeom::OArchive(
 					Alembic::AbcCoreHDF5::WriteArchive(),
 					abc_file), ts);
-
-			_objs.clear();
-			_objmap.clear();
 		}
 		else if (func=="newobject")
 		{
@@ -139,7 +144,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 					parentp(args(4)),
 					outname(args(5)),
 					soppath(args(6));
-
+/*
 			DBG << "NEW OBJECT"
 				<< " obj= " << objpath
 				<< "\n\tobj_src= " << obj_src
@@ -147,7 +152,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				<< " outname= " << outname
 				<< " sop= " << soppath
 				<< "\n";
-
+*/
 			if ( find_obj(objpath, false)==0 )
 			{
 				// add object
@@ -159,7 +164,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				if (!objnode)
 					throw("couldn't find obj "+obj_src);
 
-				DBG << "--objnode:" << objnode << " parent=" << parent << " ";
+				DBG << "objnode=" << objnode << " parent=" << parent << " ";
 
 				boost::shared_ptr<GeoObject> obj(
 					new GeoObject(objnode, parent,
@@ -168,10 +173,23 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				_objs.push_back(obj);
 				_objmap[objpath] = obj.get();
 
-				dbg << "\n\n";
+				dbg << "\n";
 			}
 			else throw("object "+objpath+" already added");
 
+		}
+		else if (func=="objset")
+		{
+			CHK(2, "objset <obj_name> <option>");
+			std::string	objpath(args(2)),
+					opt(args(3));
+
+			GeoObject *obj = find_obj(objpath);
+
+			if (opt=="static") {
+				DBG << " -- " << objpath << " set as static\n";
+				obj->setStaticGeo(true);
+			}
 		}
 		else if (func=="writesample")
 		{

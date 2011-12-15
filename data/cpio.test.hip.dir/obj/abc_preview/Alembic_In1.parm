@@ -1,8 +1,0 @@
-{
-version 0.8
-fileName	[ 0	locks=0 ]	(	$HIP/D_sim_geom_1.abc	)
-frame	[ 0	locks=0 ]	(	[ frame	1 ] 	)
-fps	[ 0	locks=0 ]	(	[ fps	24 ] 	)
-objectPath	[ 0	locks=0 ]	(	""	)
-includeXform	[ 0	locks=0 ]	(	"on"	)
-}

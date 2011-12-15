@@ -1,0 +1,7 @@
+{
+version 0.8
+group	[ 0	locks=0 ]	(	""	)
+cusp	[ 0	locks=0 ]	(	"on"	)
+angle	[ 0	locks=0 ]	(	30	)
+postnml	[ 0	locks=0 ]	(	"on"	)
+}
