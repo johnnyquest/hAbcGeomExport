@@ -294,6 +294,16 @@ def export():
 				hou.hscript('%s newobject "%s" "%s" "%s" "%s" "%s"' % \
 					(CCMD, objname, obj_src, parent, outname, soppath))
 
+				# set object flags (static, etc.)
+				#
+				if objname in soho_objs:
+					ps = soho_objs[objname].evaluate({
+						'abc_staticgeo': SohoParm('abc_staticgeo', 'int', [0], False)
+					}, now)
+
+					if ps['abc_staticgeo'].Value[0]!=0:
+						hou.hscript('%s objset "%s" static' % (CCMD, objname))
+
 		else:
 			warn("couldn't output to file %s--aborting" % abc_file)
 			skip_frame = True
