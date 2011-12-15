@@ -74,6 +74,7 @@ namespace HDK_AbcExportSimple
 
 		void		useExplicitMatrix( bool use=true ) { _mtx_soho = use; }
 		void		setMatrix( UT_DMatrix4 const & mtx ) { _matrix = mtx; useExplicitMatrix(); }
+		void		setStaticGeo( bool is_static ) { _static_geo=is_static; }
 	
 	private:
 		bool		get_mtx_from_api( OP_Context & ctx );
@@ -98,6 +99,9 @@ namespace HDK_AbcExportSimple
 		std::string			_sopname;	///< SOP name
 
 		bool				_mtx_soho;	///< flag: get xform from soho? (TODO: should be named '_mtx_explicit')
+		bool				_static_geo;	///< flag: is geometry static? (ie. write geometry data only once)
+		bool				_geo_ok;	///< flag: geo data is already written
+
 		UT_DMatrix4			_matrix;	///< xform matrix to be output
 
 		Alembic::AbcGeom::OXform *	_xform;		///< output xform obj

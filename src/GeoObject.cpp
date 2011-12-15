@@ -74,6 +74,8 @@ GeoObject::GeoObject(
 , _name( outname ? *outname : obj_node->getName().toStdString() )
 , _sopname("<no SOP>")
 , _mtx_soho(false)
+, _static_geo(false)
+, _geo_ok(false)
 , _matrix()
 , _xform(0)
 , _outmesh(0)
@@ -180,6 +182,11 @@ bool GeoObject::writeSample( float time )
 		return true;
 	}
 
+	if (_static_geo && _geo_ok) {
+		// skip if static and already written
+		//DBG << "skipping static geo " << _name << " (" << _path << ")\n";
+		return true;
+	}
 
 	// * geom sample *
 	//
@@ -329,6 +336,7 @@ bool GeoObject::writeSample( float time )
 	);
 
 	_outmesh->getSchema().set(mesh_samp); // export mesh sample
+	_geo_ok=true;
 
 	return true;
 }
