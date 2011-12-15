@@ -18,7 +18,7 @@
 
 */
 
-#define PLUGIN_VERSION_STR "0.02"
+#define PLUGIN_VERSION_STR "0.03"
 #define _DEBUG
 
 

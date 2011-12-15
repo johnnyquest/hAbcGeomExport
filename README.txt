@@ -1,4 +1,4 @@
-hAbcGeomExport 0.02
+hAbcGeomExport 0.03
 ===================
 (Imre Tuske @ DiGiC Pictures, 2011-11)
 
@@ -129,6 +129,12 @@ forget about importing normals (or have a few sad days, like I did :|).
 
 History
 -------
+
+version 0.03 (2011-12-15)
+	Initial version of a SOHO interface (hence the ability to
+	export geometry instances, etc).
+
+
 
 version 0.02 (2011-12-06)
 	First version to export of hierarchies (transforms+shapes),
