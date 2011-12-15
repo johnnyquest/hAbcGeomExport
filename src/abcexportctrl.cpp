@@ -173,7 +173,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				_objs.push_back(obj);
 				_objmap[objpath] = obj.get();
 
-				dbg << "\n\n";
+				dbg << "\n";
 			}
 			else throw("object "+objpath+" already added");
 
