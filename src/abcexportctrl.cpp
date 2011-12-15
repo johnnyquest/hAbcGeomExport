@@ -141,12 +141,12 @@ static void cmd_abcexportctrl( CMD_Args & args )
 					soppath(args(6));
 
 			DBG << "NEW OBJECT"
-				<< "\n\tobj=     " << objpath
+				<< " obj= " << objpath
 				<< "\n\tobj_src= " << obj_src
 				<< "\n\tparent=  " << parentp
-				<< "\n\toutname= " << outname
-				<< "\n\tsop=     " << soppath
-				<< "\n\n";
+				<< " outname= " << outname
+				<< " sop= " << soppath
+				<< "\n";
 
 			if ( find_obj(objpath, false)==0 )
 			{
@@ -167,6 +167,8 @@ static void cmd_abcexportctrl( CMD_Args & args )
 
 				_objs.push_back(obj);
 				_objmap[objpath] = obj.get();
+
+				dbg << "\n\n";
 			}
 			else throw("object "+objpath+" already added");
 
@@ -178,17 +180,17 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			CHK(2, "writesample <time> <obj_name> [<matrix(4x4>]");
 			fpreal		now=atof(args(2));
 			std::string	objpath(args(3));
-
+/*
 			DBG << "WRITE SAMPLE"
-				<< "\n\ttime= " << now
-				<< "\n\tobj=  " << objpath
-				<< "\n";
-
+				<< " time= " << now
+				<< " obj= " << objpath
+				<< " ";
+*/
 			GeoObject *obj = find_obj(objpath);
 
 			if ( argc > (2+2) )
 			{
-				DBG << " --- using EXPLICIT matrix\n";
+				//DBG << " --- using EXPLICIT matrix\n";
 				CHK(2+16, "writesample <time> <obj_name> <matrix4x4>");
 				
 				UT_DMatrix4 mtx;
@@ -199,7 +201,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			}
 			else
 			{
-				DBG << " --- using its own matrix\n";
+				//DBG << " --- using its own matrix\n";
 				obj->useExplicitMatrix(false);
 			}
 

@@ -103,11 +103,11 @@ GeoObject::GeoObject(
 
 	if ( _op_obj && _obj_type==OBJ_GEOMETRY && _op_sop )
 	{
-		dbg << " [GEO]";
+		dbg << "[GEO]";
 		_outmesh = new Alembic::AbcGeom::OPolyMesh(*_xform, _sopname, _ts);
 	}
 	else {
-		dbg << " [NULL]";
+		dbg << "[NULL]";
 		_outmesh = 0;
 	}
 }
@@ -118,7 +118,7 @@ GeoObject::GeoObject(
 */
 GeoObject::~GeoObject()
 {
-	DBG << " --- ~GeoObject() " << _path << "\n";
+	//DBG << " --- ~GeoObject() " << _path << "\n";
 	if (_outmesh) delete _outmesh; _outmesh=0;
 	if (_xform) delete _xform; _xform=0;
 }
@@ -161,7 +161,7 @@ bool GeoObject::get_mtx_from_soho( OP_Context & ctx )
 */
 bool GeoObject::writeSample( float time )
 {
-	dbg << "sample for " << _path << " @ " << time << ": ";
+	//dbg << "sample for " << _path << " @ " << time << ": ";
 	assert(_op_obj && "an obj should be given");
 	assert(_xform && "no abc output xform");
 
@@ -183,14 +183,14 @@ bool GeoObject::writeSample( float time )
 	_xform->getSchema().set(xform_samp); // export xform sample
 
 	if ( _outmesh==0 ) {
-		dbg << "null/xform\n";
+		//dbg << "null/xform\n";
 		return true;
 	}
 
 
 	// * geom sample *
 	//
-	dbg << "GEO\n";
+	//dbg << "GEO\n";
 
 	GU_DetailHandle gdh = _op_sop->getCookedGeoHandle(ctx);
 	GU_DetailHandleAutoReadLock gdl(gdh);
@@ -210,7 +210,7 @@ bool GeoObject::writeSample( float time )
 		uv_vtx = h_vUV.isAttributeValid(),
 		has_N  = N_pt  || N_vtx,
 		has_uv = uv_pt || uv_vtx;
-
+/*
 	DBG	<< " - ATTRS:"
 		<< " has_N:" << has_N
 		<< " N_pt:" << N_pt
@@ -219,7 +219,7 @@ bool GeoObject::writeSample( float time )
 		<< " uv_pt:" << uv_pt
 		<< " uv_vtx:" << uv_vtx
 		<< "\n";
-
+*/
 
 	// collect polymesh data
 	//

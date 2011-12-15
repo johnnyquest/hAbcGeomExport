@@ -116,8 +116,8 @@ def export():
 	dbg("is_first=%d is_last=%d" % (is_first, is_last))
 	dbg("now=%.3f fps=%.3f -> %f" % (now, fps, frame))
 
-	dbg("objpath=%s abcoutput=%s trange=%d f=%s" % \
-		(objpath, abc_file, trange, str(f)))
+	dbg("objpath=%s camera=%s abcoutput=%s trange=%d f=%s" % \
+		(objpath, camera, abc_file, trange, str(f)))
 
 
 	# collect hierarchy to be exported
@@ -188,11 +188,13 @@ def export():
 		archy2.append(N)
 	archy = archy2
 
-	if True:
+	if False:
 		dbg( '-' * 40 )
 		dbg("COLLECTED ARCHY:")
 		for a in archy:
 			dbg("- %s: " % (a[1], ))
+
+	dbg("COLLECTED ARCHY: %d elems" % len(archy))
 
 
 	# we now have a list of all objects to be exported
@@ -267,11 +269,11 @@ def export():
 		"""
 
 		for E in archy:
-			dbg("\n-")
+			#dbg("\n-")
 			#dbg("- OBJ: %s" % str(E))
 			objname = E[1]
 			soppath = E[3]
-			dbg("- OBJ: %s" % E[1])
+			#dbg("- OBJ: %s" % E[1])
 
 			# get xform matrix (TODO: get pretransform too!)
 			#
