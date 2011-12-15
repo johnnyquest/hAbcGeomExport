@@ -187,7 +187,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				<< "\n\tobj=  " << objpath
 				<< "\n";
 
-			GeoObject *obj = find_obj(objpath, false);
+			GeoObject *obj = find_obj(objpath);
 
 			if ( argc > (2+2) )
 			{
@@ -198,17 +198,17 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				for( int i=0, p=4;  i<16;  ++i, ++p )
 					mtx.data()[i] = atof(args(p));
 
-				//obj->setMatrix(mtx);
+				obj->setMatrix(mtx);
 			}
 			else
 			{
 				DBG << " --- using its own matrix\n";
-				//obj->useExplicitMatrix(false);
+				obj->useExplicitMatrix(false);
 			}
 
-			// TODO: write sample already
-			;
-			;
+			// write sample
+			//	
+			obj->writeSample(now);
 		}
 		else if (func=="cleanup")
 		{
