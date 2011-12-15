@@ -56,7 +56,7 @@ def collect_archy( objname, parentname=None, archy=None, level=1 ):
 def abc_init(abcfile, tstart=0.0, tstep=1.0/24.0):
 	"""Create a new alembic archive."""
 	dbg("abc_init() abcfile=%s" % str(abcfile))
-	hou.hscript('%s oarchive "%s" %f %f' % (CCMD, abcfile, tstep, tstart+tstep))
+	hou.hscript('%s oarchive "%s" %f %f' % (CCMD, abcfile, tstep, tstart))
 	return True
 
 
@@ -132,6 +132,7 @@ def export():
 	soho.lockObjects(now)
 
 	soho_objs = {} # {objname: soho_obj}
+	soho_only = [] # soho-only objects (can't be accessed directly with hdk)
 
 	obj_list = []
 	sop_dict = {} # {objname: sopname}
@@ -156,6 +157,7 @@ def export():
 			m = obj.split(":")
 			p = m[-2] # parent: 2nd from right
 			archy.append( ( p, obj, "%s->%s" % (m[-2], m[-1]) )  )
+			soho_only.append(obj)
 			#dbg(" -+- %s %s" % (p, obj))
 
 
@@ -188,6 +190,8 @@ def export():
 	archy_objs = [ n[1] for n in archy ]
 	skip_frame = False
 
+	now_out = now+(1.0/fps)
+
 	# first frame: init all internal stuff
 	#
 	if is_first:
@@ -206,7 +210,7 @@ def export():
 			- if geometry (mesh): AbcGeom::OPolyMesh
 		"""
 
-		s = abc_init(abc_file, tstep=1.0/fps, tstart=now)
+		s = abc_init(abc_file, tstep=1.0/fps, tstart=now_out)
 		if s:
 			# build objects for oarchive
 			#
@@ -215,6 +219,7 @@ def export():
 				parent  = E[0]
 				outname = E[2]
 				soppath = E[3]
+				if soppath is None: soppath="-"
 
 				dbg(" - new xform %s (obj=%s parent=%s)" % (outname, objname, parent))
 
@@ -249,38 +254,23 @@ def export():
 
 			# get xform matrix (TODO: get pretransform too!)
 			#
-			xform = None
+			xform = ''
 
-			if objname in soho_objs:
+			# TODO: use this only for instances!
+			#if objname in soho_objs:
+			if objname in soho_only:
 				# get matrix from soho
-				dbg(" --- (mtx from soho)")
+				#dbg(" --- (mtx from soho)")
 				xform = []
 				soho_objs[objname].evalFloat('space:local', now, xform)
 				xform = hou.Matrix4(xform)
-			else:
-				# get matrix from hou
-				dbg(" --- (mtx from hou)")
-				n = hou.node(objname) # should be an hou.ObjNode
-				pre = n.preTransform()
-				xform = n.parmTransform()
-				xform = pre * xform
-			
-			#dbg(" --- mtx: %s" % str(xform.asTupleOfTuples()))
+				xform = ' '.join([ str(n) for n in xform.asTuple() ])
 
-			if True:
-				hou.hscript('%s xformsample %f "%s" %s' % \
-					(CCMD, now, objname, " ".join([ str(n) for n in xform.asTuple() ]) ))
-
-
-			# get geom shape (if geometry)
+			# perform sample write
+			# (c++ code decides if geom is to be written)
 			#
-			if soppath:
-				dbg(" --- SOP: %s" % soppath)
-
-				hou.hscript('%s geosample %f "%s"' % \
-					(CCMD, now, objname))
-			else:
-				dbg(" --- (no SOP)")
+			hou.hscript('%s writesample %f "%s" %s' % \
+				(CCMD, now_out, objname, xform))
 
 	else:
 		#soho.error("couldn't export frame %.1f--no. of objects changed" % frame)

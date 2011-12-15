@@ -138,11 +138,6 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			_objs.clear();
 			_objmap.clear();
 		}
-		else if (func=="timesampling")
-		{
-			CHK(2, "timesampling <timestep> <timestart>");
-			;
-		}
 		else if (func=="newobject")
 		{
 			CHK(3, "newobject <obj full pathname> <parent full pathname> <obj outname> [<sop full pathname>]");
@@ -173,18 +168,6 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				<< "\n";
 
 			;
-		}
-		else if (func=="geosample")
-		{
-			CHK(2, "geosample <time> <obj_name>");
-			fpreal		now=atof(args(2));
-			std::string	objpath(args(3));
-			
-			DBG << "GEO SAMPLE"
-				<< " time=" << time
-				<< " obj=" << objpath
-				<< "\n";
-
 			;
 		}
 		else if (func=="cleanup")
