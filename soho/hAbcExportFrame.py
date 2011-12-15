@@ -132,7 +132,7 @@ def export():
 	soho.lockObjects(now)
 
 	soho_objs = {} # {objname: soho_obj}
-	soho_only = [] # soho-only objects (can't be accessed directly with hdk)
+	soho_only = {} # soho-only objects (can't be accessed directly with hdk)
 
 	obj_list = []
 	sop_dict = {} # {objname: sopname}
@@ -157,7 +157,7 @@ def export():
 			m = obj.split(":")
 			p = m[-2] # parent: 2nd from right
 			archy.append( ( p, obj, "%s->%s" % (m[-2], m[-1]) )  )
-			soho_only.append(obj)
+			soho_only[obj]=p
 			#dbg(" -+- %s %s" % (p, obj))
 
 
@@ -166,13 +166,14 @@ def export():
 	#
 	archy2 = []
 	for a in archy:
-		N = a[:]
-		if len(N)<3: N = (N[0], N[1], N[1])
+		N = list(a)
+		if len(N)<3: N.append(N[1]) # N = [ N[0], N[1], N[1] ]
 		if N[1] in sop_dict:
-			N = (N[0], N[1], N[2], sop_dict[N[1]])
+			N = [ N[0], N[1], N[2], sop_dict[N[1]] ]
 			archy2.append(N)
 		else:
-			N = (N[0], N[1], N[1], None)
+			# empty xform (no sop)
+			N = [ N[0], N[1], N[1], None ]
 			archy2.append(N)
 	archy = archy2
 
@@ -216,15 +217,22 @@ def export():
 			#
 			for E in archy:
 				objname = E[1]
+				obj_src = objname
 				parent  = E[0]
 				outname = E[2]
 				soppath = E[3]
+				if parent is None: parent="-"
 				if soppath is None: soppath="-"
 
-				dbg(" - new xform %s (obj=%s parent=%s)" % (outname, objname, parent))
+				# TODO: if instance, objname should be the base obj name
+				pass
+				if objname in soho_only:
+					obj_src = soho_only[objname]
 
-				hou.hscript('%s newobject "%s" "%s" "%s" "%s"' % \
-					(CCMD, objname, parent, outname, soppath))
+				#dbg("-- new xform\n\toutname= %s\n\tobj    = %s\n\tparent = %s\n\tsop    = %s" % (outname, objname, parent, soppath))
+
+				hou.hscript('%s newobject "%s" "%s" "%s" "%s" "%s"' % \
+					(CCMD, objname, obj_src, parent, outname, soppath))
 
 		else:
 			warn("couldn't output to file %s--aborting" % abc_file)

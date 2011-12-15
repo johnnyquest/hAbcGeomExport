@@ -34,6 +34,7 @@
 #define _DEBUG
 
 
+#include <OP/OP_Director.h>
 #include <CMD/CMD_Args.h>
 #include <CMD/CMD_Manager.h>
 
@@ -69,11 +70,7 @@ using namespace std;
 using namespace HDK_AbcExportSimple;
 
 
-
-static Alembic::AbcGeom::OArchive *		_oarchive=0;
-static Alembic::AbcGeom::TimeSamplingPtr	_ts;
 static HDK_AbcExportSimple::GeoObjects		_objs;
-
 
 
 typedef std::map<std::string, GeoObject *>	ObjMap;
@@ -121,52 +118,95 @@ static void cmd_abcexportctrl( CMD_Args & args )
 					start = atof(args(4));
 
 			DBG << "NEW OARCHIVE"
-				<< " file=" << abc_file
-				<< " step=" << step
-				<< " start=" << start
+				<< "\n\tfile=  " << abc_file
+				<< "\n\tstep=  " << step
+				<< "\n\tstart= " << start
 				<< "\n";
-
-			_oarchive = new Alembic::AbcGeom::OArchive(
-				Alembic::AbcCoreHDF5::WriteArchive(),
-				abc_file);
 			
-			_ts = AbcGeom::TimeSamplingPtr(
-				new AbcGeom::TimeSampling(step, start)
-			);
+			AbcGeom::TimeSamplingPtr
+				ts( new AbcGeom::TimeSampling(step, start) );
 
-			GeoObject::init(_oarchive, _ts);
+			GeoObject::init(
+				new Alembic::AbcGeom::OArchive(
+					Alembic::AbcCoreHDF5::WriteArchive(),
+					abc_file), ts);
+
 			_objs.clear();
 			_objmap.clear();
 		}
 		else if (func=="newobject")
 		{
-			CHK(3, "newobject <obj full pathname> <parent full pathname> <obj outname> [<sop full pathname>]");
+			CHK(4, "newobject <obj full pathname> <obj-src pathname> <parent full pathname> <obj outname> [<sop full pathname>]");
 			std::string	objpath(args(2)),
-					parentp(args(3)),
-					outname(args(4)),
-					soppath(args(5));
+					obj_src(args(3)),
+					parentp(args(4)),
+					outname(args(5)),
+					soppath(args(6));
 
 			DBG << "NEW OBJECT"
-				<< " obj=" << objpath
-				<< " parent=" << parentp
-				<< " obj=" << outname
-				<< " sop=" << soppath
-				<< "\n";
+				<< "\n\tobj=     " << objpath
+				<< "\n\tobj_src= " << obj_src
+				<< "\n\tparent=  " << parentp
+				<< "\n\toutname= " << outname
+				<< "\n\tsop=     " << soppath
+				<< "\n\n";
 
-			;
+			if ( find_obj(objpath, false)==0 )
+			{
+				// add object
+				//
+				GeoObject	*parent = find_obj(parentp, false);
+				OP_Node		*objnode = OPgetDirector()->findNode(obj_src.c_str());
+				SOP_Node	*sopnode = (SOP_Node *)OPgetDirector()->findNode(soppath.c_str());
+
+				if (!objnode)
+					throw("couldn't find obj "+obj_src);
+
+				DBG << "--objnode:" << objnode << " parent=" << parent << " ";
+
+				boost::shared_ptr<GeoObject> obj(
+					new GeoObject(objnode, parent,
+					sopnode, &outname) );
+
+				_objs.push_back(obj);
+				_objmap[objpath] = obj.get();
+			}
+			else throw("object "+objpath+" already added");
+
 		}
-		else if (func=="xformsample")
+		else if (func=="writesample")
 		{
-			CHK(2+16, "xformsample <time> <obj_name> <matrix array ... (16 floats)>");
+			// write an xform (+geom--optional) sample
+
+			CHK(2, "writesample <time> <obj_name> [<matrix(4x4>]");
 			fpreal		now=atof(args(2));
 			std::string	objpath(args(3));
-			// TODO: read matrix from args (16 floats)
 
-			DBG << "XFORM SAMPLE"
-				<< " time=" << time
-				<< " obj=" << objpath
+			DBG << "WRITE SAMPLE"
+				<< "\n\ttime= " << now
+				<< "\n\tobj=  " << objpath
 				<< "\n";
 
+			GeoObject *obj = find_obj(objpath, false);
+
+			if ( argc > (2+2) )
+			{
+				DBG << " --- using EXPLICIT matrix\n";
+				CHK(2+16, "writesample <time> <obj_name> <matrix4x4>");
+				
+				UT_DMatrix4 mtx;
+				for( int i=0, p=4;  i<16;  ++i, ++p )
+					mtx.data()[i] = atof(args(p));
+
+				//obj->setMatrix(mtx);
+			}
+			else
+			{
+				DBG << " --- using its own matrix\n";
+				//obj->useExplicitMatrix(false);
+			}
+
+			// TODO: write sample already
 			;
 			;
 		}

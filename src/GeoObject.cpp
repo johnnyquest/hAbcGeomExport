@@ -92,7 +92,7 @@ GeoObject::GeoObject(
 	if (_op_sop)
 		_sopname = _op_sop->getName();
 
-	dbg << "(" << _path << "): " << _name << " | " << _sopname;
+	dbg << "(" << _path << "): " << _name << " | " << _sopname << " | ";
 
 	assert(_oarchive && "no oarchive given");
 	assert(_ts && "no timesampling given");
