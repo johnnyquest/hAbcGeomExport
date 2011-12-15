@@ -29,6 +29,47 @@ def warn(m):	msg("WARNING: %s" % str(m))
 #dbg("(hAbcExportFrame.py)")
 
 
+
+class timer(object):
+	"""Timer class, for performance measurements."""
+
+	def ct(self):
+		#return time.clock()
+		return time.time()
+
+	def __init__(self, name='timer'):
+		self.name = name
+		t = self.ct()
+		self.t0 = t
+		self.last = t
+		self.times = []
+
+	def elapsed(self):
+		return self.ct()-self.t0
+
+	def lap(self, name):
+		t = self.ct()
+		d = t-self.last
+		self.last = t
+		self.times.append( (str(name), d) )
+
+	def __str__(self):
+		return '\n'.join([ '%20s: %.2f' % (v[0], v[1]) for v in self.times ])
+
+	def stats(self, name=None):
+		if True:
+			if not name: name=self.name
+			msg("TIMER STATS for %s:\n%s" % (name, self.__str__()))
+		else:
+			# keep quiet
+			pass
+
+
+
+
+
+
+
 # hscript command for abc export control
 CCMD = 'abcexportctrl'
 
