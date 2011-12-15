@@ -100,13 +100,8 @@ static void cmd_abcexportctrl( CMD_Args & args )
 	try
 	{
 		int argc = args.argc();
-
-		if (argc<2)
-			throw(std::string("not enough arguments"));
-
+		if (argc<2) throw(std::string("not enough arguments"));
 		string func(args(1));
-		DBG << "func: " << func << "\n";
-
 
 #define CHK(n, msg) if (argc<n+2) throw(std::string("not enough arguments--usage: " msg))
 
@@ -226,6 +221,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 		}
 #undef CHK
 
+
 		// TODO: test code, remove
 		//
 		if ( args.found('e') )
@@ -248,6 +244,12 @@ static void cmd_abcexportctrl( CMD_Args & args )
 	catch( std::string & e )
 	{
 		args.err() << "ERROR: " << e << "\n";
+		std::cerr << "ERROR: " << e << "\n";
+	}
+
+	catch(...)
+	{
+		std::cerr << "SOME OTHER SHIT HAPPENED :( \n";
 	}
 }
 
