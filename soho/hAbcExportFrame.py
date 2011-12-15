@@ -121,6 +121,8 @@ def abc_cleanup():
 def export():
 	"""Main export function."""
 
+	T = timer('FrameExport')
+
 	ps = soho.evaluate({
 		'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
 		'fps':		SohoParm('state:fps',			'real', [24],  False, key='fps'),
@@ -164,6 +166,7 @@ def export():
 	dbg("objpath=%s camera=%s abcoutput=%s trange=%d f=%s" % \
 		(objpath, camera, abc_file, trange, str(f)))
 
+	T.lap('init')
 
 	# collect hierarchy to be exported
 	# (read from scene directly, ie. not containing instances, etc.)
@@ -198,6 +201,8 @@ def export():
 		#dbg(" -- %s (sop:%s)" % (n, str(path)) )
 		if path and path!="":
 			sop_dict[n] = path
+
+	T.lap('collect-objs')
 
 	if False:
 		dbg( '-' * 40 )
@@ -241,6 +246,7 @@ def export():
 
 	dbg("COLLECTED ARCHY: %d elems" % len(archy))
 
+	T.lap('got-archy')
 
 	# we now have a list of all objects to be exported
 	# (parentname, objname, exportname, soppath)
@@ -293,6 +299,7 @@ def export():
 			skip_frame = True
 			is_last = True
 
+	T.lap('frame-first')
 
 
 	# frame export: collect xforms, geoms, and export them
@@ -326,13 +333,16 @@ def export():
 			# perform sample write
 			# (c++ code decides if geom is to be written)
 			#
-			hou.hscript('%s writesample %f "%s" %s' % \
-				(CCMD, now_out, objname, xform))
+			if True:
+				hou.hscript('%s writesample %f "%s" %s' % \
+					(CCMD, now_out, objname, xform))
 
 	else:
 		#soho.error("couldn't export frame %.1f--no. of objects changed" % frame)
 		warn("couldn't export frame %.1f--no. of objects changed" % frame)
 
+
+	T.lap('frame-export')
 
 
 	# last frame: cleanup all internal stuff,
@@ -343,6 +353,9 @@ def export():
 		dbg("IS_LAST--FINISHING...")
 		abc_cleanup()
 
+	T.lap('frame-last')
+
+	T.stats()
 
 
 
