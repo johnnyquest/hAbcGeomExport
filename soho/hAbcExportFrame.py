@@ -121,6 +121,7 @@ def export():
 	# results in array [ (parentname, objname) [, ...]  ] -- (full pathnames)
 	#
 	archy = collect_archy(objpath)
+	archy_objs = [ n[1] for n in archy ]
 	#dbg("archy: %s" % str(archy))
 
 
@@ -156,9 +157,10 @@ def export():
 		if re.search(p1, obj):
 			m = obj.split(":")
 			p = m[-2] # parent: 2nd from right
-			archy.append( ( p, obj, "%s->%s" % (m[-2], m[-1]) )  )
-			soho_only[obj]=p
-			#dbg(" -+- %s %s" % (p, obj))
+			if p in archy_objs:
+				archy.append( ( p, obj, "%s->%s" % (m[-2], m[-1]) )  )
+				soho_only[obj]=p
+				#dbg(" -+- %s %s" % (p, obj))
 
 
 	# fill rest of the archy array
