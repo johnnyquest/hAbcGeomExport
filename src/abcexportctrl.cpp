@@ -80,13 +80,15 @@ static ObjMap					_objmap;
 
 GeoObject * find_obj( std::string & objname, bool do_throw=true )
 {
-	DBG << "( find_obj() " << objname << " )\n";
+	//DBG << "( find_obj() " << objname << " )\n";
 	ObjMap::iterator p = _objmap.find(objname);
+
 	if (p==_objmap.end()) {
+		//DBG << " -- (not found)\n";
 		if (do_throw) throw("couldn't look up "+objname);
 		else return 0;
 	}
-	DBG << "( find_obj() " << objname << " -> " << (p->second) << " )\n";
+	//DBG << "( find_obj() " << objname << "==" << (p->second) << " )\n";
 	return p->second;
 }
 

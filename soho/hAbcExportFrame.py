@@ -120,9 +120,10 @@ def export():
 	# (read from scene directly, ie. not containing instances, etc.)
 	# results in array [ (parentname, objname) [, ...]  ] -- (full pathnames)
 	#
+	#dbg("COLLECTING ARCHY:")
 	archy = collect_archy(objpath)
 	archy_objs = [ n[1] for n in archy ]
-	#dbg("archy: %s" % str(archy))
+	#dbg("DONE.")
 
 
 	# collect geometry to be exported and their render SOPS
@@ -139,16 +140,19 @@ def export():
 	sop_dict = {} # {objname: sopname}
 	objs = soho.objectList('objlist:instance')
 
+	#dbg("COLLECT soho instance/sop pairs ------------------")
 	for obj in objs:
 		n = obj.getName() # full pathname
-		#dbg(" -- %s" % n )
 		obj_list.append(n)
 		soho_objs[n] = obj
 		path = obj.getDefaultedString('object:soppath', now, [None])[0]
-		#dbg(" ---- %s" % path)
+		#dbg(" -- %s (sop:%s)" % (n, str(path)) )
 		if path and path!="":
 			sop_dict[n] = path
 
+	if False:
+		dbg( '-' * 40 )
+		dbg("sop_dict: %s" % str(sop_dict))
 
 	# extend hierarchy with per-point instances
 	#
@@ -180,12 +184,11 @@ def export():
 		archy2.append(N)
 	archy = archy2
 
-	if False:
+	if True:
 		dbg( '-' * 40 )
-		dbg("archy:")
+		dbg("COLLECTED ARCHY:")
 		for a in archy:
-			#dbg("- %s: %s" % (a[1], a[3]))
-			dbg("- %s" % str(a))
+			dbg("- %s: " % (a[1], ))
 
 
 	# we now have a list of all objects to be exported
@@ -199,6 +202,7 @@ def export():
 	# first frame: init all internal stuff
 	#
 	if is_first:
+		dbg("\n\n\n")
 		dbg("IS_FIRST--INIT")
 		G.archy = archy[:]
 		G.archy_objs = archy_objs[:]
@@ -248,8 +252,8 @@ def export():
 	#
 	if archy_objs==G.archy_objs  and  not skip_frame:
 
-		dbg(" -- exporting frame %.1f" % frame)
-		pass
+		dbg("\n")
+		dbg(" -- EXPORTING frame %.1f" % frame)
 
 		"""
 		alembic todo:
@@ -259,9 +263,11 @@ def export():
 		"""
 
 		for E in archy:
+			dbg("\n-")
+			#dbg("- OBJ: %s" % str(E))
 			objname = E[1]
 			soppath = E[3]
-			dbg(" - OBJ: %s" % E[1])
+			dbg("- OBJ: %s" % E[1])
 
 			# get xform matrix (TODO: get pretransform too!)
 			#
@@ -293,6 +299,7 @@ def export():
 	# finish export
 	#
 	if is_last:
+		dbg("\n\n\n")
 		dbg("IS_LAST--FINISHING...")
 
 		# TODO: close export process
