@@ -144,7 +144,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 					parentp(args(4)),
 					outname(args(5)),
 					soppath(args(6));
-
+/*
 			DBG << "NEW OBJECT"
 				<< " obj= " << objpath
 				<< "\n\tobj_src= " << obj_src
@@ -152,7 +152,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				<< " outname= " << outname
 				<< " sop= " << soppath
 				<< "\n";
-
+*/
 			if ( find_obj(objpath, false)==0 )
 			{
 				// add object
@@ -164,7 +164,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 				if (!objnode)
 					throw("couldn't find obj "+obj_src);
 
-				DBG << "--objnode:" << objnode << " parent=" << parent << " ";
+				DBG << "objnode=" << objnode << " parent=" << parent << " ";
 
 				boost::shared_ptr<GeoObject> obj(
 					new GeoObject(objnode, parent,
