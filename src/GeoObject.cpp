@@ -130,22 +130,16 @@ GeoObject::~GeoObject()
 */
 bool GeoObject::get_mtx_from_api( OP_Context & ctx )
 {
-	if ( _op_obj ) {
+	if ( _op_obj )
+	{
 		UT_DMatrix4 const & hou_prexform = _op_obj->getPreTransform();
 		UT_DMatrix4 hou_dmtx;
+		
 		_op_obj->getParmTransform(ctx, hou_dmtx);
 		_matrix = hou_prexform * hou_dmtx; // apply pretransform
 		return true;
 	}
 	
-	return false;
-}
-
-/**		Get the object's xforms from SOHO.
-*/
-bool GeoObject::get_mtx_from_soho( OP_Context & ctx )
-{
-	// TODO: write this function
 	return false;
 }
 
@@ -175,7 +169,6 @@ bool GeoObject::writeSample( float time )
 
 
 	if (!_mtx_soho) get_mtx_from_api(ctx);
-	// else: if it's a soho matrix, we already have it
 
 	AbcGeom::M44d mtx( (const double (*)[4]) _matrix.data() );
 	xform_samp.setMatrix(mtx);

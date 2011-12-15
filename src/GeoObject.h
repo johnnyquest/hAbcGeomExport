@@ -77,7 +77,6 @@ namespace HDK_AbcExportSimple
 	
 	private:
 		bool		get_mtx_from_api( OP_Context & ctx );
-		bool		get_mtx_from_soho( OP_Context & ctx );
 
 
 	private:
