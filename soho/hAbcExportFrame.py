@@ -162,7 +162,7 @@ def export():
 			m = obj.split(":")
 			p = m[-2] # parent: 2nd from right
 			if p in archy_objs:
-				archy.append( ( p, obj, "%s->%s" % (m[-2], m[-1]) )  )
+				archy.append( ( p, obj, "%s__%s" % (m[-2], m[-1]) )  )
 				soho_only[obj]=p
 				#dbg(" -+- %s %s" % (p, obj))
 
