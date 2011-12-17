@@ -4,6 +4,8 @@
 S=`pwd`/soho
 T=$HIH/soho
 
+mkdir -p $T
+
 rm -rf $T/hAbcExport.py
 rm -rf $T/hAbcExportFrame.py
 rm -rf $T/*.pyc
