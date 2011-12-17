@@ -235,6 +235,7 @@ int get_num_comps( GB_Attribute *attr ) {
 
 
 /**		Collect all objects to be exported (including all children).
+		Specify zero depth to collect a single object only (ie. disable hierarchy).
 */
 void collect_geo_objs(
 	GeoObjects &	objects,
@@ -250,6 +251,9 @@ void collect_geo_objs(
 
 	boost::shared_ptr<GeoObject> obj( new GeoObject(node, parent) );
 	objects.push_back(obj);
+
+	if (depth<=0)
+		return;
 
 	int m = node->nOutputs();
 	if (m>0) dbg << " c:" << m;
