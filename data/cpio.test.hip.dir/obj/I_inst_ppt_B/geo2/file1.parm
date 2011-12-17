@@ -1,0 +1,9 @@
+{
+version 0.8
+filemode	[ 0	locks=0 ]	(	"read"	)
+file	[ 0	locks=0 ]	(	defgeo.bgeo	)
+reload	[ 0	locks=0 ]	(	0	)
+objpattern	[ 0	locks=0 ]	(	*	)
+geodatapath	[ 0	locks=0 ]	(	""	)
+missingframe	[ 0	locks=0 ]	(	"error"	)
+}

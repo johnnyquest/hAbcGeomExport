@@ -1,0 +1,12 @@
+{
+    channel text {
+      lefttype = extend
+      righttype = extend
+      defaultString = \"D\"
+      flags = 0
+      segment { length = 0.041666667908430099 accel = 0.0138889 0.0138889 expr = \"A\" }
+      segment { length = 0.041666667908430099 accel = 0.0138889 0.0138889 expr = \"B\" }
+      segment { length = 0.041666664183139801 accel = 0.0138889 0.0138889 expr = \"C\" }
+      segment { length = 0 accel = 0.333333 0.333333 expr = \"D\" }
+    }
+  }

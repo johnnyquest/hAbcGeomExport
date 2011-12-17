@@ -1,13 +1,14 @@
 # Makefile.
 #
 
-DSONAME = $(HIH)/dso/hAbcGeomExport.so
+DSONAME = $(HIH)/dso/hAbcExport.so
+SOURCES = src/GeoObject.cpp src/hAbcGeomExport.cpp src/abcexportctrl.cpp
 
 
-SOURCES = src/hAbcGeomExport.cpp
-
+## at home
+##
 #INCDIRS = \
-#	-I/usr/include/OpenEXR \
+#	-I/home/tusi/work/dev/alembic/libs/linux/include/OpenEXR \
 #	-I/home/tusi/work/dev/alembic/libs/linux/include \
 #	-I/home/tusi/work/dev/alembic/libs/linux/alembic-0.9.3/include
 #
@@ -15,6 +16,9 @@ SOURCES = src/hAbcGeomExport.cpp
 #	-L/home/tusi/work/dev/alembic/libs/linux/lib \
 #	-L/home/tusi/work/dev/alembic/libs/linux/alembic-0.9.3/lib/static
 
+
+## at work
+##
 INCDIRS = \
 	-I/usr/include/OpenEXR \
 	-I/home/tusi/work/alembic/libs/linux/include \
@@ -24,6 +28,9 @@ LIBDIRS = \
 	-L/home/tusi/work/alembic/libs/linux/lib \
 	-L/home/tusi/work/alembic/libs/linux/alembic-1.0.3/lib/static
 
+
+## common
+##
 LIBS = \
 	-lHalf -lIex -lhdf5 -lhdf5_hl \
 	-lAlembicAbcCoreHDF5 -lAlembicAbcCoreAbstract \

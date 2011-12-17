@@ -17,7 +17,7 @@
 
 # remove previous build
 #
-rm -f $HOUDINI_PREFS/dso/hAbcGeomExport.so
+rm -f $HIH/dso/hAbc*Export.so
 
 
 make clean
@@ -26,5 +26,5 @@ make
 
 # delete leftover stuff
 #
-rm -f src/*.o
+#rm -f src/*.o
 

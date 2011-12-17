@@ -1,0 +1,14 @@
+{
+version 0.8
+type	[ 0	locks=0 ]	(	"poly"	)
+surftype	[ 0	locks=0 ]	(	"quads"	)
+size	[ 0	locks=0 ]	(	1	1	1	)
+t	[ 0	locks=0 ]	(	0	[ ty	0.5 ] 	0	)
+divrate	[ 0	locks=0 ]	(	4	4	4	)
+orderrate	[ 0	locks=0 ]	(	4	4	4	)
+dodivs	[ 0	locks=0 ]	(	"off"	)
+divs	[ 0	locks=0 ]	(	3	3	3	)
+rebar	[ 0	locks=0 ]	(	"off"	)
+consolidatepts	[ 0	locks=0 ]	(	"on"	)
+orientedbbox	[ 0	locks=0 ]	(	"off"	)
+}

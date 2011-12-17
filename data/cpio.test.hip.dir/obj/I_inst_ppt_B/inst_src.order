@@ -1,0 +1,11 @@
+10
+font1
+divide1
+polyextrude1
+xform1
+sphere1
+sphere2
+merge1
+OUT
+vertexnormal_ql1
+subdivide1

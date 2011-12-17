@@ -1,0 +1,781 @@
+    parm {
+	name	"sourceGrp"
+	baseparm
+	export	none
+	bindselector prims "Copy Geometry"
+	    "Select the geometry to copy and press Enter to complete. Hold down Alt to select from other objects."
+	    0 1 0xffffffff 0 "" 0
+    }
+    parm {
+	name	"templateGrp"
+	baseparm
+	export	none
+	bindselector prims "Template Geometry"
+	    "Now select the geometry on whose points to copy the data, if any, and press Enter to complete."
+	    1 0 0xffffffff 0 "" 0
+    }
+    group {
+	name	"stdswitcher4"
+	label	"Copy"
+	tabbreak
+
+	parm {
+	    name	"ncy"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"nml"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"cum"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"xOrd"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"rOrd"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"t"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"r"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"s"
+	    baseparm
+	    export	all
+	}
+	parm {
+	    name	"shear"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"p"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"scale"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"vlength"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"newg"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"preservegroups"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"copyg"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"stdswitcher4_2"
+	label	"Attribute"
+	tabbreak
+
+	parm {
+	    name	"doattr"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"_label_"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"setpt"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"mulpt"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"addpt"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"subpt"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"setprim"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"mulprim"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"addprim"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"subprim"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"setvtx"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"mulvtx"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"addvtx"
+	    baseparm
+	    joinnext
+	    export	none
+	}
+	parm {
+	    name	"subvtx"
+	    baseparm
+	    export	none
+	}
+	parm {
+	    name	"copyvariable"
+	    baseparm
+	    export	none
+	}
+    }
+
+    group {
+	name	"stdswitcher4_1"
+	label	"Stamp"
+
+	parm {
+	    name	"stamp"
+	    baseparm
+	    export	none
+	}
+	group {
+	    name	"stampswitch6"
+	    label	"1-10"
+
+	    parm {
+		name	"param1"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val1"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param2"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val2"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param3"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val3"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param4"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val4"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param5"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val5"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param6"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val6"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param7"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val7"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param8"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val8"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param9"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val9"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param10"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val10"
+		baseparm
+		export	none
+	    }
+	}
+
+	group {
+	    name	"stampswitch6_1"
+	    label	"11-20"
+
+	    parm {
+		name	"param11"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val11"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param12"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val12"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param13"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val13"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param14"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val14"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param15"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val15"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param16"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val16"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param17"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val17"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param18"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val18"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param19"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val19"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param20"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val20"
+		baseparm
+		export	none
+	    }
+	}
+
+	group {
+	    name	"stampswitch6_2"
+	    label	"21-30"
+
+	    parm {
+		name	"param21"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val21"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param22"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val22"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param23"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val23"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param24"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val24"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param25"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val25"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param26"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val26"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param27"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val27"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param28"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val28"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param29"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val29"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param30"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val30"
+		baseparm
+		export	none
+	    }
+	}
+
+	group {
+	    name	"stampswitch6_3"
+	    label	"31-40"
+
+	    parm {
+		name	"param31"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val31"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param32"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val32"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param33"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val33"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param34"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val34"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param35"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val35"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param36"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val36"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param37"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val37"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param38"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val38"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param39"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val39"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param40"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val40"
+		baseparm
+		export	none
+	    }
+	}
+
+	group {
+	    name	"stampswitch6_4"
+	    label	"41-50"
+
+	    parm {
+		name	"param41"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val41"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param42"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val42"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param43"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val43"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param44"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val44"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param45"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val45"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param46"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val46"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param47"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val47"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param48"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val48"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param49"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val49"
+		baseparm
+		export	none
+	    }
+	    parm {
+		name	"param50"
+		baseparm
+		joinnext
+		export	none
+	    }
+	    parm {
+		name	"val50"
+		baseparm
+		export	none
+	    }
+	}
+
+    }
+

@@ -26,9 +26,6 @@
 
 /**		Macro for placing class-static data.
 */
-#define GEOOBJECT_STATICS_HERE \
-Alembic::AbcGeom::OArchive * HDK_AbcExportSimple::GeoObject::_oarchive(0); \
-Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts; \
 
 
 
@@ -54,6 +51,13 @@ namespace HDK_AbcExportSimple
 			_ts = timesampling;
 		}
 
+		static void cleanup()
+		{
+			if (_oarchive) delete _oarchive;
+			_oarchive=0;
+			// delete _ts?
+		}
+
 	public:
 		GeoObject(
 			OP_Node *	obj_node,
@@ -67,10 +71,13 @@ namespace HDK_AbcExportSimple
 		bool		writeSample( float time );
 		char const *	pathname() const { return _path.c_str(); }
 		char const *	sop_name() const { return _sopname.c_str(); }
+
+		void		useExplicitMatrix( bool use=true ) { _mtx_soho = use; }
+		void		setMatrix( UT_DMatrix4 const & mtx ) { _matrix = mtx; useExplicitMatrix(); }
+		void		setStaticGeo( bool is_static ) { _static_geo=is_static; }
 	
 	private:
 		bool		get_mtx_from_api( OP_Context & ctx );
-		bool		get_mtx_from_soho( OP_Context & ctx );
 
 
 	private:
@@ -91,7 +98,10 @@ namespace HDK_AbcExportSimple
 		std::string			_path;		///< obj full path
 		std::string			_sopname;	///< SOP name
 
-		bool				_mtx_soho;	///< flag: get xform from soho?
+		bool				_mtx_soho;	///< flag: get xform from soho? (TODO: should be named '_mtx_explicit')
+		bool				_static_geo;	///< flag: is geometry static? (ie. write geometry data only once)
+		bool				_geo_ok;	///< flag: geo data is already written
+
 		UT_DMatrix4			_matrix;	///< xform matrix to be output
 
 		Alembic::AbcGeom::OXform *	_xform;		///< output xform obj
@@ -102,7 +112,6 @@ namespace HDK_AbcExportSimple
 
 	/// Type: array of GeoObjects.
 	typedef std::vector< boost::shared_ptr<GeoObject> > GeoObjects;
-
 
 
 }

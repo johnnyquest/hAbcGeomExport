@@ -106,7 +106,8 @@ namespace HDK_AbcExportSimple
 		Alembic::AbcGeom::TimeSamplingPtr	_ts;
 	};
 
-}				// End HDK_Sample namespace
+
+} // End HDK_Sample namespace
 
 
 #undef STR_PARM
