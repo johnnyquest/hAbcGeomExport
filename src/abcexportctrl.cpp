@@ -210,7 +210,7 @@ static void cmd_abcexportctrl( CMD_Args & args )
 			{
 				//DBG << " --- using EXPLICIT matrix\n";
 				CHK(2+16, "writesample <time> <obj_name> <matrix4x4>");
-				
+
 				UT_DMatrix4 mtx;
 				for( int i=0, p=4;  i<16;  ++i, ++p )
 					mtx.data()[i] = atof(args(p));

@@ -53,6 +53,9 @@
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
 
+#include <time.h>
+
+
 
 namespace Abc = Alembic::Abc;
 namespace AbcGeom = Alembic::AbcGeom;
@@ -340,18 +343,19 @@ int hAbcGeomExport::startRender( int nframes, fpreal tstart, fpreal tend )
 
 		(Can return ROP_CONTINUE_RENDER, ROP_ABORT_RENDER, ROP_RETRY_RENDER)
 */
-ROP_RENDER_CODE hAbcGeomExport::renderFrame( fpreal time, UT_Interrupt * )
+ROP_RENDER_CODE hAbcGeomExport::renderFrame( fpreal now, UT_Interrupt * )
 {
-	DBG << "renderFrame() time=" << time << "\n";
+	DBG << "renderFrame() now=" << now << "\n";
+	clock_t t = clock();
 
-	executePreFrameScript(time); // run pre-frame cmd
+	executePreFrameScript(now); // run pre-frame cmd
 
 	for( GeoObjects::iterator i=_objs.begin(), m=_objs.end();  i!=m;  ++i )
 	{
 		char const *obj_name = (*i)->pathname();
 
 		DBG << "- " << obj_name << ": ";
-		bool r = (*i)->writeSample(time);
+		bool r = (*i)->writeSample(now);
 
 		if (!r) {
 			addError(ROP_MESSAGE, "failed to export object");
@@ -361,7 +365,11 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( fpreal time, UT_Interrupt * )
 	}
 
 	if (error() < UT_ERROR_ABORT)
-		executePostFrameScript(time); // run post-frame cmd
+		executePostFrameScript(now); // run post-frame cmd
+
+	t = clock()-t;
+	
+	DBG << " -- elapsed " << t << "\n";
 
 	return ROP_CONTINUE_RENDER;
 }
