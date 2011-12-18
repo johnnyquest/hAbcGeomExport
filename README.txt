@@ -1,93 +1,105 @@
-hAbcGeomExport 0.03
+hAbcGeomExport 0.03 (alpha)
 ===================
 (Imre Tuske @ DiGiC Pictures, 2011-11)
-
 
 (This is our small contribution for the Alembic project -- hopefully you'll
 find it useful. Many thanks and big respects go to all the people working
 on Alembic!)
 
-
-A simple geometry exporter to the Alembic file format, implemented as
-a ROP node (or output driver).
-
-It exports a hierarchy of object nodes from the specified root object,
-including geometry (currently poly meshes only). The SOPs flagged as
-'renderable' are used.
-
-The exported objects will be either polymeshes (for OBJ_Nodes containing
-polygon data) or empty transforms (for everything else).
-
 For more information, see the github repository (especially the issues
 section). Also "feedback is silver, contribution is gold" -- if you
 find a bug, good for you, if you can fix it, good for all of us ;)
 
-And while I'm at it, thanks to Lucas Miller and Mark Elendt for their help.
+Thanks to Lucas Miller and Mark Elendt for their help.
+
+
+
+WHAT IS
+-------
+
+This is a package of two simple geometry exporters to the Alembic file
+format. They're available as Output Drivers (ROPs):
 
 
 
 
-IMPORTANT WINDOWS-RELATED NOTE
-------------------------------
+1. Custom/Alembic Geometry Export
+---------------------------------
+(ROP)
 
-I cannot and WILL NOT build this thing under windows as for me all windows-
-related build procedures turn out nothing but pure frustration. However since
-we'd like to use this on windows, too, I'd really appreciate if someone could
-put together an MSVC++ project file, or something to that effect. Thanks!
+This is an old-school (pre-soho) output driver: it exports a single object
+along with its hierarchical children. No fancy stuff (such as instancing)
+is supported.
+
+Simple as it is. this ROP works and it is stable and (should be) reliable.
+It will be replaced by the SOHO-based ROP, as soon as it's ready.
 
 
 
 
-Known limitations
------------------
+2. Geometry/Alembic Export
+--------------------------
+(SOHO ROP -- alpha version)
 
-1.
+This is a SOHO-based exporter, which means that all Houdini facilities are
+fully available (most notably all kinds of instancing). Alembic is capable
+of auto-detecting geometry duplicates (it automatically creates instances),
+so instance away.
 
-It only exports hierarchies as connected Obj nodes -- subnets are not supported.
-(It's actually quite the opposite of how the Alembic importer builds a scene,
-for example.)
+This ROP also supports an 'abc_staticgeo' parameter (inheritable), which can
+be used to tag objects as non-deforming. Static objects are much faster to
+export.
 
-2.
+As this parameter is inheritable, you can use it directly on the ROP node,
+or on individual object nodes.
 
-Only the most regular type of polymesh supported (no open polylines, nurbs
-curves/surfaces or other fanciness.)
+Make sure you read the Notes below.
 
-Hierarchy is maintained, but all transforms are written out as local-space
-ones (as usual) -- this might give 'unexpected' results if a partial
-hierarchy is exported where the non-exported parents also have various
-transformations.
 
-Transforms are exported as matrices for now--meaning that the final
-placements will match, but the xyz rotation values might NOT.
-(Expect Euler-style rotation-popping for animated 360+ rotations.)
+
+
+Export Notes/Known Issues
+-------------------------
+
+- The export root node is always a single Obj node. For all Obj nodes,
+	the contents of the 'render' SOP will be exported.
+
+- For now only polymeshes are supported. Unsupported object types (ie.
+	non-polymesh) are exported as empty transforms (nulls).
+
+- As for attributes, only normals (N) and UVs (uv) are supported, in
+	per-point and per-vertex types.
+
+- Hierarchies supported as connected Obj nodes; Subnets are NOT SUPPORTED
+	yet (although they might work). This is quite the opposite behaviour
+	to the H11.1+ alembic import, but hey, no one said life's easy.
+	Both ways of hierarchy representations are planned to be supported.
+
+- Transforms are exported as matrices for now--meaning that the final
+	placements will match, but the xyz rotation values might NOT.
+	(Expect Euler-style rotation-popping for animated 360+ rotations.)
+	Alembic allows more sophisticated storing of rotations though,
+	but it's not implemented here yet.
 
 There are a few issues that can cause Houdini or Maya crash or hang (see
 below), but the exported files are always correct (so far--knock on wood).
 
 
 
-Build notes
------------
+SOHO-Exporter Notes
+-------------------
 
-You probably have to build Alembic first (which can be a lot of fun :)).
+- It's an alpha version, meaning it kinda works (but parameters, UI, etc.
+	will most certainly change).
 
-For building this ROP, see
+- SOHO requires a render camera to be specified. It won't affect the export
+	in any way, so any camera will do. (This will be done automatically
+	in later versions.)
 
-	./build.sh
-
-for testing, see
-
-	./data/test.sh
-
-(test.sh uses LD_LIBRARY_PATH to set some library paths explicitly, which
-is a quick hack, try to avoid that--compile with the exact same lib
-versions, or go for full static linking, if possible (?) )
-
-To build testing/example hip files, go to the ./data folder in a shell and
-type
-	./hip_build.sh
-
-This will build .hip files from their extracted versions.
+- Interrupting an export procedure doesn't work properly (the output file
+	will be closed completely only on deleting the ROP node or on
+	starting a new export -- the easiest workaround is to restart
+	Houdini).
 
 
 
@@ -107,7 +119,6 @@ utils to check.)
 
 You can probably avoid all unpleasantries by building/linking your Alembic
 version with the exact same lib-versions that the Houdini version uses.
-
 
 
 Maya-related notes
@@ -131,8 +142,8 @@ History
 -------
 
 version 0.03 (2011-12-15)
-	Initial version of a SOHO interface (hence the ability to
-	export geometry instances, etc).
+	Initial version of a SOHO interface (able to export
+	geometry instances, etc).
 
 
 

@@ -1,0 +1,65 @@
+INSTALL NOTES (hAbcGeomExport)
+=============
+
+
+
+This is by no means an 'official' package of any kind, so don't expect installers.
+
+Below is a description on how to build this package. Make sure you always work in
+a console that have the Houdini environment set up (source the 'houdini_setup_bash'
+shell script on linux, or open a Houdini Command Line on windows).
+
+Also, I never did a Windows build. It shouldn't be difficult, though. :)
+
+
+
+How to build/install
+--------------------
+
+- Download Alembic and build it.
+
+- Open the Makefile in a text editor, and set all the INCDIRS and LIBDIRS paths
+	to point at the appropriate locations (the places where you have your Alembic
+	and OpenEXR include files and compiled libs, basically).
+
+- Type 'make' or use the ./build.sh script to build.
+
+- Use the './link.sh' shell script to install the SOHO scripts to your Houdini prefs
+	folder (it creates only links, actually) -- or copy them yourself by hand.
+
+
+That's it, basically. If you launch Houdini from the console, you should see lines like
+
+> ** abcexportctrl (hscript) 0.03 ** (compiled Dec 17 2011, 17:32:46) DEBUG build
+> ** hAbcGeomExport ROP 0.03 ** (compiled Dec 17 2011, 17:32:41) DEBUG build
+
+meaning the libraries are available.
+
+
+
+Testing
+-------
+
+To build the example hip file(s), go to the ./data folder in a shell and
+type
+	./hip_build.sh
+
+This will build .hip file(s) from their extracted versions (they are stored in
+an unpacked ascii format for version control).
+
+
+
+You might need to do some library path setting adjustments in order for everything
+to work. For quick testing, I use a shell script for that, it's
+
+	./data/test.sh
+
+This script uses LD_LIBRARY_PATH to set some library paths explicitly, which
+is a quick hack. I don't recommend that as a permanent solution -- compile with
+the exact same lib versions that Houdini uses, or go for full static linking,
+if possible (?).
+
+
+
+
+
