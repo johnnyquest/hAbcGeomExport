@@ -116,240 +116,252 @@ def abc_init(abcfile, tstart=0.0, tstep=1.0/24.0):
 
 
 
+
+
+
+
+def export():
 	"""Main export function."""
 
-	T = timer('FrameExport')
+	is_last = False
 
-	ps = soho.evaluate({
-		'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
-		'fps':		SohoParm('state:fps',			'real', [24],  False, key='fps'),
-		'hver':		SohoParm('state:houdiniversion',	'string', [''],  False, key='hver'),
-		'objpath':	SohoParm('objpath',		'string',	[''], False),
-		'abcoutput':	SohoParm('abcoutput',		'string',	[''], False),
-		'camera':	SohoParm('camera',		'string',	[None], False),
-		'trange':	SohoParm('trange',		'int',		[0], False),
-		'f':		SohoParm('f',			'int',		None, False)
-	})
-	
-	now = ps['now'].Value[0]
-	fps = ps['fps'].Value[0]
-	hver = ps['hver'].Value[0]
-	camera = ps['camera'].Value[0]
+	try:
+		T = timer('FrameExport')
 
-	dbg("now=%.3f fps=%.3f" % (now, fps))
-
-	if not soho.initialize(now, camera):
-		soho.error("couldn't initialize soho (make sure camera is set)")
-		abc_cleanup()
-		return
-
-	# NOTE: this is prone to float inaccuracies
-	frame = now*fps + 1.0
-
-	objpath   = ps['objpath'].Value[0]
-	abc_file  = ps['abcoutput'].Value[0]
-	trange    = ps['trange'].Value[0]
-	f         = ps['f'].Value
-
-	is_first  = frame < f[0]+0.5 # working around float funniness
-	is_last   = frame > f[1]-0.5
-
-	if trange==0:
-		is_first= is_last= True
-
-	dbg("is_first=%d is_last=%d" % (is_first, is_last))
-	dbg("now=%.3f fps=%.3f -> %f" % (now, fps, frame))
-
-	dbg("objpath=%s camera=%s abcoutput=%s trange=%d f=%s" % \
-		(objpath, camera, abc_file, trange, str(f)))
-
-	T.lap('init')
-
-	# collect hierarchy to be exported
-	# (read from scene directly, ie. not containing instances, etc.)
-	# results in array [ (parentname, objname) [, ...]  ] -- (full pathnames)
-	#
-	#dbg("COLLECTING ARCHY:")
-	archy = collect_archy(objpath)
-	archy_objs = [ n[1] for n in archy ]
-	#dbg("DONE.")
-
-
-	# collect geometry to be exported and their render SOPS
-	# (including point- and other instances, etc)
-	# (NOTE: the entire scene is to be searched, unfortunately)
-	#
-	soho.addObjects(now, '*', '*', '', do_culling=False)
-	soho.lockObjects(now)
-
-	soho_objs = {} # {objname: soho_obj}
-	soho_only = {} # soho-only objects (can't be accessed directly with hdk)
-
-	obj_list = []
-	sop_dict = {} # {objname: sopname}
-	objs = soho.objectList('objlist:instance')
-
-	#dbg("COLLECT soho instance/sop pairs ------------------")
-	for obj in objs:
-		n = obj.getName() # full pathname
-		obj_list.append(n)
-		soho_objs[n] = obj
-		path = obj.getDefaultedString('object:soppath', now, [None])[0]
-		#dbg(" -- %s (sop:%s)" % (n, str(path)) )
-		if path and path!="":
-			sop_dict[n] = path
-
-	T.lap('collect-objs')
-
-	if False:
-		dbg( '-' * 40 )
-		dbg("sop_dict: %s" % str(sop_dict))
-
-	# extend hierarchy with per-point instances
-	#
-	p1 = re.compile(":[^:]+:")
-	for obj in obj_list:
-		if re.search(p1, obj):
-			m = obj.split(":")
-			p = m[-2] # parent: 2nd from right
-			if p in archy_objs:
-				archy.append( ( p, obj, "%s__%s" % (m[-2], m[-1]) )  )
-				soho_only[obj]=p
-				#dbg(" -+- %s %s" % (p, obj))
-
-
-	# fill rest of the archy array
-	# elem: (parentpath, objpath, exportname, soppath)
-	#
-	archy2 = []
-	for a in archy:
-		N = list(a)
-		if len(N)<3: N.append(N[1]) # N = [ N[0], N[1], N[1] ]
-		if N[1] in sop_dict:
-			N = [ N[0], N[1], N[2], sop_dict[N[1]] ]
-		else:
-			# empty xform (no sop)
-			N = [ N[0], N[1], N[1], None ]
+		ps = soho.evaluate({
+			'now':		SohoParm('state:time',			'real', [0],  False, key='now'),
+			'fps':		SohoParm('state:fps',			'real', [24],  False, key='fps'),
+			'hver':		SohoParm('state:houdiniversion',	'string', [''],  False, key='hver'),
+			'objpath':	SohoParm('objpath',		'string',	[''], False),
+			'abcoutput':	SohoParm('abcoutput',		'string',	[''], False),
+			'camera':	SohoParm('camera',		'string',	[None], False),
+			'trange':	SohoParm('trange',		'int',		[0], False),
+			'f':		SohoParm('f',			'int',		None, False)
+		})
 		
-		N[2] = re.search("[^/]+$", N[2]).group(0)
-		archy2.append(N)
-	archy = archy2
+		now = ps['now'].Value[0]
+		fps = ps['fps'].Value[0]
+		hver = ps['hver'].Value[0]
+		camera = ps['camera'].Value[0]
 
-	if False:
-		dbg( '-' * 40 )
-		dbg("COLLECTED ARCHY:")
+		dbg("now=%.3f fps=%.3f" % (now, fps))
+
+		if not soho.initialize(now, camera):
+			soho.error("couldn't initialize soho (make sure camera is set)")
+			abc_cleanup()
+			return
+
+		# NOTE: this is prone to float inaccuracies
+		frame = now*fps + 1.0
+
+		objpath   = ps['objpath'].Value[0]
+		abc_file  = ps['abcoutput'].Value[0]
+		trange    = ps['trange'].Value[0]
+		f         = ps['f'].Value
+
+		is_first  = frame < f[0]+0.5 # working around float funniness
+		is_last   = frame > f[1]-0.5
+
+		if trange==0:
+			is_first= is_last= True
+
+		dbg("is_first=%d is_last=%d" % (is_first, is_last))
+		dbg("now=%.3f fps=%.3f -> %f" % (now, fps, frame))
+
+		dbg("objpath=%s camera=%s abcoutput=%s trange=%d f=%s" % \
+			(objpath, camera, abc_file, trange, str(f)))
+
+		T.lap('init')
+
+		# collect hierarchy to be exported
+		# (read from scene directly, ie. not containing instances, etc.)
+		# results in array [ (parentname, objname) [, ...]  ] -- (full pathnames)
+		#
+		#dbg("COLLECTING ARCHY:")
+		archy = collect_archy(objpath)
+		archy_objs = [ n[1] for n in archy ]
+		#dbg("DONE.")
+
+
+		# collect geometry to be exported and their render SOPS
+		# (including point- and other instances, etc)
+		# (NOTE: the entire scene is to be searched, unfortunately)
+		#
+		soho.addObjects(now, '*', '*', '', do_culling=False)
+		soho.lockObjects(now)
+
+		soho_objs = {} # {objname: soho_obj}
+		soho_only = {} # soho-only objects (can't be accessed directly with hdk)
+
+		obj_list = []
+		sop_dict = {} # {objname: sopname}
+		objs = soho.objectList('objlist:instance')
+
+		#dbg("COLLECT soho instance/sop pairs ------------------")
+		for obj in objs:
+			n = obj.getName() # full pathname
+			obj_list.append(n)
+			soho_objs[n] = obj
+			path = obj.getDefaultedString('object:soppath', now, [None])[0]
+			#dbg(" -- %s (sop:%s)" % (n, str(path)) )
+			if path and path!="":
+				sop_dict[n] = path
+
+		T.lap('collect-objs')
+
+		if False:
+			dbg( '-' * 40 )
+			dbg("sop_dict: %s" % str(sop_dict))
+
+		# extend hierarchy with per-point instances
+		#
+		p1 = re.compile(":[^:]+:")
+		for obj in obj_list:
+			if re.search(p1, obj):
+				m = obj.split(":")
+				p = m[-2] # parent: 2nd from right
+				if p in archy_objs:
+					archy.append( ( p, obj, "%s__%s" % (m[-2], m[-1]) )  )
+					soho_only[obj]=p
+					#dbg(" -+- %s %s" % (p, obj))
+
+
+		# fill rest of the archy array
+		# elem: (parentpath, objpath, exportname, soppath)
+		#
+		archy2 = []
 		for a in archy:
-			dbg("- %s: " % (a[1], ))
+			N = list(a)
+			if len(N)<3: N.append(N[1]) # N = [ N[0], N[1], N[1] ]
+			if N[1] in sop_dict:
+				N = [ N[0], N[1], N[2], sop_dict[N[1]] ]
+			else:
+				# empty xform (no sop)
+				N = [ N[0], N[1], N[1], None ]
+			
+			N[2] = re.search("[^/]+$", N[2]).group(0)
+			archy2.append(N)
+		archy = archy2
 
-	dbg("COLLECTED ARCHY: %d elems" % len(archy))
+		if False:
+			dbg( '-' * 40 )
+			dbg("COLLECTED ARCHY:")
+			for a in archy:
+				dbg("- %s: " % (a[1], ))
 
-	T.lap('got-archy')
+		dbg("COLLECTED ARCHY: %d elems" % len(archy))
 
-	# we now have a list of all objects to be exported
-	# (parentname, objname, exportname, soppath)
-	#
-	archy_objs = [ n[1] for n in archy ]
-	skip_frame = False
+		T.lap('got-archy')
 
-	now_out = now+(1.0/fps)
+		# we now have a list of all objects to be exported
+		# (parentname, objname, exportname, soppath)
+		#
+		archy_objs = [ n[1] for n in archy ]
+		skip_frame = False
 
-	# check for user abort
-	#
-	if False: # TODO: check for user abort!
-		skip_frame = True
-		is_last = True
-		warn("user abort")
+		now_out = now+(1.0/fps)
 
-
-	# first frame: init all internal stuff
-	#
-	if is_first:
-		dbg("\n\n\n")
-		dbg("IS_FIRST--INIT")
-		G.archy = archy[:]
-		G.archy_objs = archy_objs[:]
-
-		s = abc_init(abc_file, tstep=1.0/fps, tstart=now_out)
-		if s:
-			# build objects for oarchive
-			#
-			for E in archy:
-				objname = E[1]
-				parent  = E[0]
-				outname = E[2]
-				soppath = E[3]
-				if parent is None: parent="-"
-				if soppath is None: soppath="-"
-
-				# TODO: if instance, objname should be the base obj name
-				obj_src = objname
-				if objname in soho_only:
-					obj_src = soho_only[objname]
-
-				#dbg("-- new xform\n\toutname= %s\n\tobj    = %s\n\tparent = %s\n\tsop    = %s" % (outname, objname, parent, soppath))
-
-				hou.hscript('%s newobject "%s" "%s" "%s" "%s" "%s"' % \
-					(CCMD, objname, obj_src, parent, outname, soppath))
-
-				# set object flags (static, etc.)
-				#
-				if objname in soho_objs:
-					ps = soho_objs[objname].evaluate({
-						'abc_staticgeo': SohoParm('abc_staticgeo', 'int', [0], False)
-					}, now)
-
-					if ps['abc_staticgeo'].Value[0]!=0:
-						hou.hscript('%s objset "%s" static' % (CCMD, objname))
-
-		else:
-			warn("couldn't output to file %s--aborting" % abc_file)
+		# check for user abort
+		#
+		if False: # TODO: check for user abort!
 			skip_frame = True
 			is_last = True
-
-	T.lap('frame-first')
-
-
-	# frame export: collect xforms, geoms, and export them
-	#
-	if archy_objs==G.archy_objs  and  not skip_frame:
-
-		dbg("\n")
-		dbg(" -- EXPORTING frame %.1f" % frame)
-
-		for E in archy:
-			#dbg("\n-")
-			#dbg("- OBJ: %s" % str(E))
-			objname = E[1]
-			soppath = E[3]
-			#dbg("- OBJ: %s" % E[1])
-
-			# get xform matrix (TODO: get pretransform too!)
-			#
-			xform = ''
-
-			# TODO: use this only for instances!
-			#if objname in soho_objs:
-			if objname in soho_only:
-				# get matrix from soho
-				#dbg(" --- (mtx from soho)")
-				xform = []
-				soho_objs[objname].evalFloat('space:local', now, xform)
-				xform = hou.Matrix4(xform)
-				xform = ' '.join([ str(n) for n in xform.asTuple() ])
-
-			# perform sample write
-			# (c++ code decides if geom is to be written)
-			#
-			if True:
-				hou.hscript('%s writesample %f "%s" %s' % \
-					(CCMD, now_out, objname, xform))
-
-	else:
-		#soho.error("couldn't export frame %.1f--no. of objects changed" % frame)
-		warn("couldn't export frame %.1f--no. of objects changed" % frame)
+			warn("user abort")
 
 
-	T.lap('frame-export')
+		# first frame: init all internal stuff
+		#
+		if is_first:
+			dbg("\n\n\n")
+			dbg("IS_FIRST--INIT")
+			G.archy = archy[:]
+			G.archy_objs = archy_objs[:]
+
+			s = abc_init(abc_file, tstep=1.0/fps, tstart=now_out)
+			if s:
+				# build objects for oarchive
+				#
+				for E in archy:
+					objname = E[1]
+					parent  = E[0]
+					outname = E[2]
+					soppath = E[3]
+					if parent is None: parent="-"
+					if soppath is None: soppath="-"
+
+					# TODO: if instance, objname should be the base obj name
+					obj_src = objname
+					if objname in soho_only:
+						obj_src = soho_only[objname]
+
+					#dbg("-- new xform\n\toutname= %s\n\tobj    = %s\n\tparent = %s\n\tsop    = %s" % (outname, objname, parent, soppath))
+
+					hou.hscript('%s newobject "%s" "%s" "%s" "%s" "%s"' % \
+						(CCMD, objname, obj_src, parent, outname, soppath))
+
+					# set object flags (static, etc.)
+					#
+					if objname in soho_objs:
+						ps = soho_objs[objname].evaluate({
+							'abc_staticgeo': SohoParm('abc_staticgeo', 'int', [0], False)
+						}, now)
+
+						if ps['abc_staticgeo'].Value[0]!=0:
+							hou.hscript('%s objset "%s" static' % (CCMD, objname))
+
+			else:
+				warn("couldn't output to file %s--aborting" % abc_file)
+				skip_frame = True
+				is_last = True
+
+		T.lap('frame-first')
+
+
+		# frame export: collect xforms, geoms, and export them
+		#
+		if archy_objs==G.archy_objs  and  not skip_frame:
+
+			dbg("\n")
+			dbg(" -- EXPORTING frame %.1f" % frame)
+
+			for E in archy:
+				#dbg("\n-")
+				#dbg("- OBJ: %s" % str(E))
+				objname = E[1]
+				soppath = E[3]
+				#dbg("- OBJ: %s" % E[1])
+
+				# get xform matrix (TODO: get pretransform too!)
+				#
+				xform = ''
+
+				# TODO: use this only for instances!
+				#if objname in soho_objs:
+				if objname in soho_only:
+					# get matrix from soho
+					#dbg(" --- (mtx from soho)")
+					xform = []
+					soho_objs[objname].evalFloat('space:local', now, xform)
+					xform = hou.Matrix4(xform)
+					xform = ' '.join([ str(n) for n in xform.asTuple() ])
+
+				# perform sample write
+				# (c++ code decides if geom is to be written)
+				#
+				if True:
+					hou.hscript('%s writesample %f "%s" %s' % \
+						(CCMD, now_out, objname, xform))
+
+		else:
+			#soho.error("couldn't export frame %.1f--no. of objects changed" % frame)
+			warn("couldn't export frame %.1f--no. of objects changed" % frame)
+
+
+		T.lap('frame-export')
+
+	except:
+		dbg("INTERRUPTED BY EXCEPTION")
+		is_last=True
 
 
 	# last frame: cleanup all internal stuff,
