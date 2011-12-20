@@ -96,10 +96,6 @@ SOHO-Exporter Notes
 	in any way, so any camera will do. (This will be done automatically
 	in later versions.)
 
-- Interrupting an export procedure doesn't work properly (the output file
-	will be closed completely only on deleting the ROP node or on
-	starting a new export -- the easiest workaround is to restart
-	Houdini).
 
 
 

@@ -16,6 +16,7 @@ Also, I never did a Windows build. It shouldn't be difficult, though. :)
 How to build/install
 --------------------
 
+
 - Download Alembic and build it.
 
 - Open the Makefile in a text editor, and set all the INCDIRS and LIBDIRS paths
@@ -27,6 +28,9 @@ How to build/install
 - Use the './link.sh' shell script to install the SOHO scripts to your Houdini prefs
 	folder (it creates only links, actually) -- or copy them yourself by hand.
 
+- In the './otls' folder use the './otl_build.sh' script to build the ROP otl for
+	the soho-based exporter.
+
 
 That's it, basically. If you launch Houdini from the console, you should see lines like
 
@@ -34,6 +38,7 @@ That's it, basically. If you launch Houdini from the console, you should see lin
 > ** hAbcGeomExport ROP 0.03 ** (compiled Dec 17 2011, 17:32:41) DEBUG build
 
 meaning the libraries are available.
+
 
 
 
