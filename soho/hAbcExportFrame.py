@@ -98,14 +98,6 @@ def collect_archy( objname, parentname=None, archy=None, level=1 ):
 
 
 
-def abc_init(abcfile, tstart=0.0, tstep=1.0/24.0):
-	"""Create a new alembic archive."""
-	dbg("abc_init() abcfile=%s" % str(abcfile))
-	hou.hscript('%s oarchive "%s" %f %f' % (CCMD, abcfile, tstep, tstart))
-	return True
-
-
-
 def abc_cleanup():
 	"""Clean up and close alembic archive."""
 	dbg("abc_cleanup()")
@@ -115,10 +107,15 @@ def abc_cleanup():
 
 
 
+def abc_init(abcfile, tstart=0.0, tstep=1.0/24.0):
+	"""Create a new alembic archive."""
+	dbg("abc_init() abcfile=%s" % str(abcfile))
+	abc_cleanup()
+	hou.hscript('%s oarchive "%s" %f %f' % (CCMD, abcfile, tstep, tstart))
+	return True
 
 
 
-def export():
 	"""Main export function."""
 
 	T = timer('FrameExport')
