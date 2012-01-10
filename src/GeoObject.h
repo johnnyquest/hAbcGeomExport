@@ -106,6 +106,8 @@ namespace HDK_AbcExportSimple
 
 		Alembic::AbcGeom::OXform *	_xform;		///< output xform obj
 		Alembic::AbcGeom::OPolyMesh *	_outmesh;	///< output polymesh obj
+
+		Alembic::AbcGeom::OC3fGeomParam	*_Cd_param;	///< Point/vertex color (optional)
 	};
 
 
