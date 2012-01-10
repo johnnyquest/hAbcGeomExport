@@ -80,6 +80,7 @@ GeoObject::GeoObject(
 , _xform(0)
 , _outmesh(0)
 , _Cd_param(0)
+, _v_param(0)
 {
 	UT_String s; obj_node->getFullPath(s);
 	_path = s.toStdString();
@@ -122,6 +123,7 @@ GeoObject::GeoObject(
 GeoObject::~GeoObject()
 {
 	//DBG << " --- ~GeoObject() " << _path << "\n";
+	if (_v_param) delete _v_param; _v_param=0;
 	if (_Cd_param) delete _Cd_param; _Cd_param=0;
 	if (_outmesh) delete _outmesh; _outmesh=0;
 	if (_xform) delete _xform; _xform=0;
@@ -206,7 +208,9 @@ bool GeoObject::writeSample( float time )
 				h_pUV = gdp->getPointAttribute("uv"),
 				h_vUV = gdp->getVertexAttribute("uv"),
 				h_pCd = gdp->getPointAttribute("Cd"),
-				h_vCd = gdp->getVertexAttribute("Cd");
+				h_vCd = gdp->getVertexAttribute("Cd"),
+				h_pv = gdp->getPointAttribute("v"),
+				h_vv = gdp->getVertexAttribute("v");
 	
 	bool	N_pt   = h_pN.isAttributeValid(),
 		N_vtx  = h_vN.isAttributeValid(),
@@ -214,9 +218,12 @@ bool GeoObject::writeSample( float time )
 		uv_vtx = h_vUV.isAttributeValid(),
 		Cd_pt  = h_pCd.isAttributeValid(),
 		Cd_vtx = h_vCd.isAttributeValid(),
+		v_pt   = h_pv.isAttributeValid(),
+		v_vtx  = h_vv.isAttributeValid(),
 		has_N  = N_pt  || N_vtx,
 		has_uv = uv_pt || uv_vtx,
-		has_Cd = Cd_pt || Cd_vtx;
+		has_Cd = Cd_pt || Cd_vtx,
+		has_v  = v_pt  || v_vtx;
 /*
 	DBG	<< " - ATTRS:"
 		<< " has_N:" << has_N
@@ -244,6 +251,7 @@ bool GeoObject::writeSample( float time )
 	FloatVec			g_N;			// normals (3 values; per-point or per-vertex)
 	FloatVec			g_uv;			// uv coords (2 values; per-point or per-vertex)
 	FloatVec			g_Cd;			// color (RGB: 3 values; per-point or per-vertex)
+	FloatVec			g_v;			// velocity (3 values; per-point or per-vertex)
 
 	GEO_Point const		*pt;
 	GEO_Primitive const	*prim;
@@ -280,6 +288,12 @@ bool GeoObject::writeSample( float time )
 			h_pCd.setElement(pt);
 			V = h_pCd.getV3();
 			push_v3<FloatVec, UT_Vector3>(g_Cd, V);
+		}
+
+		if ( v_pt ) {
+			h_pv.setElement(pt);
+			V = h_pv.getV3();
+			push_v3<FloatVec, UT_Vector3>(g_v, V);
 		}
 
 		ptmap[pt]=c; // store point in point->ptindex map
@@ -332,6 +346,12 @@ bool GeoObject::writeSample( float time )
 					V = h_vCd.getV3();
 					push_v3<FloatVec, UT_Vector3>(g_Cd, V);
 				}
+
+				if ( v_vtx ) {
+					h_vv.setElement(&vtx);
+					V = h_vv.getV3();
+					push_v3<FloatVec, UT_Vector3>(g_v, V);
+				}
 			}
 		}
 	}
@@ -339,6 +359,7 @@ bool GeoObject::writeSample( float time )
 	AbcGeom::ON3fGeomParam::Sample N_samp;
 	AbcGeom::OV2fGeomParam::Sample uv_samp;
 	AbcGeom::OC3fGeomParam::Sample Cd_samp;
+	AbcGeom::OV3fGeomParam::Sample v_samp;
 
 	if ( has_N ) {
 		N_samp.setScope( N_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
@@ -352,7 +373,15 @@ bool GeoObject::writeSample( float time )
 
 
 	AbcGeom::OPolyMeshSchema & mesh_schema = _outmesh->getSchema();
+	Alembic::Abc::OCompoundProperty arb_params = mesh_schema.getArbGeomParams();
+/*
+	std::vector< Alembic::Util::uint32_t > pfv_indices;
 
+	if ( Cd_vtx || v_vtx ) {
+		pfv_indices.resize(num_pfv);
+		for( int i=0; i<num_pfv; ++i ) pfv_indices[i]=i;
+	}
+*/
 	if ( has_Cd )
 	{
 		Cd_samp.setScope( Cd_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
@@ -360,26 +389,36 @@ bool GeoObject::writeSample( float time )
 
 		// NOTE369: this 'fake' indexing must be exported for now
 		// as Maya AbcImport can't handle non-indexed colorsets
-		if (true)
-		{
-			std::vector< Alembic::Util::uint32_t > Cd_indices(num_pfv);
-			for( int i=0; i<num_pfv; ++i ) Cd_indices[i]=i;
-			Cd_samp.setIndices( Alembic::Abc::UInt32ArraySample( &Cd_indices[0], Cd_indices.size() ) );
-		}
+		//Cd_samp.setIndices( Alembic::Abc::UInt32ArraySample( &pfv_indices[0], pfv_indices.size() ) );
 
-		Alembic::Abc::OCompoundProperty arb_params = mesh_schema.getArbGeomParams();
 		Alembic::AbcCoreAbstract::MetaData md;
 		md.set("mayaColorSet", "1");
 
 		if (_Cd_param==0) {
 			// NOTE386: this must be indexed for now, see NOTE369 above
 			_Cd_param = new AbcGeom::OC3fGeomParam(arb_params,
-				"Cd", true, // isIndexed
+				"Cd", false, // isIndexed
 				Cd_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope,
 				1, _ts, md);
 		}
 
 		_Cd_param->set(Cd_samp);
+	}
+
+	if ( has_v )
+	{
+		v_samp.setScope( v_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
+		v_samp.setVals( AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_v[0], g_v.size()/3) );
+
+		if (_v_param==0) {
+			_v_param = new AbcGeom::OV3fGeomParam(arb_params,
+				"velocity", false, // isIndexed
+				v_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope,
+				1, _ts);
+		}
+
+		_v_param->set(v_samp);
+
 	}
 
 	// construct mesh sample
