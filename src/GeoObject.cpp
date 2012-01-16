@@ -224,16 +224,25 @@ bool GeoObject::writeSample( float time )
 		has_uv = uv_pt || uv_vtx,
 		has_Cd = Cd_pt || Cd_vtx,
 		has_v  = v_pt  || v_vtx;
+
+	DBG
+		<< "TIME: " << time
+		<< "\n";
+
 /*
 	DBG	<< " - ATTRS:"
-		<< " has_N:" << has_N
+		<< "\n has_N:" << has_N
 		<< " N_pt:" << N_pt
 		<< " N_vtx:" << N_vtx
-		<< " has_uv:" << has_uv
+		<< "\n has_uv:" << has_uv
 		<< " uv_pt:" << uv_pt
 		<< " uv_vtx:" << uv_vtx
+		<< "\n has_Cd:" << has_Cd
 		<< " Cd_pt:" << Cd_pt
 		<< " Cd_vtx:" << Cd_vtx
+		<< "\n has_v:" << has_v
+		<< " v_pt:" << v_pt
+		<< " v_vtx:" << v_vtx
 		<< "\n";
 */
 
@@ -359,7 +368,7 @@ bool GeoObject::writeSample( float time )
 	AbcGeom::ON3fGeomParam::Sample N_samp;
 	AbcGeom::OV2fGeomParam::Sample uv_samp;
 	AbcGeom::OC3fGeomParam::Sample Cd_samp;
-	AbcGeom::OV3fGeomParam::Sample v_samp;
+	AbcGeom::OC3fGeomParam::Sample v_samp;
 
 	if ( has_N ) {
 		N_samp.setScope( N_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
@@ -374,18 +383,26 @@ bool GeoObject::writeSample( float time )
 
 	AbcGeom::OPolyMeshSchema & mesh_schema = _outmesh->getSchema();
 	Alembic::Abc::OCompoundProperty arb_params = mesh_schema.getArbGeomParams();
-/*
-	std::vector< Alembic::Util::uint32_t > pfv_indices;
 
-	if ( Cd_vtx || v_vtx ) {
-		pfv_indices.resize(num_pfv);
-		for( int i=0; i<num_pfv; ++i ) pfv_indices[i]=i;
+	DBG
+		<< " - num_pfv=" << num_pfv
+		<< "\n";
+
+	if (false)
+	{
+		std::vector< Alembic::Util::uint32_t > pfv_indices;
+	 
+		if ( Cd_vtx || v_vtx ) {
+			pfv_indices.resize(num_pfv);
+			for( int i=0; i<num_pfv; ++i ) pfv_indices[i]=i;
+		}
 	}
-*/
+
 	if ( has_Cd )
 	{
 		Cd_samp.setScope( Cd_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
 		Cd_samp.setVals( AbcGeom::C3fArraySample( (const AbcGeom::C3f *)&g_Cd[0], g_Cd.size()/3) );
+		//Cd_samp.setIndices( Alembic::Abc::UInt32ArraySample( &pfv_indices[0], pfv_indices.size() ) );
 
 		// NOTE369: this 'fake' indexing must be exported for now
 		// as Maya AbcImport can't handle non-indexed colorsets
@@ -408,13 +425,17 @@ bool GeoObject::writeSample( float time )
 	if ( has_v )
 	{
 		v_samp.setScope( v_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
-		v_samp.setVals( AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_v[0], g_v.size()/3) );
+		v_samp.setVals( AbcGeom::C3fArraySample( (const AbcGeom::C3f *)&g_v[0], g_v.size()/3) );
+		//v_samp.setIndices( Alembic::Abc::UInt32ArraySample( &pfv_indices[0], pfv_indices.size() ) );
+
+		Alembic::AbcCoreAbstract::MetaData md;
+		md.set("mayaColorSet", "0");
 
 		if (_v_param==0) {
-			_v_param = new AbcGeom::OV3fGeomParam(arb_params,
+			_v_param = new AbcGeom::OC3fGeomParam(arb_params,
 				"velocity", false, // isIndexed
 				v_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope,
-				1, _ts);
+				1, _ts, md);
 		}
 
 		_v_param->set(v_samp);
@@ -424,7 +445,7 @@ bool GeoObject::writeSample( float time )
 	// construct mesh sample
 	//
 	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
-		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_pts.size()/3 ),
+		AbcGeom::C3fArraySample( (const AbcGeom::C3f *)&g_pts[0], g_pts.size()/3 ),
 		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_pts_ids.size() ),
 		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_facevtxcounts.size() ),
 		uv_samp, N_samp
