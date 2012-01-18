@@ -63,7 +63,7 @@ namespace AbcGeom = Alembic::AbcGeom;
 
 
 #ifdef _DEBUG
-#define DBG if (true) std::cerr << "[hAbcGeomExport.cpp " << __LINE__ << "]: "
+#define DBG if (true) std::cerr << "[hAbcGeomExport.cpp:" << __LINE__ << "]: "
 #define dbg if (true) std::cerr
 #else
 #define DBG if (false) std::cerr
@@ -358,7 +358,9 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( fpreal now, UT_Interrupt * )
 	{
 		char const *obj_name = (*i)->pathname();
 
-		DBG << "- " << obj_name << ": ";
+		DBG
+			<< "- " << obj_name << ": "
+			<< "\n";
 		bool r = (*i)->writeSample(now);
 
 		if (!r) {
@@ -373,7 +375,7 @@ ROP_RENDER_CODE hAbcGeomExport::renderFrame( fpreal now, UT_Interrupt * )
 
 	t = clock()-t;
 	
-	DBG << " -- elapsed " << t << "\n";
+	//DBG << " -- elapsed " << t << "\n";
 
 	return ROP_CONTINUE_RENDER;
 }

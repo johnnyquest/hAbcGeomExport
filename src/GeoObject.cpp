@@ -12,7 +12,7 @@
 #define _DEBUG
 
 #ifdef _DEBUG
-#define DBG if (true) std::cerr << "[GeoObject.cpp " << __LINE__ << "]: "
+#define DBG if (true) std::cerr << "[GeoObject.cpp:" << __LINE__ << "]: "
 #define dbg if (true) std::cerr
 #else
 #define DBG if (false) std::cerr
@@ -47,6 +47,13 @@ template<class T, class V> inline void push_v2( T & container, V const & v ) {
 /**	Store 3 components of a vector in a container.
 */
 template<class T, class V> inline void push_v3( T & container, V const & v ) {
+/*
+	DBG << "push_v3"
+		<< " " << v.x()
+		<< " " << v.y()
+		<< " " << v.z()
+		<< "\n";
+*/
 	container.push_back(v.x());
 	container.push_back(v.y());
 	container.push_back(v.z());
@@ -419,6 +426,7 @@ bool GeoObject::writeSample( float time )
 				1, _ts, md);
 		}
 
+		DBG << " - Cd size=" << g_Cd.size() << " (" << g_Cd.size()/3 << ")\n";
 		_Cd_param->set(Cd_samp);
 	}
 
@@ -438,8 +446,8 @@ bool GeoObject::writeSample( float time )
 				1, _ts, md);
 		}
 
+		DBG << " - v size=" << g_v.size() << " (" << g_v.size()/3 << ")\n";
 		_v_param->set(v_samp);
-
 	}
 
 	// construct mesh sample
