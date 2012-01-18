@@ -33,6 +33,8 @@ using namespace HDK_AbcExportSimple;
 //
 Alembic::AbcGeom::OArchive * HDK_AbcExportSimple::GeoObject::_oarchive(0);
 Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts;
+Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts_v;
+Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts_Cd;
 
 
 
@@ -235,7 +237,6 @@ bool GeoObject::writeSample( float time )
 	DBG
 		<< "TIME: " << time
 		<< "\n";
-
 /*
 	DBG	<< " - ATTRS:"
 		<< "\n has_N:" << has_N
@@ -420,6 +421,9 @@ bool GeoObject::writeSample( float time )
 
 		if (_Cd_param==0) {
 			// NOTE386: this must be indexed for now, see NOTE369 above
+
+			// TODO: bug fix: make sure timesampling/indexing is the same!
+			//
 			_Cd_param = new AbcGeom::OC3fGeomParam(arb_params,
 				"Cd", false, // isIndexed
 				Cd_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope,
@@ -440,6 +444,9 @@ bool GeoObject::writeSample( float time )
 		md.set("mayaColorSet", "0");
 
 		if (_v_param==0) {
+
+			// TODO: bug fix: make sure timesampling/indexing is the same!
+			//
 			_v_param = new AbcGeom::OC3fGeomParam(arb_params,
 				"velocity", false, // isIndexed
 				v_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope,
