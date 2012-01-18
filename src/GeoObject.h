@@ -87,7 +87,7 @@ namespace HDK_AbcExportSimple
 
 		/// time-sampling spec (boost shared_ptr)
 		static Alembic::AbcGeom::TimeSamplingPtr
-						_ts;
+						_ts, _ts_v, _ts_Cd;
 	private:
 		GeoObject *			_parent;	///< hierarchy parent
 		OBJ_Node *			_op_obj;	///< geometry xform node
@@ -106,6 +106,9 @@ namespace HDK_AbcExportSimple
 
 		Alembic::AbcGeom::OXform *	_xform;		///< output xform obj
 		Alembic::AbcGeom::OPolyMesh *	_outmesh;	///< output polymesh obj
+
+		Alembic::AbcGeom::OC3fGeomParam	*_Cd_param;	///< Point/vertex color (optional)
+		Alembic::AbcGeom::OC3fGeomParam	*_v_param;	///< point/vertex velocity (optional)
 	};
 
 

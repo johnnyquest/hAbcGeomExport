@@ -12,7 +12,7 @@
 #define _DEBUG
 
 #ifdef _DEBUG
-#define DBG if (true) std::cerr << "[GeoObject.cpp " << __LINE__ << "]: "
+#define DBG if (true) std::cerr << "[GeoObject.cpp:" << __LINE__ << "]: "
 #define dbg if (true) std::cerr
 #else
 #define DBG if (false) std::cerr
@@ -33,6 +33,8 @@ using namespace HDK_AbcExportSimple;
 //
 Alembic::AbcGeom::OArchive * HDK_AbcExportSimple::GeoObject::_oarchive(0);
 Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts;
+Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts_v;
+Alembic::AbcGeom::TimeSamplingPtr HDK_AbcExportSimple::GeoObject::_ts_Cd;
 
 
 
@@ -47,6 +49,13 @@ template<class T, class V> inline void push_v2( T & container, V const & v ) {
 /**	Store 3 components of a vector in a container.
 */
 template<class T, class V> inline void push_v3( T & container, V const & v ) {
+/*
+	DBG << "push_v3"
+		<< " " << v.x()
+		<< " " << v.y()
+		<< " " << v.z()
+		<< "\n";
+*/
 	container.push_back(v.x());
 	container.push_back(v.y());
 	container.push_back(v.z());
@@ -79,6 +88,8 @@ GeoObject::GeoObject(
 , _matrix()
 , _xform(0)
 , _outmesh(0)
+, _Cd_param(0)
+, _v_param(0)
 {
 	UT_String s; obj_node->getFullPath(s);
 	_path = s.toStdString();
@@ -121,6 +132,8 @@ GeoObject::GeoObject(
 GeoObject::~GeoObject()
 {
 	//DBG << " --- ~GeoObject() " << _path << "\n";
+	if (_v_param) delete _v_param; _v_param=0;
+	if (_Cd_param) delete _Cd_param; _Cd_param=0;
 	if (_outmesh) delete _outmesh; _outmesh=0;
 	if (_xform) delete _xform; _xform=0;
 }
@@ -202,22 +215,42 @@ bool GeoObject::writeSample( float time )
 	GEO_AttributeHandle	h_pN = gdp->getPointAttribute("N"),
 				h_vN = gdp->getVertexAttribute("N"),
 				h_pUV = gdp->getPointAttribute("uv"),
-				h_vUV = gdp->getVertexAttribute("uv");
+				h_vUV = gdp->getVertexAttribute("uv"),
+				h_pCd = gdp->getPointAttribute("Cd"),
+				h_vCd = gdp->getVertexAttribute("Cd"),
+				h_pv = gdp->getPointAttribute("v"),
+				h_vv = gdp->getVertexAttribute("v");
 	
 	bool	N_pt   = h_pN.isAttributeValid(),
 		N_vtx  = h_vN.isAttributeValid(),
 		uv_pt  = h_pUV.isAttributeValid(),
 		uv_vtx = h_vUV.isAttributeValid(),
+		Cd_pt  = h_pCd.isAttributeValid(),
+		Cd_vtx = h_vCd.isAttributeValid(),
+		v_pt   = h_pv.isAttributeValid(),
+		v_vtx  = h_vv.isAttributeValid(),
 		has_N  = N_pt  || N_vtx,
-		has_uv = uv_pt || uv_vtx;
+		has_uv = uv_pt || uv_vtx,
+		has_Cd = Cd_pt || Cd_vtx,
+		has_v  = v_pt  || v_vtx;
+
+	DBG
+		<< "TIME: " << time
+		<< "\n";
 /*
 	DBG	<< " - ATTRS:"
-		<< " has_N:" << has_N
+		<< "\n has_N:" << has_N
 		<< " N_pt:" << N_pt
 		<< " N_vtx:" << N_vtx
-		<< " has_uv:" << has_uv
+		<< "\n has_uv:" << has_uv
 		<< " uv_pt:" << uv_pt
 		<< " uv_vtx:" << uv_vtx
+		<< "\n has_Cd:" << has_Cd
+		<< " Cd_pt:" << Cd_pt
+		<< " Cd_vtx:" << Cd_vtx
+		<< "\n has_v:" << has_v
+		<< " v_pt:" << v_pt
+		<< " v_vtx:" << v_vtx
 		<< "\n";
 */
 
@@ -230,9 +263,12 @@ bool GeoObject::writeSample( float time )
 	FloatVec			g_pts;			// point coordinates (3 values)
 	std::vector<Abc::int32_t>	g_pts_ids;		// point indices for each per-face-vertex
 	std::vector<Abc::int32_t>	g_facevtxcounts;	// vertex count for each face
+	int				num_pfv=0;		// no. of per-face vertices
 	
 	FloatVec			g_N;			// normals (3 values; per-point or per-vertex)
 	FloatVec			g_uv;			// uv coords (2 values; per-point or per-vertex)
+	FloatVec			g_Cd;			// color (RGB: 3 values; per-point or per-vertex)
+	FloatVec			g_v;			// velocity (3 values; per-point or per-vertex)
 
 	GEO_Point const		*pt;
 	GEO_Primitive const	*prim;
@@ -265,6 +301,18 @@ bool GeoObject::writeSample( float time )
 			push_v2<FloatVec, UT_Vector3>(g_uv, V);
 		}
 
+		if ( Cd_pt ) {
+			h_pCd.setElement(pt);
+			V = h_pCd.getV3();
+			push_v3<FloatVec, UT_Vector3>(g_Cd, V);
+		}
+
+		if ( v_pt ) {
+			h_pv.setElement(pt);
+			V = h_pv.getV3();
+			push_v3<FloatVec, UT_Vector3>(g_v, V);
+		}
+
 		ptmap[pt]=c; // store point in point->ptindex map
 		++c;
 	}
@@ -287,6 +335,7 @@ bool GeoObject::writeSample( float time )
 		{
 			int num_verts = prim->getVertexCount();
 			g_facevtxcounts.push_back(num_verts);
+			num_pfv += num_verts;
 			UT_Vector3 V;
 
 			for(int v=0; v<num_verts; ++v)
@@ -308,12 +357,26 @@ bool GeoObject::writeSample( float time )
 					V = h_vUV.getV3();
 					push_v2<FloatVec, UT_Vector3>(g_uv, V);
 				}
+
+				if ( Cd_vtx ) {
+					h_vCd.setElement(&vtx);
+					V = h_vCd.getV3();
+					push_v3<FloatVec, UT_Vector3>(g_Cd, V);
+				}
+
+				if ( v_vtx ) {
+					h_vv.setElement(&vtx);
+					V = h_vv.getV3();
+					push_v3<FloatVec, UT_Vector3>(g_v, V);
+				}
 			}
 		}
 	}
 
 	AbcGeom::ON3fGeomParam::Sample N_samp;
 	AbcGeom::OV2fGeomParam::Sample uv_samp;
+	AbcGeom::OC3fGeomParam::Sample Cd_samp;
+	AbcGeom::OC3fGeomParam::Sample v_samp;
 
 	if ( has_N ) {
 		N_samp.setScope( N_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
@@ -326,16 +389,84 @@ bool GeoObject::writeSample( float time )
 	}
 
 
+	AbcGeom::OPolyMeshSchema & mesh_schema = _outmesh->getSchema();
+	Alembic::Abc::OCompoundProperty arb_params = mesh_schema.getArbGeomParams();
+
+	DBG
+		<< " - num_pfv=" << num_pfv
+		<< "\n";
+
+	if (false)
+	{
+		std::vector< Alembic::Util::uint32_t > pfv_indices;
+	 
+		if ( Cd_vtx || v_vtx ) {
+			pfv_indices.resize(num_pfv);
+			for( int i=0; i<num_pfv; ++i ) pfv_indices[i]=i;
+		}
+	}
+
+	if ( has_Cd )
+	{
+		Cd_samp.setScope( Cd_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
+		Cd_samp.setVals( AbcGeom::C3fArraySample( (const AbcGeom::C3f *)&g_Cd[0], g_Cd.size()/3) );
+		//Cd_samp.setIndices( Alembic::Abc::UInt32ArraySample( &pfv_indices[0], pfv_indices.size() ) );
+
+		// NOTE369: this 'fake' indexing must be exported for now
+		// as Maya AbcImport can't handle non-indexed colorsets
+		//Cd_samp.setIndices( Alembic::Abc::UInt32ArraySample( &pfv_indices[0], pfv_indices.size() ) );
+
+		Alembic::AbcCoreAbstract::MetaData md;
+		md.set("mayaColorSet", "1");
+
+		if (_Cd_param==0) {
+			// NOTE386: this must be indexed for now, see NOTE369 above
+
+			// TODO: bug fix: make sure timesampling/indexing is the same!
+			//
+			_Cd_param = new AbcGeom::OC3fGeomParam(arb_params,
+				"Cd", false, // isIndexed
+				Cd_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope,
+				1, _ts, md);
+		}
+
+		DBG << " - Cd size=" << g_Cd.size() << " (" << g_Cd.size()/3 << ")\n";
+		_Cd_param->set(Cd_samp);
+	}
+
+	if ( has_v )
+	{
+		v_samp.setScope( v_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope );
+		v_samp.setVals( AbcGeom::C3fArraySample( (const AbcGeom::C3f *)&g_v[0], g_v.size()/3) );
+		//v_samp.setIndices( Alembic::Abc::UInt32ArraySample( &pfv_indices[0], pfv_indices.size() ) );
+
+		Alembic::AbcCoreAbstract::MetaData md;
+		md.set("mayaColorSet", "0");
+
+		if (_v_param==0) {
+
+			// TODO: bug fix: make sure timesampling/indexing is the same!
+			//
+			_v_param = new AbcGeom::OC3fGeomParam(arb_params,
+				"velocity", false, // isIndexed
+				v_vtx ? AbcGeom::kFacevaryingScope : AbcGeom::kVertexScope,
+				1, _ts, md);
+		}
+
+		DBG << " - v size=" << g_v.size() << " (" << g_v.size()/3 << ")\n";
+		_v_param->set(v_samp);
+	}
+
 	// construct mesh sample
 	//
 	AbcGeom::OPolyMeshSchema::Sample mesh_samp(
-		AbcGeom::V3fArraySample( (const AbcGeom::V3f *)&g_pts[0], g_pts.size()/3 ),
+		AbcGeom::C3fArraySample( (const AbcGeom::C3f *)&g_pts[0], g_pts.size()/3 ),
 		AbcGeom::Int32ArraySample( &g_pts_ids[0], g_pts_ids.size() ),
 		AbcGeom::Int32ArraySample( &g_facevtxcounts[0], g_facevtxcounts.size() ),
 		uv_samp, N_samp
 	);
 
-	_outmesh->getSchema().set(mesh_samp); // export mesh sample
+	mesh_schema.set(mesh_samp); // export mesh sample
 	_geo_ok=true;
 
 	return true;
