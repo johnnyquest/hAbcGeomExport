@@ -31,7 +31,6 @@
 #define PLUGIN_VERSION_STR "0.03"
 
 // TODO: remove this as soon as debugging is over
-#define _DEBUG
 
 
 #include <OP/OP_Director.h>

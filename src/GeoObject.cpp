@@ -9,7 +9,6 @@
 
 #include "GeoObject.h"
 
-#define _DEBUG
 
 #ifdef _DEBUG
 #define DBG if (true) std::cerr << "[GeoObject.cpp:" << __LINE__ << "]: "
