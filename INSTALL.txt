@@ -17,7 +17,7 @@ How to build/install
 --------------------
 
 
-- Download Alembic and build it.
+- Download Alembic and build it. (1)
 
 - Open the Makefile in a text editor, and set all the INCDIRS and LIBDIRS paths
 	to point at the appropriate locations (the places where you have your Alembic
@@ -38,6 +38,25 @@ That's it, basically. If you launch Houdini from the console, you should see lin
 > ** hAbcGeomExport ROP 0.03 ** (compiled Dec 17 2011, 17:32:41) DEBUG build
 
 meaning the libraries are available.
+
+
+
+
+(1): Alembic library building notes
+-----------------------------------
+
+You want to build the Alembic libraries so they will use the other required libraries
+(HDF5, OpenEXR, etc.) from the Houdini installation. SideFX now provides all the
+necessary includes, lib and dll/so files. Make sure you build them this way or the
+resulting plugins won't build and/or will crash around, depending on your platform.
+
+Since your compiled Alembic libs will use DLL libraries, make sure you use the
+following #define-s when building Alembic:
+
+	- _HDF5USEDLL_
+	- OPENEXR_DLL
+	- PLATFORM_WINDOWS
+
 
 
 
