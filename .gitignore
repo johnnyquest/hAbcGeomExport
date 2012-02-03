@@ -31,5 +31,18 @@ tmp*/*
 config/*
 #otls/*
 
+# windows crap
+*.ncb
+*.lib
+*.exp
+*.dll
+*.obj
+
+*.suo
+*.vcproj.*.user
+Debug/*
+Release/*
+x64/*
+
 
 

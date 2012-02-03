@@ -19,7 +19,6 @@
 */
 
 #define PLUGIN_VERSION_STR "0.03"
-#define _DEBUG
 
 
 #include "hAbcGeomExport.h"
@@ -32,6 +31,7 @@
 
 #include <UT/UT_Version.h>
 #include <UT/UT_DSOVersion.h>
+
 #include <CH/CH_LocalVariable.h>
 #include <PRM/PRM_Include.h>
 #include <OP/OP_OperatorTable.h>
