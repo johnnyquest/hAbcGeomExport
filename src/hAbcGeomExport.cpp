@@ -66,7 +66,6 @@ namespace Abc = Alembic::Abc;
 namespace AbcGeom = Alembic::AbcGeom;
 
 
-
 #ifdef _DEBUG
 #define DBG if (true) std::cerr << "[hAbcGeomExport.cpp:" << __LINE__ << "]: "
 #define dbg if (true) std::cerr
@@ -90,7 +89,7 @@ static PRM_Name		prm_objpath("objpath", "Path to Root Object");
 static PRM_Default	prm_objpath_d(0, "/obj");
 
 static PRM_Name		prm_abcoutput("abcoutput", "Save to file");
-static PRM_Default	prm_abcoutput_d(0, "./out.abc");
+static PRM_Default	prm_abcoutput_d(0, "$HIP/out.abc");
 
 
 
