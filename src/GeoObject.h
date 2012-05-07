@@ -13,6 +13,8 @@
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
 
+#include <UT/UT_Version.h>
+
 #include <OBJ/OBJ_Node.h>
 #include <SOP/SOP_Node.h>
 #include <OP/OP_Node.h>
@@ -22,6 +24,12 @@
 #include <vector>
 #include <cassert>
 #include <string>
+
+
+#if UT_MAJOR_VERSION_INT >= 12
+#include <GA/GA_GBMacros.h>
+#endif
+
 
 
 /**		Macro for placing class-static data.
