@@ -10,12 +10,19 @@
 #ifndef __hAbcGeomExport_h__
 #define __hAbcGeomExport_h__
 
+#include <UT/UT_Version.h>
+
 #include <OBJ/OBJ_Node.h>
 #include <ROP/ROP_Node.h>
 #include <SOP/SOP_Node.h>
 #include <OP/OP_Node.h>
 
+#if UT_MAJOR_VERSION_INT >= 12
+#include <GA/GA_GBMacros.h>
+#include <GA/GA_Attribute.h>
+#else
 #include <GB/GB_Attribute.h>
+#endif
 
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
@@ -46,8 +53,13 @@ class OP_VariablePair;
 
 namespace HDK_AbcExportSimple
 {
+#if UT_MAJOR_VERSION_INT >= 12
+	typedef std::map< std::string, GA_Attribute * >
+		AttrArray;
+#else
 	typedef std::map< std::string, GB_Attribute * >
 		AttrArray;
+#endif
 
 
 

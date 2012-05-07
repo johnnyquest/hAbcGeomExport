@@ -48,7 +48,12 @@
 #include <GEO/GEO_PrimPoly.h>
 #include <GEO/GEO_AttributeHandle.h>
 
+#if UT_MAJOR_VERSION_INT >= 12
+// ...
+#include <GA/GA_AttributeDict.h>
+#else
 #include <GB/GB_AttributeDictOffsetIterator.h>
+#endif
 
 #include <Alembic/AbcGeom/All.h>
 #include <Alembic/AbcCoreHDF5/All.h>
@@ -169,6 +174,7 @@ hAbcGeomExport::~hAbcGeomExport()
 /**		Collect all attributes from an attribute dict.
 		(Used to get all point/prim/vertex/... attribute names).
 */
+/*
 void get_attrs(
 	GB_AttributeDict & dict,
 	AttrArray & names,
@@ -188,11 +194,12 @@ void get_attrs(
 			<< "\n";
 	}
 }
-
+*/
 
 
 /**		Get the size of a given attribute type (in bytes).
 */
+/*
 size_t get_attribtype_size( GB_AttribType t )
 {
 	typedef  std::map<GB_AttribType, size_t> SizeMap;
@@ -212,16 +219,17 @@ size_t get_attribtype_size( GB_AttribType t )
 	assert(r>0 && "unknown/unsupported type...");
 	return r;
 }
-
+*/
 
 
 /**		Get number of components for an attribute.
 */
+/*
 int get_num_comps( GB_Attribute *attr ) {
 	assert(attr);
 	return attr->getSize() / get_attribtype_size(attr->getType());
 }
-
+*/
 
 
 
